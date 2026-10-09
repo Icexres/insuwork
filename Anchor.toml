@@ -1,0 +1,15 @@
+# OQ-18: toolchain versions pinned at scaffold time; owner confirms or changes.
+[toolchain]
+anchor_version = "0.31.1"
+
+[features]
+seeds = true
+
+[programs.devnet]
+insuwork_bond = "BOND111111111111111111111111111111111111111"
+insuwork_escrow = "ESCR11111111111111111111111111111111111111"
+insuwork_disputes = "DISP11111111111111111111111111111111111111"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"

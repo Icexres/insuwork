@@ -4,11 +4,11 @@
 Record exact versions here at scaffold time (T-01) and in `rust-toolchain.toml`, `.nvmrc`, `Anchor.toml`, `package.json#packageManager`.
 | Tool | Version |
 |---|---|
-| Rust | TBD |
-| Solana CLI (Agave) | TBD |
-| Anchor | TBD |
-| Node | TBD |
-| pnpm | TBD |
+| Rust | 1.82.0 (`rust-toolchain.toml`) |
+| Solana CLI (Agave) | TBD (OQ-18) |
+| Anchor | 0.31.1 (`Anchor.toml`) |
+| Node | 24.13.0 (`.nvmrc`) |
+| pnpm | 9.12.0 (`package.json#packageManager`) |
 | Supabase CLI | TBD |
 
 Windows note: Anchor/Solana tooling is easiest under WSL2 (Ubuntu). Keep the repo inside the WSL filesystem for speed, or accept slower builds on `F:\`.

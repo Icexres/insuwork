@@ -1,0 +1,9 @@
+{
+  "app": {
+    "name": "InsuWork",
+    "tagline": "Backed delivery, paid in NPR."
+  },
+  "mock": {
+    "badge": "MOCK"
+  }
+}
