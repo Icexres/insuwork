@@ -1,0 +1,6 @@
+---
+description: Core project rules for InsuWork
+alwaysApply: true
+---
+Read /AGENTS.md before any task; it is the source of truth. Obey its §5 hard rules: no crypto for Nepal residents (no wallet in freelancer/family views), no PII on-chain, escrow releases only to a registered partner wallet, no bond pooling, Σcap ≤ deposited, no tokens, nothing negative about freelancers on-chain, no clawbacks, AI triage advisory only, mock partner always labelled MOCK.
+If a behaviour is in docs/decisions/OPEN-QUESTIONS.md, stop and ask the owner instead of choosing. Money is integer base units, never floats.

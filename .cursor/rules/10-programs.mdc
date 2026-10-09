@@ -1,0 +1,5 @@
+---
+description: Anchor program rules
+globs: programs/**,tests/programs/**,packages/sdk/**
+---
+Follow programs/AGENTS.md and docs/SPEC-onchain.md exactly. Checked arithmetic, named errors, events on every state change, CPI only via authority PDAs. Tests in LiteSVM/Bankrun TS per docs/TEST-PLAN.md.

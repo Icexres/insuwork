@@ -1,6 +1,6 @@
-# Bharosa — Bonded Trust for Nepali Talent
+# InsuWork — Bonded Trust for Nepali Talent
 
-> **भरोसा (bharosa)**, Nepali for *trust, something you can rely on*. This is a working name; check it against trademarks and app stores before launch.
+> **InsuWork** is the product name; check it against trademarks and app stores before launch.
 
 | | |
 |---|---|
@@ -19,7 +19,7 @@
 
 **Insight.** Trust is backed by **collateral**, not credentials. A skill badge costs nothing to fake. Money someone stands to lose does.
 
-**Solution.** Bharosa lets **diaspora Nepali professionals put up a USDC bond (a deposit at risk) behind a specific freelancer back home**. The bond sits in a Solana program and pays the client if a delivery is not made. If the work is delivered, the voucher earns a premium that the client pays. Every escrow release that succeeds becomes an on-chain **proof of paid delivery**. The freelancer builds a record that is hard to fake and that they carry with them, starting with their first contract. **The freelancer and their family never touch crypto.** A non-resident partner converts everything offshore and pays it into a Nepali bank account in NPR.
+**Solution.** InsuWork lets **diaspora Nepali professionals put up a USDC bond (a deposit at risk) behind a specific freelancer back home**. The bond sits in a Solana program and pays the client if a delivery is not made. If the work is delivered, the voucher earns a premium that the client pays. Every escrow release that succeeds becomes an on-chain **proof of paid delivery**. The freelancer builds a record that is hard to fake and that they carry with them, starting with their first contract. **The freelancer and their family never touch crypto.** A non-resident partner converts everything offshore and pays it into a Nepali bank account in NPR.
 
 **Expected change.** A final-year CS student whose family is about to pay a consultancy deposit gets a bonded, pre-funded first contract that their parents can see. The bet is that some families will **defer the deposit**. We measure this with a lottery and a control group, not with testimonials.
 
@@ -54,7 +54,7 @@ Global freelance marketplaces (Upwork, Fiverr) let clients restrict jobs by coun
 
 ### 1.5 Out of scope
 - **Skill assessment as the product.** The market is commoditised (Upwork certifications, Braintrust AIR, Toptal), easy to cheat with AI, and has zero Colosseum winners (§10).
-- **Building another marketplace.** Upwork, Yaha Chha, OnlineKaam and Freelanced Nepal already exist. Bharosa is a **trust layer that sits beside marketplaces**, not a replacement for them.
+- **Building another marketplace.** Upwork, Yaha Chha, OnlineKaam and Freelanced Nepal already exist. InsuWork is a **trust layer that sits beside marketplaces**, not a replacement for them.
 - **Unskilled labour migration** (most of the 839k permits). Our cohort is small and skilled. We say so openly (§8.4).
 
 ---
@@ -63,7 +63,7 @@ Global freelance marketplaces (Upwork, Fiverr) let clients restrict jobs by coun
 
 1. **Collateral beats credentials.** Economics research on *social collateral* shows that network ties stand in for collateral and reduce information gaps in lending and job referrals (Karlan, Mobius, Rosenblat & Szeidl, [*Trust and Social Collateral*, QJE 2009](https://www.povertyactionlab.org/sites/default/files/research-paper/19%20-%20Karlan%20et%20al.%20-%202009%20-%20QJE%20-%20TRUST%20AND%20SOCIAL%20COLLATERAL.pdf); [NBER w13126](https://www.nber.org/papers/w13126)). We make that tie **explicit, priced and enforceable**.
 2. **Reputation must be earned through work, not issued.** a16z's reputation framework argues that reputation only signals anything if it is non-transferable and earned through activity. Our only reputation primitive is **a paid delivery that a real client funded and released**.
-3. **The diaspora is the missing trust bridge.** Nepali engineers abroad have credibility with foreign clients, ties to people back home, and spare USDC or dollars. Today their only way to help is "come abroad too". Bharosa gives them a way to **profit when talent stays home**, which flips the usual diaspora incentive (see the council rule in §15: no payers who profit when people emigrate).
+3. **The diaspora is the missing trust bridge.** Nepali engineers abroad have credibility with foreign clients, ties to people back home, and spare USDC or dollars. Today their only way to help is "come abroad too". InsuWork gives them a way to **profit when talent stays home**, which flips the usual diaspora incentive (see the council rule in §15: no payers who profit when people emigrate).
 4. **Keep the crypto where it's legal.** The chain does the work that requires a chain: collateral that can be slashed, cross-border escrow among parties on three continents with no shared bank, and an auditable record of where funds came from. Nepal residents only ever see NPR (§11).
 
 ---
@@ -80,7 +80,7 @@ Global freelance marketplaces (Upwork, Fiverr) let clients restrict jobs by coun
 - If milestones succeed, the voucher earns a **bond premium**. The **client pays it** on top of the contract price, because the client is the one being protected. The freelancer's pay is never reduced.
 
 **B. Paid Delivery Record (proof of paid delivery)**
-- Every successful milestone release writes a **Solana Attestation Service (SAS)** attestation ([SAS](https://solana.com/news/solana-attestation-service)) under the schema `bharosa.paid_delivery.v1`. It records the client, the amount band, the date, a hash of the milestone spec and the backing voucher. It also records whether the partner confirmed the NPR credit in Nepal.
+- Every successful milestone release writes a **Solana Attestation Service (SAS)** attestation ([SAS](https://solana.com/news/solana-attestation-service)) under the schema `insuwork.paid_delivery.v1`. It records the client, the amount band, the date, a hash of the milestone spec and the backing voucher. It also records whether the partner confirmed the NPR credit in Nepal.
 - The subject is a **pseudonymous freelancer reference**, not a wallet the freelancer must hold (§11). The freelancer gets a public, verifiable profile link that works anywhere: an Upwork profile, a CV, LinkedIn.
 - Only **successes** are written on-chain. Failures show up as losses on the *voucher's* bond record, not as a permanent public mark on a young person's name (§5.5).
 
@@ -111,9 +111,9 @@ Global freelance marketplaces (Upwork, Fiverr) let clients restrict jobs by coun
 
 ## 4. How it fits with Stay Contract
 
-Bharosa is the **trust layer**, and Stay Contract (council pick, 2026-10-02) is the **commitment and payment layer**. They share one escrow program.
+InsuWork is the **trust layer**, and Stay Contract (council pick, 2026-10-02) is the **commitment and payment layer**. They share one escrow program.
 
-| Layer | Stay Contract provides | Bharosa adds |
+| Layer | Stay Contract provides | InsuWork adds |
 |---|---|---|
 | Who pays | Solana teams lock 6 months of salary in USDC | — |
 | Who is hired | Final-year CS students with an open IELTS/JLPT/consultancy file | **Why a client would risk hiring a fresher**: a voucher's bond |
@@ -169,7 +169,7 @@ sequenceDiagram
   participant AI as AI triage
   participant V as Voucher (abroad)
   participant C as Client
-  participant PG as Bharosa programs
+  participant PG as InsuWork programs
   participant P as Conversion partner
   F->>AI: Apply (portfolio, interview)
   AI->>V: Structured screening report
@@ -195,7 +195,7 @@ sequenceDiagram
 ### 5.4 Claims and disputes
 - **Window.** A claim must be filed within **14 days** after a milestone's due date. After that, the backing auto-unlocks.
 - **Evidence.** The spec hash committed at creation, the delivery artefacts and the message log. Hashes go on-chain and the files stay off-chain.
-- **Adjudication (v1).** A named **three-person panel**: one senior engineer nominated by Bharosa, one nominated by the voucher, one nominated by the client. Decision by majority within 7 days. Each panelist stakes a small fee that they lose if they don't rule in time.
+- **Adjudication (v1).** A named **three-person panel**: one senior engineer nominated by InsuWork, one nominated by the voucher, one nominated by the client. Decision by majority within 7 days. Each panelist stakes a small fee that they lose if they don't rule in time.
 - **Adjudication (v2).** A decentralised jury in the style of Kleros, or the hybrid AI and smart-contract dispute-resolution model from the archive literature.
 - **Outcomes.** *Upheld*: the bond pays the client, capped at the milestone value, and the escrowed salary for that milestone is refunded to the client. *Rejected*: the milestone releases normally. *Partial*: pro-rata.
 - **Anti-collusion.** A client and a voucher with a declared relationship can't be counterparties to each other. Claim rates per client are public, so a serial claimer becomes visible.
@@ -218,7 +218,7 @@ sequenceDiagram
 | **Voucher** | Non-resident Nepali professionals (foreign citizens in v1), ideally alumni of the freelancer's college | A way to help home without telling people to leave, plus a return | USDC bond, judgement, a 30-minute call | Premium on successful milestones, a public record as a backer | Losing bond capital. Securities or insurance rules where they live. |
 | **Client** | v1: Solana teams, DAOs and Superteam sponsors that already hold USDC and need junior builders. v2: any offshore client. | Cheap talent without the "who's really working, and what if they vanish" risk | Salary in escrow plus a ~3% premium | A guarantee backed by real collateral, verified delivery history, Squads-controlled escrow | Claims being slow or unfair |
 | **Conversion partner** | A licensed money transmitter or bank partner outside Nepal, owned by a non-resident (NepalRelief / Cross River pattern) | Volume and compliant flows | KYC, conversion, SWIFT, NPR-credit attestations | Per-payout fee or FX spread | Nepal regulatory exposure, AML |
-| **Bharosa (the operator)** | An offshore entity **owned by a non-resident** (the 1964 Act bars a Nepal-resident founder from owning it) | A sustainable take rate | Programs, triage, dashboards, panel coordination | Platform fee (§7) | Founder-structure legality (§11) |
+| **InsuWork (the operator)** | An offshore entity **owned by a non-resident** (the 1964 Act bars a Nepal-resident founder from owning it) | A sustainable take rate | Programs, triage, dashboards, panel coordination | Platform fee (§7) | Founder-structure legality (§11) |
 
 ### 6.2 Ecosystem and institutional stakeholders
 
@@ -261,7 +261,7 @@ sequenceDiagram
 - If all 6 milestones succeed:
   - Sita receives the full **$6,000**, converted to NPR (about NPR 8 lakh in total, or about NPR 1.3 lakh a month), against a local fresher alternative of Rs 10–15k/month.
   - The voucher earns **$180**, an 18% return on capital over 6 months, at the risk of losing up to $1,000.
-  - Bharosa earns **$60**.
+  - InsuWork earns **$60**.
 - If milestone 4 fails and the claim is upheld, the client gets $1,000 from the bond plus a refund of milestone 4's escrow. The voucher has lost $1,000 − $90 in premiums earned = **−$910**.
 - **Implication.** The voucher needs a delivery-failure rate well under ~15% per backing to come out ahead. That forces careful vouching, which is the point.
 
@@ -318,7 +318,7 @@ Every arrow is a hypothesis. The weakest are **"client accepts a fresher"** (dem
 | `Commitment` (shared with Stay Contract) | `client`, `freelancer_ref`, `partner`, `milestones[]`, `premium_bps`, `backing`, `vest` | Release destination **hard-coded to `partner`** |
 | `Milestone` | `amount`, `due_ts`, `spec_hash`, `status`, `oracle` (`client_sig` \| `github_merge`) | |
 | `Claim` | `commitment`, `milestone`, `evidence_hash`, `panel[3]`, `votes`, `status` | 14-day window, 7-day ruling |
-| SAS schema `bharosa.paid_delivery.v1` | `freelancer_ref`, `client`, `amount_band`, `date`, `spec_hash`, `voucher`, `npr_credit_confirmed` | Issuers: the Bharosa program (delivery) and the partner (NPR credit) |
+| SAS schema `insuwork.paid_delivery.v1` | `freelancer_ref`, `client`, `amount_band`, `date`, `spec_hash`, `voucher`, `npr_credit_confirmed` | Issuers: the InsuWork program (delivery) and the partner (NPR credit) |
 
 - `freelancer_ref = H(partner_kyc_id ‖ salt)`. **No personal data on-chain and no wallet needed by the freelancer.**
 - Client treasuries can use **Squads** multisig. Network fees are paid by the client or sponsored.
@@ -354,7 +354,7 @@ Anchor (Rust), the SAS SDK, Squads v4, and Next.js with a Solana wallet adapter 
 
 ### 10.2 Nepali platforms
 
-| Player | Model | Relation to Bharosa |
+| Player | Model | Relation to InsuWork |
 |---|---|---|
 | [Yaha Chha](https://www.yahachha.com/) | Nepali marketplace with KYC on both sides | Domestic clients. A possible partner whose freelancers get backed. |
 | [OnlineKaam](https://www.onlinekaam.com/) | Claims 1,000+ internally vetted freelancers | Its vetting doesn't carry abroad |
@@ -369,7 +369,7 @@ None of them offers **cross-border recourse** or a **record that travels outside
 - **Nearest neighbours**: `bytebonds` (the worker issues bonds against their *own* future earnings, the reverse direction) and `kapture` (AI-verified proof of remote work releasing payroll).
 - **No project found with third-party collateral that can be slashed behind an individual worker.** The caveat: absence in the corpus is not proof that nobody has built it.
 
-### 10.4 Why Bharosa is different
+### 10.4 Why InsuWork is different
 1. **Collateral, not a credential.** Someone loses real money if the freelancer fails.
 2. **The diaspora as underwriters**, with incentives that pay when talent stays.
 3. **Legal by design for Nepal**: the crypto stays offshore and the freelancer gets NPR.
@@ -472,7 +472,7 @@ None of them offers **cross-border recourse** or a **record that travels outside
 
 ## 16. Open questions
 
-1. **Name.** Check "Bharosa" for conflicts (it is a common word, and Indian apps may already use it).
+1. **Name.** Check "InsuWork" for conflicts (trademarks, domains and app stores).
 2. **Who is the non-resident co-founder or entity owner?**
 3. **Bond premium level.** Is 3% enough to attract vouchers and low enough for clients? Test with both groups.
 4. **Panel v1 membership.** Who are the first panelists, and how are they paid?

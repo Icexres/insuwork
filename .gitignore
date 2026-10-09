@@ -1,0 +1,14 @@
+node_modules/
+.next/
+target/
+.anchor/
+test-ledger/
+keys/
+*.keypair.json
+id.json
+.env
+.env.local
+.env.*.local
+!.env.example
+supabase/.temp/
+.DS_Store

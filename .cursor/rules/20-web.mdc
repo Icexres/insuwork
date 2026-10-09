@@ -1,0 +1,5 @@
+---
+description: Next.js app rules
+globs: apps/web/**,packages/shared/**
+---
+Follow apps/AGENTS.md. No wallet imports under freelancer/family routes. Supabase RLS on every table. All strings via i18n files. Shadcn/ui components.

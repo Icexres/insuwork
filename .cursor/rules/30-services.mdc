@@ -1,0 +1,5 @@
+---
+description: Services rules
+globs: services/**,packages/triage/**,packages/attest/**
+---
+Follow services/AGENTS.md and docs/AI-TRIAGE.md / docs/SPEC-attestation.md. Idempotent jobs, env-only secrets, no PII in logs, MOCK label on partner data.
