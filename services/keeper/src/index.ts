@@ -1,5 +1,3 @@
-// Auto-release crank stub (T-26, OQ-8). Plain Node entrypoint + exported fn for cron.
-export function shouldAutoRelease(nowTs: number, dueTs: number, claimWindowSecs: number, disputed: boolean): boolean {
-  if (disputed) return false;
-  return nowTs >= dueTs + claimWindowSecs;
-}
+// Auto-release crank (T-26, OQ-8). Will call sdk.crankAutoReleaseIx once a milestone's window
+// (max(due_ts, submitted_ts) + claim window, E-31) has closed; the program enforces the rule.
+export {};

@@ -10,18 +10,7 @@ import {
   TOKEN_PROGRAM_ID, MINT_SIZE, ACCOUNT_SIZE, MintLayout, AccountLayout,
 } from "@solana/spl-token";
 
-export const TEST_USDC_DECIMALS = 6;
 export const USDC = 1_000_000n; // 1 USDC in base units
-export const CLAIM_WINDOW_SECS = 14 * 24 * 3600; // 14-day window (E-08)
-export const RULING_WINDOW_SECS = 7 * 24 * 3600; // 7-day ruling window
-
-export function warpClock(nowSecs, deltaSecs) {
-  return nowSecs + deltaSecs;
-}
-
-export function isClaimOpen(nowSecs, dueTs) {
-  return nowSecs <= dueTs + CLAIM_WINDOW_SECS;
-}
 
 const ALT_PROGRAM = new PublicKey("AddressLookupTab1e1111111111111111111111111");
 const UPGRADEABLE_LOADER = new PublicKey("BPFLoaderUpgradeab1e11111111111111111111111");
@@ -70,7 +59,7 @@ export class Env {
     return { program: new anchor.Program(idl, provider), programId, programData };
   }
 
-  createMint(decimals = TEST_USDC_DECIMALS) {
+  createMint(decimals = 6) {
     const mint = Keypair.generate().publicKey;
     const data = Buffer.alloc(MINT_SIZE);
     MintLayout.encode({

@@ -21,7 +21,6 @@ type BNType = InstanceType<typeof BN>;
 export const BOND_PROGRAM_ID = new PublicKey(bondIdl.address);
 export const ESCROW_PROGRAM_ID = new PublicKey(escrowIdl.address);
 export const DISPUTES_PROGRAM_ID = new PublicKey(disputesIdl.address);
-export const USDC_DECIMALS = 6;
 export const MAX_BACKINGS = 4;
 /** Measured: 4-backing finalize ≈ 231k CU (LiteSVM). Use with buildV0Tx for multi-backing calls. */
 export const MULTI_BACKING_COMPUTE_UNITS = 400_000;
