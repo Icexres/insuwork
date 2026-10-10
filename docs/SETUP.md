@@ -37,6 +37,15 @@ cp .env.example apps/web/.env.local   # fill values
 pnpm --filter web dev
 ```
 
+## Devnet deploy (T-18, E-37)
+```
+# 1. fund the deployer (~11 SOL for three programs): address = solana-keygen pubkey keys/deployer.json
+pnpm build:programs && pnpm sync:idl
+pnpm deploy:devnet           # deploy/upgrade all three programs
+pnpm devnet:init             # test mint, configs, MOCK partner -> deployments/devnet.json
+pnpm devnet:set-upgrade-authority <SQUADS_VAULT>   # last: upgrades now need the multisig
+```
+
 ## Keys (all separate, all git-ignored, in `keys/` or env)
 Upgrade authority (OQ-19) · admin · GitHub oracle · attester · mock partner · keeper fee payer · test client/voucher/panelist wallets.
 

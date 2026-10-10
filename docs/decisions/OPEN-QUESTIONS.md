@@ -8,7 +8,6 @@ Each item says where it bites and, where `IDEA.md` hints at something, what it s
 | ID | Question | Blocks | Notes |
 |---|---|---|---|
 | OQ-6 | _(Interim: admin-settable, E-23.)_ **Treasury.** Which wallet receives the 1% platform fee; is it a Squads multisig on devnet? | escrow config | |
-| OQ-19 | **Upgrade authority** for the three programs on devnet: a single dev key or a Squads multisig? | deploy | IDEA §9.4 says multisig during pilot. |
 
 ## Off-chain / infra
 | ID | Question | Blocks |

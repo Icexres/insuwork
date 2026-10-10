@@ -9,6 +9,9 @@
     "docker:toolchain": "docker build -f tools/anchor.Dockerfile -t insuwork-anchor:0.31.1 tools",
     "test:syntax": "node scripts/check-syntax.mjs",
     "sync:idl": "node scripts/sync-idl.mjs",
+    "deploy:devnet": "docker run --rm -v \"%INIT_CWD%:/work\" -w /work insuwork-anchor:0.31.1 bash scripts/deploy-programs.sh",
+    "devnet:init": "node scripts/devnet-init.mjs",
+    "devnet:set-upgrade-authority": "docker run --rm -v \"%INIT_CWD%:/work\" -w /work insuwork-anchor:0.31.1 bash scripts/set-upgrade-authority.sh",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit -p tsconfig.base.json"
   },
