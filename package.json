@@ -8,6 +8,7 @@
     "build:programs": "docker run --rm -v \"%INIT_CWD%:/work\" -v insuwork-cargo:/usr/local/cargo/registry -v insuwork-rustup:/usr/local/rustup insuwork-anchor:0.31.1 anchor build",
     "docker:toolchain": "docker build -f tools/anchor.Dockerfile -t insuwork-anchor:0.31.1 tools",
     "test:syntax": "node scripts/check-syntax.mjs",
+    "sync:idl": "node scripts/sync-idl.mjs",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit -p tsconfig.base.json"
   },
@@ -15,6 +16,7 @@
     "@coral-xyz/anchor": "0.31.1",
     "@solana/spl-token": "0.4",
     "@solana/web3.js": "1",
+    "@types/node": "24",
     "eslint": "9.12.0",
     "litesvm": "^0.8.0",
     "typescript": "5.6.3"

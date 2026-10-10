@@ -16,6 +16,7 @@ Record exact versions here at scaffold time (T-01) and in `rust-toolchain.toml`,
 pnpm install                 # Windows node_modules (web, packages)
 pnpm docker:toolchain        # once: builds insuwork-anchor:0.31.1 (~10 min)
 pnpm build:programs          # anchor build in Docker -> target/deploy/*.so, target/idl/*.json
+pnpm sync:idl               # copy IDLs/types into packages/sdk/src/idl (commit the result)
 pnpm test:programs:docker    # LiteSVM tests in node:24 Linux container (LiteSVM has no Windows binary)
 ```
 Docker volumes `insuwork-cargo`, `insuwork-rustup`, `insuwork-node-modules` cache crates/toolchains/Linux node_modules.
