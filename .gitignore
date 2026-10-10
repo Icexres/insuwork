@@ -12,3 +12,4 @@ id.json
 !.env.example
 supabase/.temp/
 .DS_Store
+.pnpm-store/

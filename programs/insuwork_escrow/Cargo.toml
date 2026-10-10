@@ -2,11 +2,21 @@
 name = "insuwork_escrow"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.79"
 
 [lib]
 crate-type = ["cdylib", "lib"]
 name = "insuwork_escrow"
 
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build", "insuwork_bond/idl-build"]
+
 [dependencies]
-anchor-lang = "0.31.1"
-anchor-spl = "0.31.1"
+anchor-lang = { version = "=0.31.1", features = ["init-if-needed"] }
+anchor-spl = "=0.31.1"
+insuwork_bond = { path = "../insuwork_bond", features = ["cpi"] }
