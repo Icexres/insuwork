@@ -81,3 +81,9 @@ creates credential `insuwork` and both schemas; idempotent). The indexer writes 
 `ATTESTER_SECRET_KEY` (base58 of keys/attester.json) and `SAS_CREDENTIAL_AUTHORITY` (deployer pubkey) are set.
 Encoding check against real SAS: `node packages/attest/test/devnet-roundtrip.ts`. Unit tests: `pnpm test:services`.
 MOCK partner payouts + NPR attestations: also set `MOCK_PARTNER_SECRET_KEY` (base58 of `keys/mock-partner.json`) for the indexer (E-45).
+
+## GitHub oracle webhook (E-46)
+GitHub repo → Settings → Webhooks: payload URL `https://<host>/api/webhooks/github`, content type `application/json`,
+secret = `GITHUB_WEBHOOK_SECRET`, events: "Pull requests". The app needs `GITHUB_ORACLE_SECRET_KEY`
+(base58 of `keys/github-oracle.json`, the oracle set in the escrow config) and the Supabase service key.
+Local testing needs a public tunnel to `localhost:3000`.

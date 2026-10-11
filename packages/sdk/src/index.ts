@@ -1,8 +1,9 @@
 // InsuWork SDK: program clients, PDA helpers, remaining-account builders, event decoding and
 // address-lookup-table helpers. All on-chain calls from apps/services go through here.
 // Erasable TS only (no enums/namespaces) so Node can run it directly with type stripping.
+import { sha256 } from "@noble/hashes/sha256";
 import { Buffer } from "buffer";
-import anchor from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor";
 import {
   AddressLookupTableProgram, ComputeBudgetProgram, PublicKey, TransactionMessage, VersionedTransaction,
   type AccountMeta, type AddressLookupTableAccount, type TransactionInstruction,
@@ -147,6 +148,9 @@ export function approveMilestoneIx(p: Programs, c: CommitmentCtx, index: number)
   return p.escrow.methods.approveMilestone(index).accountsStrict(releaseAccounts(c, index, c.client))
     .remainingAccounts(remaining.release(c.backings, c.mint)).instruction();
 }
+
+/** SPEC-onchain: github_ref_hash = sha256("owner/repo#pr"). Repo names are case-insensitive on GitHub → lowercased. */
+export const githubRefHash = (repo: string, pr: number) => Buffer.from(sha256(new TextEncoder().encode(`${repo.toLowerCase()}#${pr}`)));
 
 export function oracleApproveIx(p: Programs, c: CommitmentCtx, index: number, oracle: PublicKey, githubRefHash: Uint8Array) {
   return p.escrow.methods.oracleApprove(index, [...githubRefHash]).accountsStrict(releaseAccounts(c, index, oracle))

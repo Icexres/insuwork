@@ -148,7 +148,7 @@ Items marked **[OQ-n]** are undecided: implement the stub, do not choose behavio
 | due_ts | i64 | |
 | spec_hash | [u8;32] | sha256 of spec document (off-chain in Supabase Storage) |
 | release_mode | enum {ClientSig, GithubOracle} | ClientSig always allowed as well |
-| github_ref_hash | [u8;32] | sha256("owner/repo#pr") when GithubOracle |
+| github_ref_hash | [u8;32] | sha256(lowercase "owner/repo" + "#" + pr) when GithubOracle — `sdk.githubRefHash` (E-46) |
 | status | enum | Pending → Active → Released / Disputed → Resolved |
 | locked_amount | u64 | total locked across backings for this milestone |
 | locked_per_backing | [u64; 4] | per-backing lock, same order as `commitment.backings` |

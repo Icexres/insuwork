@@ -8,6 +8,8 @@
     "test": "node --test \"test/*.test.ts\""
   },
   "dependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@insuwork/sdk": "workspace:^",
     "@solana/wallet-adapter-base": "0",
     "@solana/wallet-adapter-react": "0",
     "@solana/wallet-adapter-react-ui": "0",

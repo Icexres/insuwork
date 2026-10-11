@@ -4,7 +4,7 @@
 //      so replays and out-of-order delivery converge on current state.
 // Run: SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… [SOLANA_RPC_URL=…] node services/indexer/src/index.ts
 import { pathToFileURL } from "node:url";
-import anchor from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor";
 import { Connection, Keypair, PublicKey, type AccountInfo } from "@solana/web3.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 // relative (not @insuwork/sdk) so the Linux test container resolves it without a workspace install
