@@ -68,4 +68,18 @@ const v = sessions.voucher.cookie;
 const msg2 = (await (await post("/api/auth/siws/nonce", v, { wallet })).json()).message;
 assert.equal((await post("/api/auth/siws/verify", v, { wallet, signature: bs58.encode(sign(null, Buffer.from(msg2), privateKey)) })).status, 409);
 
-console.log("auth e2e: all checks passed");
+// T-24 MOCK KYC: freelancer only, idempotent, masked, salt never returned
+const fr = sessions.freelancer.cookie;
+assert.equal((await post("/api/mock-partner/kyc", sessions.client.cookie, { bankName: "Nabil Bank", accountNumber: "1234567890" })).status, 403);
+const k1 = await (await post("/api/mock-partner/kyc", fr, { bankName: "Nabil Bank", accountNumber: "1234-5678-90" })).json();
+assert.match(k1.freelancer_ref, /^[0-9a-f]{64}$/);
+assert.equal(k1.account_masked, "••7890");
+assert.equal(k1.is_mock, true);
+assert.equal(k1.salt, undefined);
+const k2 = await (await post("/api/mock-partner/kyc", fr, { bankName: "Other", accountNumber: "9999" })).json();
+assert.equal(k2.freelancer_ref, k1.freelancer_ref, "idempotent");
+const { data: row } = await service.from("partner_kyc").select("salt, is_mock").eq("freelancer_user_id", sessions.freelancer.id).single();
+assert.equal(row!.is_mock, true);
+assert.ok(String(row!.salt).length > 60, "32-byte salt stored server-side");
+
+console.log("auth + KYC e2e: all checks passed");

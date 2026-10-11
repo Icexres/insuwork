@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import * as sdk from "../../../packages/sdk/src/index.ts";
-import { attestPendingDeliveries } from "../src/effects.ts";
+import { attestPendingDeliveries, mockPartnerPayouts } from "../src/effects.ts";
 
 // minimal Supabase query-builder fake: select/eq/in/maybeSingle/upsert(onConflict, ignoreDuplicates)
 function fakeDb(tables: Record<string, Record<string, unknown>[]>) {
@@ -49,7 +49,7 @@ test("W-05 attester is idempotent; upheld claims are never attested", async () =
   let sends = 0;
   const deps = {
     db: fakeDb(tables) as never,
-    attester: Keypair.generate().publicKey,
+    signer: Keypair.generate().publicKey,
     credentialAuthority: Keypair.generate().publicKey,
     exists: async (k: PublicKey) => onChain.has(k.toBase58()),
     send: async () => (sends++, `tx${sends}`),
@@ -66,4 +66,25 @@ test("W-05 attester is idempotent; upheld claims are never attested", async () =
   assert.equal(await attestPendingDeliveries(deps), 1);
   assert.equal(sends, 1);
   assert.equal(tables.attestations[0].tx_sig, "already-on-chain");
+});
+
+test("T-24 MOCK partner: one payout + one NPR attestation per release, all MOCK", async () => {
+  const commitment = Keypair.generate().publicKey;
+  const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
+  const release = { name: "milestoneReleased", data: { commitment: commitment.toBase58(), index: 0, partner_payout: "970000000" } };
+  const tables: Record<string, Record<string, unknown>[]> = {
+    events_raw: [release, { ...release }], milestones: [{ pubkey: m0 }], payouts: [], attestations: [],
+  };
+  let sends = 0;
+  const deps = {
+    db: fakeDb(tables) as never, signer: Keypair.generate().publicKey, credentialAuthority: Keypair.generate().publicKey,
+    exists: async () => false, send: async () => (sends++, "tx"),
+  };
+  assert.equal(await mockPartnerPayouts(deps), 1);
+  assert.equal(await mockPartnerPayouts(deps), 0);
+  assert.equal(sends, 1);
+  assert.equal(tables.payouts.length, 1);
+  assert.equal(tables.payouts[0].is_mock, true);
+  assert.equal(tables.payouts[0].npr_amount, "13095000"); // 970 USDC × 135 NPR = NPR 130,950.00
+  assert.equal(tables.attestations[0].kind, "npr_credit");
 });

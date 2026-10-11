@@ -80,3 +80,4 @@ One-time on devnet: `pnpm sas:setup` (creates `keys/attester.json`, funds attest
 creates credential `insuwork` and both schemas; idempotent). The indexer writes delivery attestations when
 `ATTESTER_SECRET_KEY` (base58 of keys/attester.json) and `SAS_CREDENTIAL_AUTHORITY` (deployer pubkey) are set.
 Encoding check against real SAS: `node packages/attest/test/devnet-roundtrip.ts`. Unit tests: `pnpm test:services`.
+MOCK partner payouts + NPR attestations: also set `MOCK_PARTNER_SECRET_KEY` (base58 of `keys/mock-partner.json`) for the indexer (E-45).

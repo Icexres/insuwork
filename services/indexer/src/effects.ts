@@ -5,10 +5,11 @@ import { PublicKey, type Connection, type TransactionInstruction } from "@solana
 import type { SupabaseClient } from "@supabase/supabase-js";
 import * as sdk from "../../../packages/sdk/src/index.ts";
 import * as attest from "../../../packages/attest/src/index.ts";
+import { MOCK_NPR_PAISA_PER_USDC, mockNprPaisa } from "../../../packages/shared/src/mock-partner.ts";
 
 export type AttestDeps = {
   db: SupabaseClient;
-  attester: PublicKey; // authorized signer + payer
+  signer: PublicKey; // authorized SAS signer + payer (attester key, or MOCK partner key for NPR credit)
   credentialAuthority: PublicKey;
   exists: (k: PublicKey) => Promise<boolean>;
   send: (ix: TransactionInstruction) => Promise<string>;
@@ -45,7 +46,7 @@ export async function attestPendingDeliveries(d: AttestDeps) {
       : { data: null };
 
     const { ix, attestation } = await attest.createAttestationIx({
-      payer: d.attester, signer: d.attester, credentialAuthority: d.credentialAuthority, schema: "delivery", milestone,
+      payer: d.signer, signer: d.signer, credentialAuthority: d.credentialAuthority, schema: "delivery", milestone,
       data: attest.deliveryData({
         freelancerRef: Buffer.from(c.freelancer_ref, "hex"), client: new PublicKey(c.client), amount: BigInt(m.amount),
         shareExact: !!prof?.share_exact_amount, date: secs(m.released_ts ?? e.received_at), specHash: Buffer.from(m.spec_hash, "hex"),
@@ -63,6 +64,47 @@ export async function attestPendingDeliveries(d: AttestDeps) {
     written++;
   }
   return written;
+}
+
+/**
+ * T-24 MOCK partner (rule 10): for every MilestoneReleased, record a MOCK NPR payout (payouts.is_mock)
+ * and an NPR-credit attestation signed by the partner key (E-44). Idempotent per milestone.
+ */
+export async function mockPartnerPayouts(d: AttestDeps) {
+  const { data: events, error } = await d.db.from("events_raw").select("data").eq("name", "milestoneReleased");
+  if (error) throw new Error(error.message);
+  const { data: done } = await d.db.from("attestations").select("milestone_pubkey").eq("kind", "npr_credit");
+  const attested = new Set((done ?? []).map((r) => r.milestone_pubkey));
+  let n = 0;
+  for (const e of events ?? []) {
+    const ev = e.data as { commitment: string; index: number; partner_payout: string };
+    const commitment = new PublicKey(ev.commitment);
+    const milestone = sdk.pdas.milestone(commitment, ev.index).toBase58();
+    if (attested.has(milestone)) continue;
+    const { data: m } = await d.db.from("milestones").select("pubkey").eq("pubkey", milestone).maybeSingle();
+    if (!m) continue; // mirror not there yet
+
+    const usdc = BigInt(ev.partner_payout);
+    await d.db.from("payouts").upsert({
+      milestone_pubkey: milestone, usdc_amount: usdc.toString(), fx_rate: (Number(MOCK_NPR_PAISA_PER_USDC) / 100).toFixed(4),
+      npr_amount: mockNprPaisa(usdc).toString(), credited_at: new Date().toISOString(), is_mock: true,
+    }, { onConflict: "milestone_pubkey", ignoreDuplicates: true });
+    const { data: payout } = await d.db.from("payouts").select("credited_at").eq("milestone_pubkey", milestone).maybeSingle();
+
+    const { ix, attestation } = await attest.createAttestationIx({
+      payer: d.signer, signer: d.signer, credentialAuthority: d.credentialAuthority, schema: "nprCredit", milestone: new PublicKey(milestone),
+      data: attest.nprCreditData({ commitment, milestoneIndex: ev.index, creditedDate: secs(payout!.credited_at) }),
+    });
+    const tx_sig = (await d.exists(attestation)) ? "already-on-chain" : await d.send(ix);
+    const { error: insErr } = await d.db.from("attestations").upsert(
+      { milestone_pubkey: milestone, schema: "insuwork.npr_credit.v1", kind: "npr_credit", address: attestation.toBase58(), tx_sig },
+      { onConflict: "milestone_pubkey,kind", ignoreDuplicates: true },
+    );
+    if (insErr) throw new Error(insErr.message);
+    attested.add(milestone);
+    n++;
+  }
+  return n;
 }
 
 export const chainExists = (connection: Connection) => async (k: PublicKey) => (await connection.getAccountInfo(k)) !== null;

@@ -24,7 +24,7 @@
 | `indexer_cursors` | `program`, `last_sig` | server only |
 | `events_raw` | `slot`, `sig`, `program`, `name`, `data jsonb` (key `sig+ix_index+event_index`) | admin / indexer |
 
-FX rate for the mock: constant in `packages/shared` labelled MOCK.
+FX rate for the mock: `MOCK_NPR_PAISA_PER_USDC` in `packages/shared/src/mock-partner.ts`. MOCK payouts and NPR-credit attestations are written by the indexer loop (E-45).
 
 ## 2. Route handlers (`apps/web/app/api/...`)
 | Route | Method | Auth | Purpose |
@@ -38,7 +38,6 @@ FX rate for the mock: constant in `packages/shared` labelled MOCK.
 | `/api/claims/evidence` | POST | client wallet | Upload evidence, return `evidence_hash` |
 | `/api/webhooks/github` | POST | GitHub HMAC secret | On `pull_request.closed && merged`: look up `github_links`, sign `oracle_approve` |
 | `/api/mock-partner/kyc` | POST | freelancer | Create MOCK kyc, `freelancer_ref` |
-| `/api/mock-partner/payout` | POST | internal secret | Record MOCK payout for a release, trigger NPR-credit attestation |
 | `/api/keeper/run` | POST | internal secret | Run one keeper pass; called by a scheduled job (E-41) |
 | `/api/indexer/*` | — | internal | Live subscription + polling catch-up (E-41) |
 | `/api/family/[freelancerUserId]` | GET | family | Schedule + payouts in NPR |
