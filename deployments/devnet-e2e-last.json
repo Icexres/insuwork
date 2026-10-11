@@ -1,0 +1,85 @@
+{
+  "commitment": {
+    "address": "F3GMj3DTYY5VgedSsVo52pN4xZjCWtnraFvxLCBZTLPb",
+    "status": "completed",
+    "total_required": "932.00",
+    "released": "800.00",
+    "vest_status": "released"
+  },
+  "milestones": [
+    {
+      "index": 0,
+      "amount": "400.00",
+      "status": "released",
+      "release_mode": "clientSig",
+      "tx_sig": "3277arm9frCjRXGdedQjvB5bSxFNE7iDQc7pxypgCHwiSRTpPnc9ny9m7DfZyZtRhrZFQDBKp7vgXdi8J8Eh5ka3"
+    },
+    {
+      "index": 1,
+      "amount": "400.00",
+      "status": "released",
+      "release_mode": "githubOracle",
+      "tx_sig": "3kN9mdLqDMoAnUf7SznMXCB9yMiExABvCFwFsmRvDySAmAXfUwf1p54rmduiy6D6pTyiMruCuJAGzjvpF2EiQbSC"
+    }
+  ],
+  "voucher_vault": {
+    "deposited": "500.00",
+    "locked": "0.00",
+    "premiums_earned": "24.00"
+  },
+  "balances_usdc": {
+    "client": "1,068.00",
+    "voucher_wallet": "24.00"
+  },
+  "mock_payouts": [
+    {
+      "kind": "milestone",
+      "usdc": "400.00",
+      "npr": "54,000",
+      "fx": 135,
+      "is_mock": true
+    },
+    {
+      "kind": "milestone",
+      "usdc": "400.00",
+      "npr": "54,000",
+      "fx": 135,
+      "is_mock": true
+    },
+    {
+      "kind": "retention_vest",
+      "usdc": "100.00",
+      "npr": "13,500",
+      "fx": 135,
+      "is_mock": true
+    }
+  ],
+  "attestations": [
+    {
+      "kind": "delivery",
+      "milestone_pubkey": "8qyd8wYWh3cUWaksmJ9uMSMwWiwXfeQ8h5rD5Z6GR71Q",
+      "address": "FXBfCMFm2yfahT4bDmx64FY9HGgvoaRGsGin8fCXD7VG",
+      "tx_sig": "5TxKw4cUGbvGS4qp1GndjDxQvgRtXpFdBJZYN65Wy1LjLuCvH96j26vfmgfpQia8WJ4sWsaUhfVxw2MzRPDHXyih"
+    },
+    {
+      "kind": "delivery",
+      "milestone_pubkey": "Ho7f2iSMZMGmQg4arKttAMb7x9Mj1di8Zcjy44EJDNP7",
+      "address": "AiwocWSPkgojQZs86LKQtWMv84xeDuwUMZEgWTi6MYkP",
+      "tx_sig": "62VobofvesRG4P1qcHs2fDdxQmFE43J2YC6hpoqzkDd8NREZBDxcs42v6HUKUv6v58trkHzvHkurC41ev2KqT1Xq"
+    },
+    {
+      "kind": "npr_credit",
+      "milestone_pubkey": "8qyd8wYWh3cUWaksmJ9uMSMwWiwXfeQ8h5rD5Z6GR71Q",
+      "address": "BZq8hYKCedeFgxCeSUjF6yhK5VQfviiogVEaQ2RRTD3m",
+      "tx_sig": "5krmqQVCjggdPBUKy165vnCpXswkpuwdfiYChiCVYjAzTHxSkg2j49KQNXkE51rjYhHWwHkasK7wugN4hPjXgy7P"
+    },
+    {
+      "kind": "npr_credit",
+      "milestone_pubkey": "Ho7f2iSMZMGmQg4arKttAMb7x9Mj1di8Zcjy44EJDNP7",
+      "address": "3vViqnhTz8DmzbXmLGnqKyodB7J7PFW4HXqxGha8NL1W",
+      "tx_sig": "4DZUjvDHMg699gvbJH4QBAJYVrxw8wxDYa6DXJaPGxgWfdkfaUMys8MxstoNuMzhMNgknMG8exZ5DLSrSZE1zFRP"
+    }
+  ],
+  "explorer": "https://explorer.solana.com/address/F3GMj3DTYY5VgedSsVo52pN4xZjCWtnraFvxLCBZTLPb?cluster=devnet",
+  "m0_release_tx": "3277arm9frCjRXGdedQjvB5bSxFNE7iDQc7pxypgCHwiSRTpPnc9ny9m7DfZyZtRhrZFQDBKp7vgXdi8J8Eh5ka3"
+}

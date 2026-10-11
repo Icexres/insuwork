@@ -1,7 +1,7 @@
 -- T-20 RLS checks (TEST-PLAN W-02 + role escalation). Run: pnpm test:db
 -- W-01 (family access) is deferred with OQ-22.
 begin;
-select plan(11);
+select plan(12);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-00000000000f', 'fr@test'),
@@ -20,6 +20,9 @@ insert into commitments (pubkey, client, freelancer_ref, partner, status, milest
 select throws_ok($$insert into payouts (milestone_pubkey, usdc_amount, fx_rate, npr_amount, is_mock) values ('x', 1, 1, 1, false)$$,
   '23514', null, 'W-06 payouts must be is_mock');
 select throws_ok($$update partner_kyc set is_mock = false$$, '23514', null, 'W-06 partner_kyc must be is_mock');
+
+select throws_ok($$insert into payouts (kind, commitment, milestone_pubkey, usdc_amount, fx_rate, npr_amount) values ('retention_vest', 'C1', 'x', 1, 1, 1)$$,
+  '23514', null, 'retention vest payout has no milestone');
 
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-00000000000f","role":"authenticated"}', true);

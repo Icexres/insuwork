@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import * as sdk from "../../../packages/sdk/src/index.ts";
-import { attestPendingDeliveries, mockPartnerPayouts } from "../src/effects.ts";
+import { attestPendingDeliveries, mockPartnerPayouts, mockVestPayouts } from "../src/effects.ts";
 
 // minimal Supabase query-builder fake: select/eq/in/maybeSingle/upsert(onConflict, ignoreDuplicates)
 function fakeDb(tables: Record<string, Record<string, unknown>[]>) {
@@ -15,6 +15,7 @@ function fakeDb(tables: Record<string, Record<string, unknown>[]>) {
         select: () => q,
         eq: (c: string, v: unknown) => (filters.push((r) => r[c] === v), q),
         in: (c: string, vs: unknown[]) => (filters.push((r) => vs.includes(r[c])), q),
+        insert: async (row: Record<string, unknown>) => ((tables[t] ??= []).push(row), { error: null }),
         maybeSingle: async () => ({ data: rows()[0] ?? null, error: null }),
         then: (res: (x: unknown) => unknown) => res({ data: rows(), error: null }),
         upsert: async (row: Record<string, unknown>, o: { onConflict: string; ignoreDuplicates?: boolean }) => {
@@ -71,7 +72,7 @@ test("W-05 attester is idempotent; upheld claims are never attested", async () =
 test("T-24 MOCK partner: one payout + one NPR attestation per release, all MOCK", async () => {
   const commitment = Keypair.generate().publicKey;
   const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
-  const release = { name: "milestoneReleased", data: { commitment: commitment.toBase58(), index: 0, partner_payout: "970000000" } };
+  const release = { name: "milestoneReleased", data: { commitment: commitment.toBase58(), index: 0, partnerPayout: "970000000" } };
   const tables: Record<string, Record<string, unknown>[]> = {
     events_raw: [release, { ...release }], milestones: [{ pubkey: m0 }], payouts: [], attestations: [],
   };
@@ -87,4 +88,29 @@ test("T-24 MOCK partner: one payout + one NPR attestation per release, all MOCK"
   assert.equal(tables.payouts[0].is_mock, true);
   assert.equal(tables.payouts[0].npr_amount, "13095000"); // 970 USDC × 135 NPR = NPR 130,950.00
   assert.equal(tables.attestations[0].kind, "npr_credit");
+});
+
+test("retention vest: one MOCK payout row per commitment, no milestone", async () => {
+  const vest = { name: "vestReleased", data: { commitment: "C1", amount: "100000000" } };
+  const tables: Record<string, Record<string, unknown>[]> = { events_raw: [vest, { ...vest }], commitments: [{ pubkey: "C1" }], payouts: [] };
+  assert.equal(await mockVestPayouts({ db: fakeDb(tables) as never }), 1);
+  assert.equal(await mockVestPayouts({ db: fakeDb(tables) as never }), 0);
+  assert.deepEqual(
+    [tables.payouts[0].kind, tables.payouts[0].milestone_pubkey, tables.payouts[0].npr_amount, tables.payouts[0].is_mock],
+    ["retention_vest", null, "1350000", true],
+  );
+});
+
+test("partial claim outcome gets a delivery record", async () => {
+  const commitment = Keypair.generate().publicKey;
+  const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
+  const tables: Record<string, Record<string, unknown>[]> = {
+    events_raw: [{ sig: "s", instruction: "Finalize", name: "milestoneResolved", received_at: "2026-10-11T00:00:00Z",
+      data: { commitment: commitment.toBase58(), index: 0, outcome: { partial: {} } } }],
+    commitments: [{ pubkey: commitment.toBase58(), client: Keypair.generate().publicKey.toBase58(), freelancer_ref: "ab".repeat(32), vouchers: [] }],
+    milestones: [{ pubkey: m0, amount: "1", released_ts: null, spec_hash: "00".repeat(32) }], attestations: [],
+  };
+  const deps = { db: fakeDb(tables) as never, signer: Keypair.generate().publicKey, credentialAuthority: Keypair.generate().publicKey,
+    exists: async () => false, send: async () => "tx" };
+  assert.equal(await attestPendingDeliveries(deps), 1);
 });

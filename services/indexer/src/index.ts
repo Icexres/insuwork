@@ -221,6 +221,7 @@ async function main() {
     await poll(ctx, connection).catch(log);
     if (attestDeps) await import("./effects.ts").then((fx) => fx.attestPendingDeliveries(attestDeps)).catch(log);
     if (partnerDeps) await import("./effects.ts").then((fx) => fx.mockPartnerPayouts(partnerDeps)).catch(log);
+    await import("./effects.ts").then((fx) => fx.mockVestPayouts({ db })).catch(log);
     await new Promise((r) => setTimeout(r, every));
   }
 }

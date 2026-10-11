@@ -92,3 +92,8 @@ Local testing needs a public tunnel to `localhost:3000`.
 Every few minutes, either `curl -X POST -H "Authorization: Bearer $KEEPER_RUN_SECRET" https://<host>/api/keeper/run`
 or `pnpm keeper` (env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `KEEPER_SECRET_KEY`, optional `SOLANA_RPC_URL`).
 The keeper key only pays fees; fund it with a little devnet SOL.
+
+## Devnet end-to-end run (E-48)
+`pnpm db:start`, web dev server running with `GITHUB_WEBHOOK_SECRET` + `GITHUB_ORACLE_SECRET_KEY` in `apps/web/.env.local`,
+`pnpm sas:setup` done, then `pnpm devnet:e2e`. Costs ≈0.2 devnet SOL per run (deployer pays). The public devnet RPC
+rate-limits (429s are retried); set `SOLANA_RPC_URL` to a dedicated endpoint for smoother runs.
