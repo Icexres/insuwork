@@ -5,5 +5,591 @@
   },
   "mock": {
     "badge": "MOCK"
+  },
+  "shell": {
+    "publicProfile": "Public profile ↗",
+    "help": "Help & pilot guidance ↗",
+    "footer": "InsuWork · Pre-validation pilot · Demonstration data",
+    "footerFamily": "Read-only · Only the payment schedule and statement are shared.",
+    "envPilot": "PILOT · MOCK DATA",
+    "envDevnet": "DEVNET",
+    "notifications": "Notifications",
+    "helpLabel": "Help",
+    "pilotNotice": { "title": "Pilot workspace", "body": "Bank credits and partner verification are simulated." },
+    "devnetNotice": { "title": "Devnet pilot", "body": "Test funds only. No production financial activity." },
+    "workspace": {
+      "freelancer": "FREELANCER WORKSPACE",
+      "family": "FAMILY WORKSPACE",
+      "voucher": "VOUCHER WORKSPACE",
+      "client": "CLIENT WORKSPACE",
+      "panel": "PANELIST WORKSPACE",
+      "admin": "OPERATOR WORKSPACE"
+    },
+    "crumb": {
+      "freelancer": "Freelancer",
+      "family": "Family",
+      "voucher": "Voucher",
+      "client": "Client",
+      "panel": "Panelist",
+      "admin": "Operator"
+    },
+    "nav": {
+      "home": "Home",
+      "application": "Application",
+      "triage": "Triage interview",
+      "overview": "Overview",
+      "statement": "Income statement",
+      "dashboard": "Dashboard",
+      "applicants": "Applicants",
+      "vault": "Bond vault",
+      "freelancers": "Backed freelancers",
+      "newCommitment": "New commitment",
+      "commitments": "Commitments",
+      "assignedClaims": "Assigned claims",
+      "configuration": "Configuration",
+      "claimsQueue": "Claims queue",
+      "keeper": "Keeper & events"
+    }
+  },
+  "common": {
+    "pilotBoundaries": {
+      "title": "Pilot boundaries",
+      "body": "Test funds only. Mock partner KYC does not establish actual eligibility. The licensed partner route, legal review and external audit remain launch prerequisites."
+    },
+    "atRisk": {
+      "title": "Your capital is at risk",
+      "body": "An upheld failed-delivery claim pays the client from your bond, up to the locked milestone value. Premiums are earned on successful releases — not a guaranteed return."
+    },
+    "riskAck": "I understand the capital risk and that allocated funds cannot be withdrawn.",
+    "back": "Back",
+    "saveAndLeave": "Save and leave",
+    "networkFee": "Estimated network fee",
+    "claimWindow": "Claim window",
+    "panelRuling": "Panel ruling",
+    "wallet": "Wallet",
+    "network": "Network",
+    "paymentColumns": ["Payment / work", "Due / confirmation", "NPR · MOCK", "Status"],
+    "fxNote": "Future NPR amounts are conversion estimates, not guaranteed final exchange amounts. Your contract pay is not reduced by the client’s guarantee or platform fees.",
+    "eyebrow": "{role} / INSUWORK"
+  },
+  "public": {
+    "nav": { "backers": "For backers", "clients": "For clients", "families": "For families", "verify": "Verify a record", "signIn": "Sign in" },
+    "eyebrow": "PUBLIC PROFILE / {ref}",
+    "url": "insuwork.app/p/{ref}",
+    "backed": "BACKED",
+    "startCommitment": "Start a commitment",
+    "metrics": {
+      "deliveries": "Paid deliveries",
+      "deliveriesNote": "Historical demonstration records",
+      "clients": "Distinct clients",
+      "clientsNote": "Client-funded, released work",
+      "since": "Backed since"
+    },
+    "backer": {
+      "title": "A named backer. A bounded guarantee.",
+      "badge": "DEMO",
+      "disclaimer": "Performance deposit backing, not an endorsement from InsuWork.",
+      "band": "GUARANTEE BAND"
+    },
+    "records": {
+      "title": "Paid Delivery Records",
+      "schema": "insuwork.paid_delivery.v1",
+      "columns": ["Released / work", "Client", "Amount band", "Bank confirmation", "Verify"],
+      "footnote": "A release writes the paid-delivery record. Bank confirmation is a separate, later event. Only successes are public; failed or disputed work is never recorded against the freelancer."
+    },
+    "notice": {
+      "title": "What this record does — and does not — prove",
+      "body": "These are demo attestations, verifiable on Solana Explorer (devnet). A bank-credit confirmation shows a payment arrived, not physical residence in Nepal. The owner can revoke the public identity link while the pseudonymous records persist."
+    },
+    "footer": "InsuWork · Pre-validation pilot · Public profile and bank confirmations use demonstration data."
+  },
+  "freelancer": {
+    "application": {
+      "title": "Tell backers who you are",
+      "subtitle": "Your profile is the first part of a thoughtful, human introduction.",
+      "eyebrow": "APPLICATION / ABOUT 30 MIN",
+      "steps": ["Profile", "Portfolio & GitHub", "Baseline", "Triage interview", "Verification", "Done"],
+      "paceNotice": { "title": "Your pace. Your information.", "body": "Save your application and return later. Research answers are never shown to backers or clients." },
+      "panel": "Profile details",
+      "stepBadge": "STEP 1 OF 6",
+      "intro": "Backers see these details alongside your portfolio and advisory interview summary.",
+      "fields": {
+        "fullName": "Full name",
+        "displayName": "Public display name",
+        "college": "College",
+        "gradYear": "Graduation year",
+        "stack": "Primary stack",
+        "bio": "Short introduction · optional"
+      },
+      "consent": "I understand that my public display name and stack can be shown to clients once I am backed.",
+      "guaranteeNotice": { "title": "A profile is not a guarantee", "body": "A backer reviews your work and decides whether to take a call. Only a client-funded paid delivery becomes part of your public record." },
+      "continue": "Continue to portfolio"
+    },
+    "triage": {
+      "title": "Your work, in your own words",
+      "subtitle": "A short written interview for backers. Advisory only — never a score or credential.",
+      "badge": "TURN {turn} OF ~{total}",
+      "interviewer": "AI INTERVIEWER · {section}",
+      "answer": "Your answer · draft saved",
+      "hint": "Enter to send · Shift + Enter for a new line",
+      "send": "Send answer",
+      "sections": "Interview sections",
+      "sectionList": ["Background & goals", "Project walk-through", "Technical reasoning", "Availability", "Communication"],
+      "duration": "About 15–20 minutes. You can save and return at any time.",
+      "usageNotice": { "title": "How your answers are used", "body": "A backer reads your structured summary in about 10 minutes, then decides on a call. The interview never issues credentials or moves money." },
+      "control": "Your control",
+      "controlBody": "You can review your summary when the interview is complete and request a human review if it is inaccurate.",
+      "reviewBadge": "OQ-21 · REVIEW PROCESS",
+      "neverAsk": "We never ask about caste, religion, politics or family finances."
+    },
+    "home": {
+      "title": "Namaste, {name}",
+      "subtitle": "Your profile is live. One active contract, one payment received.",
+      "viewDelivery": "View delivery for {milestone}",
+      "metrics": { "received": "Received · MOCK bank credit", "estimate": "Contract estimate · MOCK", "current": "Current delivery" },
+      "contract": "Contract with {client}",
+      "mockPayments": "MOCK PAYMENTS",
+      "receivedSoFar": "Received so far · MOCK",
+      "journey": "Your application journey",
+      "backer": "Your backer",
+      "backerBody": "{name} guarantees your work to clients. If something goes wrong, talk to him early. It never costs you money.",
+      "contactBacker": "Contact {name}",
+      "profile": "Public profile",
+      "copyLink": "Copy link",
+      "open": "Open ↗",
+      "profileHint": "Share on your CV or LinkedIn. You control the link to your identity.",
+      "revoke": "Revoke profile link",
+      "revokeBadge": "OQ-23 · REVOCATION",
+      "family": "Family access",
+      "familyStatus": "Active · Read-only payment access",
+      "removeAccess": "Remove access",
+      "invite": "Invite family",
+      "invitePlaceholder": "family@email.com",
+      "inviteButton": "Invite family member",
+      "limitBadge": "OQ-22 · ACCESS LIMIT"
+    }
+  },
+  "family": {
+    "overview": {
+      "title": "{name}’s contract payments",
+      "subtitle": "Read-only. Payments arrive in Nepali rupees in {name}’s bank account.",
+      "openStatement": "Open income statement",
+      "metrics": { "received": "Received so far · MOCK", "total": "Total contract estimate · MOCK", "monthly": "Monthly estimate · MOCK", "monthlyNote": "Future conversion amounts may vary" },
+      "progress": "Received, not just scheduled",
+      "progressBadge": "MOCK BANK DATA",
+      "schedule": "Payment schedule",
+      "reviewNotice": {
+        "title": "What “under review” means",
+        "body": "{client} is checking the delivered work before approving payment. It is not yet a bank credit. Ask {name} for an update if the payment is delayed."
+      },
+      "fxNote": "Future estimates use a mock conversion rate of {rate}. Final exchange rates, fees and bank timing may differ.",
+      "glance": "Contract at a glance",
+      "glanceLabels": { "freelancer": "Freelancer", "period": "Period", "bank": "Bank", "backer": "Backer" },
+      "readOnly": "READ-ONLY ACCESS",
+      "guaranteeNotice": {
+        "title": "A guarantee protects the client",
+        "body": "The backer’s guarantee covers upheld failed-delivery claims by the client. It does not pay missed milestones to {name} or the family. A short contract is not permanent income security."
+      },
+      "update": "Need a clearer update?",
+      "updateBody": "{name} can explain delivery progress. You cannot approve work or change contract payments from this page.",
+      "contact": "Contact {name}"
+    },
+    "statement": {
+      "title": "Income statement",
+      "subtitle": "A printable record of received contract payments — estimates are kept separate.",
+      "print": "Print / Save PDF",
+      "docTitle": "Contract income statement",
+      "issued": "Issued {date}",
+      "mockData": "MOCK PARTNER DATA",
+      "holder": "ACCOUNT HOLDER",
+      "payer": "PAYER / SERVICE",
+      "period": "Reporting period: {period} · Contract {contract}",
+      "columns": ["PERIOD", "DESCRIPTION / CREDIT DATE", "CREDITED (NPR)"],
+      "total": "Total credited · MOCK",
+      "disclaimer": "Foreign-currency receipts for IT services, converted and credited by the simulated payout partner. This demonstration statement is not evidence of an actual SWIFT receipt and is not a bank-issued document.",
+      "remaining": "Remaining scheduled payments — not credited income",
+      "pilotCopy": "PILOT COPY / NOT FOR FINANCIAL RELIANCE · Page 1 of 1",
+      "details": "Statement details",
+      "detailLabels": { "received": "Payments received", "total": "Credited total", "preparedFor": "Prepared for" },
+      "detailsNote": "Formatted for discussion with a bank or the NRB freelancer FX facility. Acceptance by a bank has not been validated.",
+      "receivedNotice": {
+        "title": "Received income only",
+        "body": "The total includes the one mock bank credit. Future scheduled payments are estimates and must not be treated as received income."
+      },
+      "back": "Back to overview"
+    }
+  },
+  "voucher": {
+    "setup": {
+      "title": "Set up your bond vault",
+      "subtitle": "A segregated performance deposit. Your capital backs specific people — never a pooled fund.",
+      "steps": ["Connect wallet", "Verify ownership", "Create bond vault", "Deposit USDC"],
+      "fund": "Fund your performance deposit",
+      "stepBadge": "STEP 4 OF 4",
+      "intro": "Your Phantom wallet is connected and vault {vault} is created. Deposit at least {min} USDC to begin backing freelancers.",
+      "amount": "Amount to deposit · USDC",
+      "labels": { "balance": "Wallet balance", "after": "Balance after deposit", "min": "Minimum deposit" },
+      "deposit": "Deposit {amount} USDC",
+      "prereqs": "Completed prerequisites",
+      "prereqLabels": { "ownership": "Wallet ownership", "vault": "Vault creation", "kyc": "Non-resident KYC" },
+      "eligibility": "Pilot eligibility: non-residents, foreign citizens in v1. Jurisdiction-specific counsel is required before real funds.",
+      "how": "How the vault works",
+      "invariant": "Deposit ≥ allocation ≥ locks",
+      "invariantBody": "Total allocated exposure caps must never exceed your deposit. Milestone locks sit inside those allocations.",
+      "ruleLabels": { "leverage": "Leverage", "premium": "Premium" },
+      "withdrawNotice": {
+        "title": "Only unallocated funds are withdrawable",
+        "body": "To free more capacity, close a backing without a live commitment. A milestone unlock frees the lock, not the freelancer’s allocation."
+      }
+    },
+    "dashboard": {
+      "title": "{name} bond vault",
+      "subtitle": "Segregated performance deposit · 1:1 leverage · capital at risk · no guaranteed yield",
+      "backFreelancer": "Back freelancer",
+      "metrics": { "deposited": "Deposited · USDC", "allocated": "Allocated · USDC", "locked": "Locked · USDC", "unallocated": "Unallocated · USDC", "withdrawable": "Only unallocated funds are withdrawable" },
+      "utilisation": "Capital utilisation",
+      "leverageBadge": "1:1 LEVERAGE",
+      "utilisationBody": "Total allocated exposure must never exceed the deposited balance. Locked milestones sit inside allocated capacity.",
+      "bars": { "deposited": "Deposited", "allocated": "Allocated", "locked": "Locked", "unallocated": "Unallocated" },
+      "backings": "Backings",
+      "activeBadge": "{count} ACTIVE",
+      "backingColumns": ["Freelancer / client", "Cap / locked", "Premiums", "Status"],
+      "totalPremiums": "Total premiums earned",
+      "claimsPaid": "Claims paid",
+      "overview": "Vault overview",
+      "vault": "Vault {vault}",
+      "vaultSub": "Segregated performance deposit · Phantom wallet connected",
+      "premiumsEarned": "Premiums earned",
+      "withdraw": "Unallocated withdraw",
+      "withdrawBody": "Only unallocated funds are withdrawable. Allocated and locked capital remains reserved for active backings.",
+      "withdrawAmount": "Amount to withdraw · USDC",
+      "withdrawButton": "Withdraw unallocated",
+      "activity": "Recent activity",
+      "demo": "DEMO"
+    },
+    "applicants": {
+      "title": "Applicants",
+      "subtitle": "Advisory reports, not credentials. Review fit, communication, and delivery risk before allocating your vault.",
+      "viewCapacity": "View vault capacity",
+      "metrics": {
+        "remaining": "Remaining backing capacity",
+        "remainingNote": "Available for new applicants",
+        "allocated": "Allocated capacity",
+        "deposit": "Vault deposit",
+        "premium": "Premium rate",
+        "premiumNote": "Client-paid on successful releases"
+      },
+      "reports": "Applicant advisory reports",
+      "reportsBadge": "{count} REPORTS",
+      "reportsBody": "These reports summarize delivery risk, communication quality, and fit for the current vault. They are advisory only and do not replace your own judgment.",
+      "columns": ["Applicant", "Background", "Communication", "Status", "Action"],
+      "review": "Review",
+      "pending": "Report pending",
+      "guidance": "Review guidance",
+      "guidanceLabels": { "allocation": "Recommended allocation", "premium": "Premium estimate" },
+      "yourDecision": "Your decision",
+      "premiumOnSuccess": "{rate} on success",
+      "guidanceNote": "Review the advisory summary, then book a call before making a backing decision.",
+      "capacityNotice": {
+        "title": "Capacity reminder",
+        "body": "Total exposure caps must remain within the {deposit} deposit. {remaining} remains available for new backings."
+      }
+    },
+    "report": {
+      "title": "Voucher report for {name}",
+      "subtitle": "Advisory review for backing decision. This report is not a credential or employment verification.",
+      "bookCall": "Book 30-min call",
+      "summary": "Candidate summary",
+      "advisory": "ADVISORY",
+      "advisoryNotice": {
+        "title": "Advisory note",
+        "body": "This report is advisory and not a credential. It summarizes public-facing delivery confidence, communication clarity, and realistic estimation patterns from the provided source."
+      },
+      "decision": "Backing decision panel",
+      "decisionLabels": { "deposit": "Deposit", "allocated": "Allocated", "remaining": "Remaining", "cap": "Proposed cap", "after": "Remaining after cap" },
+      "riskTitle": "At-risk performance deposit",
+      "backButton": "Back {name} · {cap} cap",
+      "questions": "Suggested call questions",
+      "questionsNoticeTitle": "Advisory report"
+    }
+  },
+  "client": {
+    "freelancers": {
+      "title": "Backed freelancers",
+      "subtitle": "InsuWork is the trust layer beside marketplaces. These freelancers are backed by a named backer and a specific performance deposit. Claim protection is conditional on failed delivery and an upheld panel claim, up to the milestone or cap — not the whole contract.",
+      "start": "Start commitment",
+      "filters": "Filters",
+      "matches": "{count} MATCHES",
+      "search": "Search freelancer",
+      "searchPlaceholder": "Search name or stack…",
+      "stack": "Stack",
+      "backer": "Backer",
+      "cap": "Cap",
+      "capPlaceholder": "Any guarantee cap",
+      "delivered": "Delivered work",
+      "deliveryFilters": ["Any history", "1+ paid delivery", "3+ paid deliveries"],
+      "backerLabel": "BACKER",
+      "deliveredLabel": "DELIVERED WORK",
+      "protection": {
+        "title": "Claim protection",
+        "body": "Failed delivery claim is conditional on an upheld panel ruling. Protection is capped at the milestone amount, not the full contract."
+      },
+      "clientLabels": { "backer": "Backer", "cap": "Cap", "delivered": "Delivered work", "exposure": "Live exposure" },
+      "clientBody": "Your team workspace uses a Squads treasury on devnet. Test funds only.",
+      "openClient": "Open client profile",
+      "protectionHeadline": "Conditional on failed delivery and upheld claim",
+      "protectionBody": "Protection is capped at the milestone amount or the backer’s allocation cap — whichever is lower. It is never the full contract value.",
+      "protectionLabels": { "trigger": "Trigger", "decision": "Decision", "cap": "Cap" },
+      "protectionValues": { "trigger": "Failed delivery", "decision": "Panel ruling", "cap": "Milestone or allocation" },
+      "premiumNotice": {
+        "title": "Premium is client-paid",
+        "body": "Premium is earned on successful releases and is paid by the client, not deducted from the freelancer’s contract pay."
+      },
+      "boundaryLabels": { "eligibility": "Eligibility", "counsel": "Counsel" },
+      "boundaryValues": { "eligibility": "Non-residents", "counsel": "Required before real funds" }
+    },
+    "new": {
+      "crumb": "Client commitment",
+      "eyebrow": "CLIENT COMMITMENT / INSUWORK",
+      "title": "Create new commitment",
+      "subtitle": "Define clear deliverables and release conditions. Step 2 of 5 · Milestones.",
+      "saveDraft": "Save milestone draft",
+      "steps": ["Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
+      "details": "Commitment details",
+      "selected": "SELECTED FREELANCER",
+      "fields": {
+        "title": "Commitment title",
+        "client": "Client",
+        "freelancer": "Freelancer",
+        "backer": "Backer",
+        "cap": "Backer cap",
+        "mode": "Salary release mode",
+        "partner": "Partner"
+      },
+      "partnerValue": "MOCK · Partner shown for pilot only",
+      "relatedNotice": {
+        "title": "Anti-related-party note",
+        "body": "Your treasury must not belong to this freelancer’s backer. Declared related parties cannot be counterparties."
+      },
+      "milestones": "Milestones",
+      "stepBadge": "STEP 2 OF 5",
+      "continue": "Continue to retention vest",
+      "milestonesBody": "Specify what counts as delivery. Each active milestone has up to {cap} of backing.",
+      "due": "Due {date}",
+      "amount": "Amount",
+      "totals": { "salary": "Total salary", "premium": "Client-paid premium", "fee": "Platform fee", "vest": "Optional forgiveness-only vest", "fund": "Total fund" },
+      "payNote": "Freelancer pay is not reduced by the client-paid premium or platform fee.",
+      "context": "Client context",
+      "contextBody": "This commitment is configured for a pilot client context. Production eligibility requires separate legal review and external audit.",
+      "viewClient": "View client profile",
+      "funding": "Funding summary",
+      "fundingLabels": { "salary": "Salary", "premium": "Premium · 3%", "platform": "Platform · 1%", "vest": "Optional vest" },
+      "fundNotice": {
+        "title": "Total to fund · {total}",
+        "body": "Fund from your Squads treasury, not the backer’s vault. Optional $500 month-12 vest is forgiveness-only: no clawbacks or exit penalties."
+      }
+    },
+    "commitment": {
+      "crumb": "Commitment timeline",
+      "title": "Commitment timeline",
+      "approve": "Approve & release {milestone}",
+      "metrics": {
+        "contract": "Salary contract · MOCK",
+        "released": "Salary released · MOCK",
+        "remaining": "Salary remaining in escrow",
+        "fees": "Premium / fee / vest",
+        "feesNote": "Client-paid premium · platform fee · vest separated"
+      },
+      "columns": ["Payment / work", "Due / confirmation", "USD · MOCK", "Status"],
+      "receivedSoFar": "Salary received so far · MOCK",
+      "evidence": "Release evidence",
+      "fileClaim": "File claim · evidence required",
+      "clientDetails": "Client details",
+      "contactClient": "Contact client",
+      "recourse": "Claim recourse",
+      "recourseLabels": { "majority": "Panel majority", "payout": "Upheld bond payout", "refund": "Escrow refund" },
+      "recourseValues": { "majority": "2 of 3 votes", "payout": "Up to milestone value", "refund": "Milestone escrow refunded" },
+      "recourseBody": "File a claim within 14 days after the milestone due date. A three-person panel rules by majority (2 of 3) within 7 days of assignment. An upheld claim pays from the bond up to the milestone value and refunds that milestone’s salary escrow."
+    }
+  },
+  "panel": {
+    "claims": {
+      "title": "Assigned claims",
+      "subtitle": "Review disputes assigned to your panel. Rule within 7 days of assignment.",
+      "queueButton": "Review queue",
+      "queue": "Claim queue",
+      "assignedBadge": "{count} ASSIGNED",
+      "queueBody": "One claim is ready for review. Read the spec, evidence, and pseudonymous freelancer response before voting.",
+      "notVoted": "NOT YET VOTED",
+      "labels": {
+        "assignedTo": "Assigned to",
+        "filed": "Filed",
+        "stake": "At stake",
+        "client": "Client",
+        "freelancer": "Freelancer",
+        "milestone": "Milestone",
+        "spec": "Spec",
+        "evidence": "Evidence",
+        "response": "Response",
+        "deadline": "Deadline",
+        "remaining": "Time remaining",
+        "ruling": "Panel ruling"
+      },
+      "guidanceNotice": {
+        "title": "Review guidance",
+        "body": "Compare the delivery against the approved spec and evidence. If the work does not meet the agreed requirements, uphold the claim. If it meets the requirements, dismiss the claim."
+      },
+      "openEvidence": "Open evidence",
+      "reviewClaim": "Review claim",
+      "checklist": "Review checklist",
+      "checklistItems": [
+        "Compare delivery against the approved spec and evidence.",
+        "Check whether the freelancer response explains the gap or confirms the issue.",
+        "Uphold the claim only if the delivery clearly fails the agreed requirements.",
+        "Dismiss the claim if the delivery meets the approved requirements."
+      ],
+      "majorityNote": "Decisions require a majority of 2 of 3 panelists. No-majority handling remains an open question (OQ-3).",
+      "overview": "Panel overview",
+      "overviewLabels": { "panelist": "Panelist", "wallet": "Allowlisted wallet", "assigned": "Assigned claims", "window": "Review window" },
+      "openProfile": "Open panel profile",
+      "voting": "Voting guidance",
+      "votingItems": [
+        { "label": "Uphold claim", "value": "Delivery fails the approved spec." },
+        { "label": "Dismiss claim", "value": "Delivery meets the approved spec." },
+        { "label": "Request evidence", "value": "Needed before a final vote." }
+      ],
+      "pseudonymNotice": {
+        "title": "Pseudonymity",
+        "body": "The freelancer is identified by a pseudonymous reference. Do not add personal information to public evidence."
+      }
+    },
+    "review": {
+      "crumb": "Claim review",
+      "eyebrow": "CLAIM REVIEW / INSUWORK",
+      "title": "Review claim {id}",
+      "openEvidence": "Open evidence ↗",
+      "metrics": { "id": "Claim ID", "client": "Client", "freelancer": "Freelancer", "freelancerNote": "Pseudonymous delivery record", "locked": "Backing locked" },
+      "overview": "Claim overview",
+      "pending": "RULING PENDING",
+      "clientEvidence": "CLIENT EVIDENCE",
+      "freelancerEvidence": "FREELANCER EVIDENCE",
+      "rationale": "Decision rationale",
+      "choices": [
+        { "label": "Upheld", "effect": "Bond pays client cap · escrow refunded" },
+        { "label": "Rejected", "effect": "Normal release · no bond payout" },
+        { "label": "Partial", "effect": "Pro-rata split · rationale required" }
+      ],
+      "rationaleLabel": "Rationale",
+      "rationalePlaceholder": "Summarize the ruling basis, evidence alignment, and any partial allocation logic.",
+      "finalNotice": {
+        "title": "Final once signed",
+        "body": "Your vote is final once signed. A majority of 2 of 3 determines the outcome. No-majority handling is unresolved (OQ-3)."
+      },
+      "members": "Panel members",
+      "pendingCount": "{count} OF 3 PENDING",
+      "memberPending": "PENDING",
+      "fees": "Wallet and fees",
+      "feeLabels": { "claimFee": "Claim fee", "networkFee": "Network fee", "policy": "Policy status" },
+      "oqNotice": {
+        "title": "No-majority unresolved · OQ-3",
+        "body": "Proposed claim fee: 10 USDC, refundable if upheld (OQ-4). No-majority policy remains unresolved (OQ-3)."
+      },
+      "saveDraft": "Save draft",
+      "submit": "Submit decision",
+      "submitNote": "Final once signed · majority 2 of 3 · 7-day ruling window"
+    }
+  },
+  "admin": {
+    "config": {
+      "crumb": "Config",
+      "title": "Operator configuration",
+      "subtitle": "Manage pilot parameters, payout destinations and authorized panelists. Changes require the upgrade authority’s signature.",
+      "apply": "Apply config",
+      "program": "Program pilot config",
+      "programBody": "Client-side premiums and fees are additional to salary. Backing caps remain fully collateralized.",
+      "programFields": {
+        "minBond": "Minimum bond · USDC",
+        "leverage": "Leverage",
+        "premium": "Premium · client-paid",
+        "fee": "Platform fee · client-side",
+        "claimWindow": "Claim window",
+        "ruling": "Panel ruling"
+      },
+      "assumptions": {
+        "title": "Pilot assumptions",
+        "body": "Devnet pilot only. Counsel, a licensed payout partner and external security audit are required before production financial activity."
+      },
+      "partner": "Payout partner",
+      "partnerFields": { "name": "Partner name", "wallet": "Partner wallet", "note": "Partner note" },
+      "oracle": "Oracle control",
+      "oracleBadge": "GITHUB MERGE",
+      "oracleFields": { "name": "Oracle name", "note": "Oracle note" },
+      "authority": "Upgrade authority",
+      "authorityBody": "Signing info assumption for pilot configuration.",
+      "authorityField": "Authority note",
+      "sidebar": "Operator sidebar",
+      "sidebarBody": "Devnet wallet context for pilot configuration.",
+      "sidebarFields": { "wallet": "Wallet", "treasury": "Treasury", "operator": "Operator", "network": "Network" },
+      "allowlist": "Panel allowlist",
+      "members": "{count} MEMBERS",
+      "remove": "Remove",
+      "addMember": "Add member",
+      "addPlaceholder": "Panelist wallet address"
+    },
+    "claims": {
+      "crumb": "Claims",
+      "eyebrow": "OPERATOR / CLAIMS QUEUE",
+      "title": "Claims queue",
+      "subtitle": "One active dispute is in voting. No unassigned cases. Review the majority decision, finalization state, and source integrity before closing.",
+      "openPanel": "Open review panel",
+      "metrics": {
+        "open": "Open claims",
+        "openNote": "1 live case · 0 unassigned",
+        "voting": "Voting window",
+        "votingNote": "Majority decision required",
+        "ruling": "Panel ruling",
+        "rulingNote": "Finalize after majority vote",
+        "reviewers": "Assigned reviewers",
+        "reviewersNote": "1 InsuWork · 1 voucher · 1 client nominee"
+      },
+      "queueBadge": "1 LIVE · 0 UNASSIGNED",
+      "filters": ["All claims", "Voting", "Assigned", "Finalized"],
+      "columns": ["Claim ID", "Parties", "Filed / milestone", "Status", "Review"],
+      "openReview": "Open review",
+      "assignmentNote": "Assignment guidance: one InsuWork operator, one voucher backer, and one client nominee review each live claim. A majority decision within 7 days advances the case to finalization.",
+      "workflow": "Assignment workflow",
+      "active": "Active claim review",
+      "activeLabels": { "milestone": "Milestone", "filed": "Filed", "amount": "Amount", "panel": "Current panel", "majority": "Majority", "finalization": "Finalization" },
+      "reviewPanel": "Review panel",
+      "vote": "VOTE",
+      "majorityNotice": { "title": "Majority decision", "body": "No votes have been cast. Finalization becomes available after 2 of 3 votes agree." },
+      "integrity": "Source integrity",
+      "integrityBody": "Evidence is held off-chain with committed hashes. Review the spec and message log before panel finalization.",
+      "source": "Source"
+    },
+    "keeper": {
+      "title": "Keeper & events",
+      "subtitle": "Scan expired claim windows and unlock eligible backing where no claim is open. Salary release requires client approval or the agreed GitHub merge.",
+      "run": "Run keeper now",
+      "overview": "Keeper overview",
+      "oqBadge": "OQ-8 · UNRESOLVED",
+      "overviewBody": "Scan expired claim windows. Never unlock disputed backing while a claim is open.",
+      "labels": { "lastRun": "Last run", "scanned": "Scanned", "unlocked": "Unlocked" },
+      "behaviorNotice": {
+        "title": "Keeper behavior",
+        "body": "After the 14-day claim window, undisputed backing can unlock. This does not automatically release salary."
+      },
+      "history": "RUN HISTORY",
+      "events": "Events",
+      "eventsBadge": "ILLUSTRATIVE PILOT RECORDS",
+      "eventsBody": "These records are illustrative pilot data and do not represent real-time activity.",
+      "columns": ["Event", "Timestamp", "Entity", "Amount", "Status"],
+      "wallet": "Wallet and devnet",
+      "walletBody": "Operator wallet and environment used for keeper runs.",
+      "walletLabels": { "balance": "Balance", "mode": "Keeper mode" },
+      "rules": "Keeper rules",
+      "ruleLabels": { "release": "Salary release", "unlock": "Backing unlock" },
+      "rulesNote": "Illustrative historical events. MOCK bank credits are simulated and are not evidence of a real payout."
+    }
   }
 }

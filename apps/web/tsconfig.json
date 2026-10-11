@@ -15,10 +15,22 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@insuwork/shared/*": [
+        "../../packages/shared/*"
+      ]
+    }
   },
   "include": [
+    "next-env.d.ts",
     "app/**/*",
+    "components/**/*",
+    "lib/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": [

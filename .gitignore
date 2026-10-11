@@ -13,3 +13,4 @@ id.json
 supabase/.temp/
 .DS_Store
 .pnpm-store/
+*.tsbuildinfo
