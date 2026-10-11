@@ -20,6 +20,7 @@
 | `relationships` | `party_a`, `party_b`, `kind`, `declared_by` | admin / declarer — OQ-20 |
 | `payouts` (MOCK) | `milestone_pubkey`, `usdc_amount`, `fx_rate`, `npr_amount`, `credited_at`, `is_mock=true` | freelancer, family, admin / mock-partner |
 | `attestations` | `milestone_pubkey`, `schema`, `address`, `tx_sig`, `kind` | public / attester |
+| `siws_nonces` | `user_id`, `nonce`, `issued_at` (single use, 5 min) | server only |
 | `events_raw` | `slot`, `sig`, `program`, `name`, `data jsonb` (key `sig+ix_index+event_index`) | admin / indexer |
 
 FX rate for the mock: constant in `packages/shared` labelled MOCK.
@@ -37,8 +38,8 @@ FX rate for the mock: constant in `packages/shared` labelled MOCK.
 | `/api/webhooks/github` | POST | GitHub HMAC secret | On `pull_request.closed && merged`: look up `github_links`, sign `oracle_approve` |
 | `/api/mock-partner/kyc` | POST | freelancer | Create MOCK kyc, `freelancer_ref` |
 | `/api/mock-partner/payout` | POST | internal secret | Record MOCK payout for a release, trigger NPR-credit attestation |
-| `/api/keeper/run` | POST | internal secret | Run one keeper pass (OQ-8) |
-| `/api/indexer/*` | — | internal | Depends on OQ-9 |
+| `/api/keeper/run` | POST | internal secret | Run one keeper pass; called by a scheduled job (E-41) |
+| `/api/indexer/*` | — | internal | Live subscription + polling catch-up (E-41) |
 | `/api/family/[freelancerUserId]` | GET | family | Schedule + payouts in NPR |
 
 All request/response bodies are defined as zod schemas in `packages/shared/schemas`.

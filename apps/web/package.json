@@ -5,9 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "node --test test/"
+    "test": "node --test \"test/*.test.ts\""
   },
   "dependencies": {
+    "@solana/wallet-adapter-base": "0",
+    "@solana/wallet-adapter-react": "0",
+    "@solana/wallet-adapter-react-ui": "0",
+    "@solana/web3.js": "1",
+    "@supabase/ssr": "0",
+    "@supabase/supabase-js": "2",
+    "bs58": "6",
     "next": "14.2.13",
     "react": "18.3.1",
     "react-dom": "18.3.1"

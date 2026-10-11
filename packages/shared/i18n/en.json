@@ -591,5 +591,30 @@
       "ruleLabels": { "release": "Salary release", "unlock": "Backing unlock" },
       "rulesNote": "Illustrative historical events. MOCK bank credits are simulated and are not evidence of a real payout."
     }
+  },
+  "auth": {
+    "signInTitle": "Sign in to InsuWork",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "sendLink": "Email me a sign-in link",
+    "linkSent": "Check your inbox for the sign-in link.",
+    "google": "Continue with Google",
+    "or": "or",
+    "error": "Sign-in failed. Try again.",
+    "signOut": "Sign out",
+    "onboardingTitle": "How will you use InsuWork?",
+    "roles": {
+      "freelancer": "Freelancer — I deliver work and get paid in NPR",
+      "family": "Family — I follow a freelancer's payments",
+      "client": "Client — I fund milestone escrow",
+      "voucher": "Voucher — I post a bond behind a freelancer"
+    },
+    "wallet": {
+      "title": "Bind your wallet",
+      "body": "Sign a message (no transaction, no fees) to link this wallet to your profile.",
+      "sign": "Sign to bind",
+      "bound": "Wallet bound",
+      "failed": "Could not bind this wallet."
+    }
   }
 }

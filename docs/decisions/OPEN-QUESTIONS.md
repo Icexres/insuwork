@@ -12,9 +12,6 @@ Each item says where it bites and, where `IDEA.md` hints at something, what it s
 ## Off-chain / infra
 | ID | Question | Blocks |
 |---|---|---|
-| OQ-8 | **Where does the auto-release keeper run?** (Hosting not decided.) Cron route, separate worker, or manual crank button for the demo? | services/keeper |
-| OQ-9 | **Indexer.** How does Supabase learn about on-chain events: Helius webhooks, RPC log subscription in a worker, or polling? | API, keeper, attester |
-| OQ-10 | **SAS issuer key.** SAS attestations are signed by an authorized signer of a credential. Is that a backend key held by InsuWork (delivery) and a mock-partner key (NPR credit)? Check whether SAS accepts a program PDA as signer (IDEA §9.1 says "issuer: the InsuWork program"). | packages/attest |
 | OQ-14 | **Panelist compensation** in v1 (IDEA §16 Q4). Paid at all in the hackathon? | disputes, admin UI |
 | OQ-18 | **Toolchain versions** — on-chain part decided (E-17). Still open: Supabase CLI, Next.js (scaffold has 14.2.13). | SETUP |
 | OQ-21 | **Triage applicant appeal flow.** IDEA says "applicant can appeal": to whom, and what changes? | triage |

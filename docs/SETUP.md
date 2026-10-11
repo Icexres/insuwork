@@ -61,3 +61,12 @@ Either Circle's devnet USDC (faucet) or a project test mint created by a script.
 Docker must be running. `pnpm db:start` starts the local stack and applies `supabase/migrations`;
 `pnpm test:db` runs the pgTAP RLS tests in `supabase/tests`; `pnpm db:reset` reapplies migrations + seed.
 The printed local keys are the public Supabase demo keys; never use them outside localhost.
+
+## Web auth (local, E-42)
+1. `pnpm db:start`, then copy `API_URL`, `ANON_KEY`, `SERVICE_ROLE_KEY` from `npx supabase status -o env` into
+   `apps/web/.env.local` as `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+2. `pnpm --filter @insuwork/web dev`, open http://localhost:3000/login. Magic-link emails land in Mailpit at http://localhost:54324.
+3. Google: set `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` / `_SECRET` and `enabled = true` under `[auth.external.google]` in `supabase/config.toml`.
+4. Panelist/admin roles are granted server-side, e.g. `update profiles set role = 'admin' where id = '<user id>'` in the local DB.
+5. End-to-end auth check (dev server running): `cd apps/web && node --env-file=.env.local test/auth.e2e.ts`.
+Without `NEXT_PUBLIC_SUPABASE_URL` the role guard is off and the demo screens browse freely.
