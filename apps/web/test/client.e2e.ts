@@ -25,6 +25,7 @@ assert.equal(ok.status, 200, await ok.text());
 
 // another client can't write to this commitment
 const other = await signIn("client");
+await service.from("wallet_links").delete().eq("wallet", "11111111111111111111111111111111");
 await service.from("wallet_links").insert({ user_id: other.id, wallet: "11111111111111111111111111111111" });
 assert.equal((await post("/api/commitments/meta", other.cookie, { commitment, specs: [] })).status, 403);
 assert.equal((await post("/api/claims/evidence", other.cookie, { commitment, index: 0, statement: "x".repeat(30) })).status, 403);

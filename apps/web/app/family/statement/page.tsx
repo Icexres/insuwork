@@ -10,6 +10,7 @@ export default function IncomeStatement() {
 
   return (
     <Workspace role="family" active="/family/statement" crumb={[en.shell.nav.statement]}>
+      <Notice title={en.family.later.title}>{en.family.later.body}</Notice>
       <PageHeading
         eyebrow={fmt(en.common.eyebrow, { role: "FAMILY" })}
         title={t.title}

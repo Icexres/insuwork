@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // workspace packages are consumed as TypeScript source (no build step)
-  transpilePackages: ["@insuwork/sdk", "@insuwork/keeper"],
+  transpilePackages: ["@insuwork/sdk", "@insuwork/keeper", "@insuwork/triage"],
   webpack: (config) => {
     // the SDK imports "./x.ts" paths (allowImportingTsExtensions); let webpack resolve them
     config.resolve.extensionAlias = { ".js": [".ts", ".js"] };

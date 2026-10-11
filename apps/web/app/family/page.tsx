@@ -10,6 +10,7 @@ export default function FamilyOverview() {
 
   return (
     <Workspace role="family" active="/family" crumb={[en.shell.nav.overview]}>
+      <Notice title={en.family.later.title}>{en.family.later.body}</Notice>
       <PageHeading
         eyebrow={fmt(en.common.eyebrow, { role: "FAMILY" })}
         title={fmt(t.title, { name })}

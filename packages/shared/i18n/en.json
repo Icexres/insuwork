@@ -81,12 +81,27 @@
     "eyebrow": "{role} / INSUWORK"
   },
   "public": {
+    "bands": [
+      "< $50",
+      "$50–99",
+      "$100–249",
+      "$250–499",
+      "$500–999",
+      "$1,000–1,999",
+      "$2,000–4,999",
+      "≥ $5,000"
+    ],
+    "notFound": "No profile at this link.",
+    "noRecords": "No paid deliveries yet.",
+    "pending": "Pending",
     "nav": { "backers": "For backers", "clients": "For clients", "families": "For families", "verify": "Verify a record", "signIn": "Sign in" },
     "eyebrow": "PUBLIC PROFILE / {ref}",
     "url": "insuwork.app/p/{ref}",
     "backed": "BACKED",
     "startCommitment": "Start a commitment",
     "metrics": {
+      "recordsNote": "Released, client-funded work",
+      "backers": "Backers",
       "deliveries": "Paid deliveries",
       "deliveriesNote": "Historical demonstration records",
       "clients": "Distinct clients",
@@ -112,6 +127,66 @@
     "footer": "InsuWork · Pre-validation pilot · Public profile and bank confirmations use demonstration data."
   },
   "freelancer": {
+    "flow": {
+      "stepBadge": "STEP {n} OF 6",
+      "no": "No",
+      "yes": "Yes",
+      "portfolioBody": "Links backers can open: deployed apps, case studies, repos. One per line.",
+      "portfolio": "Portfolio links",
+      "github": "GitHub username",
+      "continueBaseline": "Continue to baseline",
+      "baselineBody": "Research questions for the InsuWork study. Never shown to backers or clients.",
+      "baselineOpen": "Do you have an open IELTS/JLPT booking or consultancy file?",
+      "baselineNoc": "Have you filed for a study-abroad NOC?",
+      "baselineDeposit": "Has a consultancy deposit been paid?",
+      "continueTriage": "Continue to interview",
+      "triageBody": "A written interview of 12–16 turns. Your answers become an advisory summary for backers.",
+      "reviewTitle": "Your interview summary",
+      "reviewBody": "InsuWork reviews every report before backers see your application. Advisory only — never a score.",
+      "summary": "Summary",
+      "response": "Your response · shown to backers beside the report",
+      "responsePlaceholder": "Anything the summary missed or got wrong (max 600 characters)…",
+      "saveResponse": "Save response",
+      "retake": "Retake the interview (once)",
+      "awaitingBacker": "AWAITING BACKER",
+      "doneBacked": "A backer has posted a bond for you. Clients can now start a commitment.",
+      "doneReady": "You're verified (MOCK). Backers can now review your application.",
+      "rejectedTitle": "Application not accepted",
+      "rejectedBody": "InsuWork did not accept this application. Your interview stays private.",
+      "homeSubtitle": "Your contracts and MOCK bank credits, in NPR.",
+      "homeEmpty": "No contract yet. Finish your application so a backer can review it.",
+      "guarantee": "Guarantee in place",
+      "noBacker": "No backer yet",
+      "payments": "{count} funded payments",
+      "fxNote": "At MOCK FX 135 NPR per USD",
+      "backerBody": "Your backer guarantees your work to clients. If something goes wrong, talk to them early. It never costs you money.",
+      "profileAfterKyc": "Your public profile appears after verification.",
+      "comingLater": "COMING LATER",
+      "familyLater": "Family access arrives after the pilot run.",
+      "noContracts": "No contracts yet",
+      "noContractsBody": "Once a backer backs you, clients can fund milestones and payments appear here in NPR.",
+      "credited": "Credited",
+      "paidMock": "Paid · MOCK",
+      "inProgress": "In progress",
+      "underReview": "Under review",
+      "upcoming": "Upcoming",
+      "closed": "Closed",
+      "vest": "Retention vest · MOCK",
+      "claimNote": "The client raised a concern on this payment. A panel reviews it; it never costs you money.",
+      "journey": {
+        "applied": "APPLIED",
+        "interview": "INTERVIEW",
+        "ready": "REVIEWED",
+        "verified": "VERIFIED · MOCK"
+      }
+    },
+    "verify": {
+      "mockTitle": "MOCK partner verification",
+      "mockBody": "In the pilot a MOCK partner stands in for the licensed bank partner. Only your bank name and the last 4 digits are kept.",
+      "bank": "Bank",
+      "account": "Account number",
+      "submit": "Verify with MOCK partner"
+    },
     "application": {
       "title": "Tell backers who you are",
       "subtitle": "Your profile is the first part of a thoughtful, human introduction.",
@@ -134,6 +209,15 @@
       "continue": "Continue to portfolio"
     },
     "triage": {
+      "start": "Start interview",
+      "startBody": "About 25–30 minutes. You can leave and come back; your answers are saved.",
+      "cannotStart": "Finish your profile and baseline first, or you have used your one retake.",
+      "flagged": "We couldn't generate your summary automatically. InsuWork will review it.",
+      "doneTitle": "Interview complete",
+      "doneBody": "Your summary is ready for review. You can add a response on your application page.",
+      "retakeUsed": "RETAKE USED",
+      "retakeAvailable": "ONE RETAKE AVAILABLE",
+      "advisoryBadge": "ADVISORY",
       "title": "Your work, in your own words",
       "subtitle": "A short written interview for backers. Advisory only — never a score or credential.",
       "badge": "TURN {turn} OF ~{total}",
@@ -142,11 +226,11 @@
       "hint": "Enter to send · Shift + Enter for a new line",
       "send": "Send answer",
       "sections": "Interview sections",
-      "sectionList": ["Background & goals", "Project walk-through", "Technical reasoning", "Availability", "Communication"],
-      "duration": "About 15–20 minutes. You can save and return at any time.",
+      "sectionList": ["Background & goals", "Project walk-through A", "Project walk-through B", "Technical reasoning", "Debugging", "Availability", "Communication"],
+      "duration": "About 25–30 minutes. You can save and return at any time.",
       "usageNotice": { "title": "How your answers are used", "body": "A backer reads your structured summary in about 10 minutes, then decides on a call. The interview never issues credentials or moves money." },
       "control": "Your control",
-      "controlBody": "You can review your summary when the interview is complete and request a human review if it is inaccurate.",
+      "controlBody": "When the interview is complete you can read your summary, add a written response, and retake the interview once.",
       "reviewBadge": "OQ-21 · REVIEW PROCESS",
       "neverAsk": "We never ask about caste, religion, politics or family finances."
     },
@@ -178,6 +262,10 @@
     }
   },
   "family": {
+    "later": {
+      "title": "Family access is coming later",
+      "body": "This page shows demonstration data. Family invitations open after the pilot run (OQ-22)."
+    },
     "overview": {
       "title": "{name}’s contract payments",
       "subtitle": "Read-only. Payments arrive in Nepali rupees in {name}’s bank account.",

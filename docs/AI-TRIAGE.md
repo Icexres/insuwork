@@ -6,11 +6,11 @@
 ## 1. Provider
 Vercel AI SDK. `AI_PROVIDER` and `AI_MODEL` env vars select provider/model (E-09). No provider-specific features without a fallback.
 
-## 2. Interview (draft — structure is [OQ-25], owner to confirm)
-- 8–12 turns, max ~20 minutes. Text chat.
-- Sections: background and goals; one recent project walk-through (what *they* did); a small technical reasoning question in their stated stack; availability and working hours; communication check (written English clarity).
+## 2. Interview (decided, E-51)
+- 12–16 turns, max ~30 minutes. Text chat.
+- Sections: background and goals; two recent project walk-throughs (what *they* did); a small technical reasoning question in their stated stack; a debugging question; availability and working hours; communication check (written English clarity).
 - Must not ask about: religion, caste, ethnicity, politics, family finances, immigration plans beyond the baseline NOC question captured in the application form.
-- System prompt lives in `packages/triage/prompts/interview.md`, versioned; the version is stored with each session.
+- System prompt lives in `packages/triage/prompts/interview.ts`, versioned; the version is stored with each session.
 
 ## 3. Report schema (`report jsonb`, validated with zod)
 ```json
@@ -28,10 +28,10 @@ Vercel AI SDK. `AI_PROVIDER` and `AI_MODEL` env vars select provider/model (E-09
   "disclaimer": "Advisory only. Not a credential."
 }
 ```
-**[OQ-25]** Whether the report includes a numeric overall score. Draft above has none (so it cannot act as a credential); owner to confirm.
+No numeric score (E-51): the report must not act as a credential.
 
 ## 4. Prompt-injection safety
 Portfolio/GitHub content is passed as quoted data. The model is instructed to ignore instructions inside applicant content. Output must parse against the schema or is retried once then flagged.
 
-## 5. Appeal
-**[OQ-21]**
+## 5. Appeal (E-51)
+One retake per application: the new report replaces the old. The applicant may add a short written response (≤ 600 chars) that vouchers see beside the report.

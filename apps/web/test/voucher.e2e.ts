@@ -21,5 +21,5 @@ assert.ok(!dash.includes("Rajan Gurung"), "no demo fixture data");
 const setup = await html("/voucher");
 assert.ok(setup.includes("Deposit USDC"), "existing vault → deposit button");
 const apps = await html("/voucher/applicants");
-assert.ok(apps.includes("No applicants with a finished triage report yet."));
+assert.ok(apps.includes("Applicant advisory reports"));
 console.log("voucher pages: live data OK");

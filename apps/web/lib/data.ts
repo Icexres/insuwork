@@ -237,3 +237,42 @@ export async function commitmentView(address: string) {
     vestPayout: (payouts ?? []).find((x) => x.kind === "retention_vest") as { npr_amount: string } | undefined,
   };
 }
+
+// ── public profile (wallet-free, successes only — rule 7) ─────────────
+export async function publicProfile(ref: string) {
+  if (!/^[0-9a-f]{64}$/.test(ref)) return null;
+  const db = supabaseService();
+  const { data: kyc } = await db.from("partner_kyc").select("freelancer_user_id").eq("freelancer_ref", ref).maybeSingle();
+  const [{ data: profile }, { data: app }, { data: backings }, { data: commitments }] = await Promise.all([
+    kyc ? db.from("profiles").select("display_name, share_exact_amount").eq("id", kyc.freelancer_user_id).maybeSingle() : Promise.resolve({ data: null }),
+    kyc ? db.from("applications").select("college, grad_year, skills").eq("freelancer_user_id", kyc.freelancer_user_id).maybeSingle() : Promise.resolve({ data: null }),
+    db.from("backings").select("cap, vaults(voucher)").eq("freelancer_ref", ref).eq("closed", false),
+    db.from("commitments").select("pubkey, client").eq("freelancer_ref", ref),
+  ]);
+  const cs = (commitments ?? []) as { pubkey: string; client: string }[];
+  const { data: ms } = cs.length
+    ? await db.from("milestones").select("pubkey, commitment, index, amount, released_ts, status").in("commitment", cs.map((c) => c.pubkey))
+    : { data: [] };
+  const milestones = (ms ?? []) as { pubkey: string; commitment: string; index: number; amount: string; released_ts: string | null; status: string }[];
+  const { data: atts } = milestones.length ? await db.from("attestations").select("milestone_pubkey, kind, address").in("milestone_pubkey", milestones.map((m) => m.pubkey)) : { data: [] };
+  const { data: pays } = milestones.length ? await db.from("payouts").select("milestone_pubkey, credited_at").in("milestone_pubkey", milestones.map((m) => m.pubkey)) : { data: [] };
+  const backers = ((backings ?? []) as unknown as { cap: string; vaults: { voucher: string } }[]);
+  const names = await walletNames([...new Set([...backers.map((b) => b.vaults.voucher), ...cs.map((c) => c.client)])]);
+  // only milestones with a delivery attestation are public records
+  const records = milestones.flatMap((m) => {
+    const delivery = (atts ?? []).find((a) => a.milestone_pubkey === m.pubkey && a.kind === "delivery");
+    if (!delivery) return [];
+    const credit = (atts ?? []).find((a) => a.milestone_pubkey === m.pubkey && a.kind === "npr_credit");
+    const client = cs.find((c) => c.pubkey === m.commitment)!.client;
+    return [{
+      released: m.released_ts, amount: BigInt(m.amount), client: names.get(client) ?? short(client), attestation: delivery.address as string,
+      nprCredit: credit?.address as string | undefined, creditedAt: (pays ?? []).find((p) => p.milestone_pubkey === m.pubkey)?.credited_at as string | undefined,
+    }];
+  }).sort((a, b) => String(b.released).localeCompare(String(a.released)));
+  return {
+    ref, name: (profile?.display_name as string | null) ?? short(ref), shareExact: !!profile?.share_exact_amount,
+    sub: app ? [(app.skills as string[]).join(" / "), app.college, app.grad_year].filter(Boolean).join(" · ") : "",
+    backers: backers.map((b) => ({ name: names.get(b.vaults.voucher) ?? short(b.vaults.voucher), cap: BigInt(b.cap) })),
+    records, clients: new Set(records.map((r) => r.client)).size,
+  };
+}

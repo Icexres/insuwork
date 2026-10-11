@@ -87,10 +87,11 @@ export async function refresh(ctx: Ctx, key: PublicKey, seen = new Set<string>()
       });
     case "backing":
       await refresh(ctx, d.vault, seen);
-      return upsert(ctx.db, "backings", {
+      await upsert(ctx.db, "backings", {
         pubkey: k, vault: d.vault.toBase58(), freelancer_ref: hex(d.freelancerRef), cap: d.cap.toString(),
         locked: d.locked.toString(), active_commitments: d.activeCommitments, closed: !d.active,
       });
+      return markBacked(ctx, hex(d.freelancerRef));
     case "commitment": {
       const backings: PublicKey[] = d.backings.slice(0, d.backingCount);
       for (const b of backings) await refresh(ctx, b, seen);
@@ -126,6 +127,12 @@ export async function refresh(ctx: Ctx, key: PublicKey, seen = new Set<string>()
         filed_ts: ts(d.filedTs), deadline_ts: ts(d.rulingDeadline),
       });
   }
+}
+
+/** E-51: an application becomes "backed" once any backing for the freelancer's ref exists (admin set it ready first). */
+async function markBacked(ctx: Ctx, ref: string) {
+  const { data: kyc } = await ctx.db.from("partner_kyc").select("freelancer_user_id").eq("freelancer_ref", ref).maybeSingle();
+  if (kyc) await ctx.db.from("applications").update({ status: "backed" }).eq("freelancer_user_id", kyc.freelancer_user_id).eq("status", "ready");
 }
 
 const REFRESH_FIELDS = ["commitment", "vault", "backing", "claim", "milestone"];

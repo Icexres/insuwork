@@ -152,12 +152,18 @@ describe("@insuwork/sdk", { skip: !programsBuilt() && "run `anchor build` first"
           }
           return { error: null };
         },
-        update: (patch) => ({
-          eq: async (col, v) => {
-            for (const r of tables[t]?.values() ?? []) if (r[col] === v) Object.assign(r, patch);
-            return { error: null };
-          },
-        }),
+        update: (patch) => {
+          const conds = [];
+          const q = {
+            eq: (col, v) => (conds.push([col, v]), q),
+            then: (res) => {
+              for (const r of tables[t]?.values() ?? []) if (conds.every(([c, v]) => r[c] === v)) Object.assign(r, patch);
+              return res({ error: null });
+            },
+          };
+          return q;
+        },
+        select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }),
       }),
     };
     const getAccount = async (k) => {

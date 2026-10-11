@@ -32,8 +32,7 @@ FX rate for the mock: `MOCK_NPR_PAISA_PER_USDC` in `packages/shared/src/mock-par
 | `/api/auth/siws/nonce`, `/api/auth/siws/verify` | POST | session | Bind wallet to profile |
 | `/api/applications` | GET/POST/PATCH | freelancer | CRUD own application |
 | `/api/triage/start` | POST | freelancer | Create session |
-| `/api/triage/message` | POST (stream) | freelancer | Interview turn |
-| `/api/triage/finish` | POST | freelancer | Generate report (server) |
+| `/api/triage/message` | POST | freelancer | Interview turn; generates the report when the interview ends (E-52) |
 | `/api/specs` | POST | client wallet | Upload spec, return `spec_hash` |
 | `/api/claims/evidence` | POST | client wallet | Upload evidence, return `evidence_hash` |
 | `/api/webhooks/github` | POST | GitHub HMAC secret | On `pull_request.closed && merged`: look up `github_links`, sign `oracle_approve` |
