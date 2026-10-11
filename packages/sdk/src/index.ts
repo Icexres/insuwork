@@ -5,7 +5,7 @@ import { sha256 } from "@noble/hashes/sha256";
 import { Buffer } from "buffer";
 import * as anchor from "@coral-xyz/anchor";
 import {
-  AddressLookupTableProgram, ComputeBudgetProgram, PublicKey, TransactionMessage, VersionedTransaction,
+  AddressLookupTableProgram, ComputeBudgetProgram, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction,
   type AccountMeta, type AddressLookupTableAccount, type TransactionInstruction,
 } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -103,6 +103,42 @@ export async function loadCommitment(p: Programs, address: PublicKey): Promise<C
     address, client: c.client, partner: c.partner, mint: cfg.usdcMint, treasury: cfg.treasury,
     disputesTreasury: dcfg.treasury, milestoneCount: c.milestoneCount, backings,
   };
+}
+
+// ---------------- voucher (bond) ----------------
+
+/** First deposit: create the vault and fund it in one transaction (min_bond applies, E-19). */
+export async function initVaultAndDepositIxs(p: Programs, voucher: PublicKey, mint: PublicKey, amount: BNType) {
+  const vault = pdas.vault(voucher);
+  return [
+    await p.bond.methods.initVault().accountsStrict({
+      config: pdas.bondConfig(), vault, vaultAta: pdas.vaultAta(vault), usdcMint: mint, voucher,
+      tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId,
+    }).instruction(),
+    await depositIx(p, voucher, mint, amount),
+  ];
+}
+
+export function depositIx(p: Programs, voucher: PublicKey, mint: PublicKey, amount: BNType) {
+  const vault = pdas.vault(voucher);
+  return p.bond.methods.deposit(amount).accountsStrict({
+    config: pdas.bondConfig(), vault, vaultAta: pdas.vaultAta(vault), voucherAta: ata(voucher, mint), voucher, tokenProgram: TOKEN_PROGRAM_ID,
+  }).instruction();
+}
+
+/** Only unallocated USDC; the program keeps `deposited - amount >= allocated` (VO-4). */
+export function withdrawIx(p: Programs, voucher: PublicKey, mint: PublicKey, amount: BNType) {
+  const vault = pdas.vault(voucher);
+  return p.bond.methods.withdraw(amount).accountsStrict({
+    config: pdas.bondConfig(), vault, vaultAta: pdas.vaultAta(vault), voucherAta: ata(voucher, mint), voucher, tokenProgram: TOKEN_PROGRAM_ID,
+  }).instruction();
+}
+
+export function createBackingIx(p: Programs, voucher: PublicKey, freelancerRef: Uint8Array, cap: BNType) {
+  const vault = pdas.vault(voucher);
+  return p.bond.methods.createBacking([...freelancerRef], cap).accountsStrict({
+    config: pdas.bondConfig(), vault, backing: pdas.backing(vault, freelancerRef), voucher, systemProgram: SystemProgram.programId,
+  }).instruction();
 }
 
 // ---------------- remaining accounts ----------------

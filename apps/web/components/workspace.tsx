@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import en from "@insuwork/shared/i18n/en.json";
-import { today, users } from "@/lib/demo";
+import { short, viewer } from "@/lib/data";
 import { Badge, Divider, Icon, type IconName, Notice } from "./ui";
 
 // Role workspace shell: left nav, top bar, footer. No wallet code here — the
@@ -41,7 +41,7 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
 
 const WALLET_ROLES: Role[] = ["voucher", "client", "panel", "admin"];
 
-export function Workspace({
+export async function Workspace({
   role,
   active,
   crumb,
@@ -54,9 +54,10 @@ export function Workspace({
   children: ReactNode;
 }) {
   const s = en.shell;
-  const user = users[role];
-  const wallet = "wallet" in user ? user.wallet : undefined;
-  const notice = wallet ? s.devnetNotice : s.pilotNotice;
+  const v = await viewer();
+  const wallet = v?.wallet && WALLET_ROLES.includes(role) ? short(v.wallet) : undefined;
+  const notice = WALLET_ROLES.includes(role) ? s.devnetNotice : s.pilotNotice;
+  const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
 
   return (
     <div className="flex min-h-screen bg-canvas">
@@ -94,8 +95,8 @@ export function Workspace({
         <div className="flex flex-col gap-4">
           <Notice title={notice.title}>{notice.body}</Notice>
           <Divider />
-          <p className="text-[13px] text-fg">{user.name}</p>
-          <p className="text-[11px] text-muted">{user.sub}</p>
+          <p className="text-[13px] text-fg">{v?.name ?? s.signedOut}</p>
+          <p className="text-[11px] text-muted">{v?.email}</p>
         </div>
       </aside>
 

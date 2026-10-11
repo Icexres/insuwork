@@ -57,12 +57,8 @@ const REF = createHash("sha256").update(`insuwork:v1:e2e:${Date.now()}`).digest(
 const vault = sdk.pdas.vault(voucher.publicKey);
 const backing = sdk.pdas.backing(vault, REF);
 await send([
-  await p.bond.methods.initVault().accountsStrict({ config: sdk.pdas.bondConfig(), vault, vaultAta: sdk.pdas.vaultAta(vault), usdcMint: mint,
-    voucher: voucher.publicKey, tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId }).instruction(),
-  await p.bond.methods.deposit(sdk.usdc(500)).accountsStrict({ config: sdk.pdas.bondConfig(), vault, vaultAta: sdk.pdas.vaultAta(vault),
-    voucherAta, voucher: voucher.publicKey, tokenProgram: TOKEN_PROGRAM_ID }).instruction(),
-  await p.bond.methods.createBacking([...REF], sdk.usdc(500)).accountsStrict({ config: sdk.pdas.bondConfig(), vault, backing,
-    voucher: voucher.publicKey, systemProgram: SystemProgram.programId }).instruction(),
+  ...(await sdk.initVaultAndDepositIxs(p, voucher.publicKey, mint, sdk.usdc(500))),
+  await sdk.createBackingIx(p, voucher.publicKey, REF, sdk.usdc(500)),
 ], [voucher]);
 
 // ── commitment ──────────────────────────────────────────────────────
@@ -145,6 +141,7 @@ const atts = (await db.from("attestations").select("kind, milestone_pubkey, addr
 const [v] = await q("vaults", "deposited, locked, premiums_earned", "pubkey", vault.toBase58());
 const bal = async (owner: PublicKey) => (await conn.getTokenAccountBalance(sdk.ata(owner, mint))).value.amount;
 const report = {
+  voucher: voucher.publicKey.toBase58(),
   commitment: { address: commitment.toBase58(), status: cm?.status, total_required: usd(cm?.total_required), released: usd(cm?.released), vest_status: cm?.vest_status },
   milestones: ms.map((m: Record<string, unknown>) => ({ ...m, amount: usd(m.amount as string) })),
   voucher_vault: v && { deposited: usd(v.deposited), locked: usd(v.locked), premiums_earned: usd(v.premiums_earned) },

@@ -10,6 +10,7 @@
     "publicProfile": "Public profile ↗",
     "help": "Help & pilot guidance ↗",
     "footer": "InsuWork · Pre-validation pilot · Demonstration data",
+    "signedOut": "Not signed in",
     "footerFamily": "Read-only · Only the payment schedule and statement are shared.",
     "envPilot": "PILOT · MOCK DATA",
     "envDevnet": "DEVNET",
@@ -220,6 +221,35 @@
     }
   },
   "voucher": {
+    "actions": {
+      "connect": "Connect your wallet first.",
+      "submitting": "Waiting for your wallet signature…",
+      "done": "Confirmed on devnet. Figures refresh as the indexer catches up.",
+      "failed": "Transaction failed:",
+      "viewTx": "View transaction ↗",
+      "invalidAmount": "Enter a positive USDC amount.",
+      "belowMin": "The first deposit must be at least the minimum bond.",
+      "overMax": "That is more than your unallocated balance.",
+      "overCapacity": "The cap can't exceed your remaining capacity (1:1 leverage)."
+    },
+    "empty": {
+      "noWallet": "Bind your wallet above to see your vault.",
+      "noVault": "You have no bond vault yet.",
+      "createVault": "Create your vault and deposit",
+      "noBackings": "No backings yet.",
+      "noApplicants": "No applicants with a finished triage report yet.",
+      "noKyc": "This applicant has not completed MOCK partner KYC, so they can't be backed yet.",
+      "notFound": "Applicant not found."
+    },
+    "live": {
+      "commitments": "{count} live commitment(s)",
+      "noCommitment": "No commitment yet",
+      "capOf": "{locked} locked of {cap}",
+      "locked": "Locked",
+      "open": "Open",
+      "depositButton": "Deposit USDC",
+      "alreadyBacked": "You already back this freelancer."
+    },
     "setup": {
       "title": "Set up your bond vault",
       "subtitle": "A segregated performance deposit. Your capital backs specific people — never a pooled fund.",
