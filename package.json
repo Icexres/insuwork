@@ -17,7 +17,8 @@
     "db:start": "supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,realtime,storage-api",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "test:db": "supabase test db"
+    "test:db": "supabase test db",
+    "indexer": "node services/indexer/src/index.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.31.1",

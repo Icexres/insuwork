@@ -103,6 +103,18 @@ importers:
 
   packages/triage: {}
 
+  services/indexer:
+    dependencies:
+      '@coral-xyz/anchor':
+        specifier: 0.31.1
+        version: 0.31.1(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@6.0.6)
+      '@solana/web3.js':
+        specifier: ^1.99.0
+        version: 1.99.0(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@6.0.6)
+      '@supabase/supabase-js':
+        specifier: '2'
+        version: 2.117.3
+
   services/keeper: {}
 
   services/mock-partner: {}

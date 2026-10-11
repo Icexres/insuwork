@@ -21,6 +21,7 @@
 | `payouts` (MOCK) | `milestone_pubkey`, `usdc_amount`, `fx_rate`, `npr_amount`, `credited_at`, `is_mock=true` | freelancer, family, admin / mock-partner |
 | `attestations` | `milestone_pubkey`, `schema`, `address`, `tx_sig`, `kind` | public / attester |
 | `siws_nonces` | `user_id`, `nonce`, `issued_at` (single use, 5 min) | server only |
+| `indexer_cursors` | `program`, `last_sig` | server only |
 | `events_raw` | `slot`, `sig`, `program`, `name`, `data jsonb` (key `sig+ix_index+event_index`) | admin / indexer |
 
 FX rate for the mock: constant in `packages/shared` labelled MOCK.

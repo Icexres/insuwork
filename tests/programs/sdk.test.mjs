@@ -4,6 +4,7 @@ import { describe, it, before } from "node:test";
 import assert from "node:assert/strict";
 import { Env, USDC, anchor, Keypair, SystemProgram, TOKEN_PROGRAM_ID, errorName, programsBuilt } from "./harness.mjs";
 import * as sdk from "../../packages/sdk/src/index.ts";
+import * as indexer from "../../services/indexer/src/index.ts";
 
 const { BN } = anchor;
 const bn = (x) => new BN(x.toString());
@@ -13,6 +14,7 @@ const REF = Buffer.alloc(32, 0xab);
 describe("@insuwork/sdk", { skip: !programsBuilt() && "run `anchor build` first" }, () => {
   let env, admin, p, mint, partner, treasury;
   const panel = [];
+  let finalLogs, finalCommitment; // reused by the indexer test
 
   const balOf = (owner) => env.tokenBalance(sdk.ata(owner, mint));
   const send = async (ixs, signers) => {
@@ -125,11 +127,61 @@ describe("@insuwork/sdk", { skip: !programsBuilt() && "run `anchor build` first"
     // bond 4 × 250 + salary/premium refund 1,030 + claim fee 10 back
     assert.equal(balOf(client.publicKey) - before, 2_040n * USDC);
 
+    finalLogs = res.logs;
+    finalCommitment = commitment;
     const events = sdk.decodeEvents(p, res.logs);
     const names = events.map((e) => `${e.program}.${e.name}`);
     assert.equal(names.filter((n) => n === "bond.claimPaid").length, 4);
     assert.ok(names.includes("escrow.milestoneResolved"));
     assert.ok(names.includes("disputes.claimFinalized"));
+  });
+
+  it("indexer (T-22): stores events once and mirrors every touched account, parents first", async () => {
+    const tables = {};
+    const FK = { backings: ["vault", "vaults"], milestones: ["commitment", "commitments"], claims: ["milestone", "milestones"] };
+    const keyOf = (t, r) => (t === "events_raw" ? `${r.sig}/${r.ix_index}/${r.event_index}` : r.pubkey);
+    const db = {
+      from: (t) => ({
+        upsert: async (rows, opts = {}) => {
+          const rowsArr = Array.isArray(rows) ? rows : [rows];
+          tables[t] ??= new Map();
+          for (const r of rowsArr) {
+            if (FK[t] && !tables[FK[t][1]]?.has(r[FK[t][0]])) return { error: { message: `fk ${t}.${FK[t][0]}` } };
+            const k = keyOf(t, r);
+            if (!(opts.ignoreDuplicates && tables[t].has(k))) tables[t].set(k, { ...tables[t].get(k), ...r });
+          }
+          return { error: null };
+        },
+        update: (patch) => ({
+          eq: async (col, v) => {
+            for (const r of tables[t]?.values() ?? []) if (r[col] === v) Object.assign(r, patch);
+            return { error: null };
+          },
+        }),
+      }),
+    };
+    const getAccount = async (k) => {
+      const a = env.svm.getAccount(k);
+      return a && { ...a, data: Buffer.from(a.data) };
+    };
+    const ctx = { p, db, getAccount };
+    const n = await indexer.ingest(ctx, "sig1", 7, finalLogs);
+    assert.ok(n >= 6);
+    assert.equal(await indexer.ingest(ctx, "sig1", 7, finalLogs), n, "replay");
+    assert.equal(tables.events_raw.size, n, "replay stored nothing new");
+    assert.equal([...tables.events_raw.values()].filter((e) => e.name === "claimPaid").length, 4);
+
+    const c = tables.commitments.get(finalCommitment.toBase58());
+    assert.equal(c.vouchers.length, 4);
+    assert.equal(tables.vaults.size, 4);
+    assert.equal(tables.backings.size, 4);
+    const m = tables.milestones.get(sdk.pdas.milestone(finalCommitment, 0).toBase58());
+    assert.equal(m.status, "resolved");
+    assert.equal(m.tx_sig, "sig1");
+    const claim = [...tables.claims.values()][0];
+    assert.equal(claim.outcome, "upheld");
+    assert.equal(claim.panel.length, 3);
+    assert.match(c.freelancer_ref, /^(ab){32}$/);
   });
 
   it("createLookupTableIxs chunks extends under the tx limit", () => {

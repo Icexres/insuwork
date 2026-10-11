@@ -70,3 +70,7 @@ The printed local keys are the public Supabase demo keys; never use them outside
 4. Panelist/admin roles are granted server-side, e.g. `update profiles set role = 'admin' where id = '<user id>'` in the local DB.
 5. End-to-end auth check (dev server running): `cd apps/web && node --env-file=.env.local test/auth.e2e.ts`.
 Without `NEXT_PUBLIC_SUPABASE_URL` the role guard is off and the demo screens browse freely.
+
+## Indexer (E-43)
+`SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… pnpm indexer` (optional `SOLANA_RPC_URL`, `INDEXER_POLL_SECS`).
+On first start it backfills all program history, then follows live logs and polls every 30 s.
