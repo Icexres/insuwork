@@ -38,7 +38,7 @@ FX rate for the mock: `MOCK_NPR_PAISA_PER_USDC` in `packages/shared/src/mock-par
 | `/api/claims/evidence` | POST | client wallet | Upload evidence, return `evidence_hash` |
 | `/api/webhooks/github` | POST | GitHub HMAC secret | On `pull_request.closed && merged`: look up `github_links`, sign `oracle_approve` |
 | `/api/mock-partner/kyc` | POST | freelancer | Create MOCK kyc, `freelancer_ref` |
-| `/api/keeper/run` | POST | internal secret | Run one keeper pass; called by a scheduled job (E-41) |
+| `/api/keeper/run` | POST | `Bearer KEEPER_RUN_SECRET` | Run one keeper pass; called by a scheduled job (E-41, E-47) |
 | `/api/indexer/*` | — | internal | Live subscription + polling catch-up (E-41) |
 | `/api/family/[freelancerUserId]` | GET | family | Schedule + payouts in NPR |
 

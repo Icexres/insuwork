@@ -87,3 +87,8 @@ GitHub repo → Settings → Webhooks: payload URL `https://<host>/api/webhooks/
 secret = `GITHUB_WEBHOOK_SECRET`, events: "Pull requests". The app needs `GITHUB_ORACLE_SECRET_KEY`
 (base58 of `keys/github-oracle.json`, the oracle set in the escrow config) and the Supabase service key.
 Local testing needs a public tunnel to `localhost:3000`.
+
+## Keeper (E-47)
+Every few minutes, either `curl -X POST -H "Authorization: Bearer $KEEPER_RUN_SECRET" https://<host>/api/keeper/run`
+or `pnpm keeper` (env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `KEEPER_SECRET_KEY`, optional `SOLANA_RPC_URL`).
+The keeper key only pays fees; fund it with a little devnet SOL.

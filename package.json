@@ -20,7 +20,8 @@
     "test:db": "supabase test db",
     "indexer": "node services/indexer/src/index.ts",
     "test:services": "node --test \"packages/attest/test/*.test.ts\" \"packages/shared/test/*.test.ts\" \"services/*/test/*.test.ts\"",
-    "sas:setup": "node scripts/sas-setup.mjs"
+    "sas:setup": "node scripts/sas-setup.mjs",
+    "keeper": "node services/keeper/src/cli.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.31.1",

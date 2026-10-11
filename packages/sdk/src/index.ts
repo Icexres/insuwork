@@ -169,6 +169,13 @@ function closeAccounts(c: CommitmentCtx, authority: PublicKey) {
   };
 }
 
+/** Permissionless once the vest is due (keeper, T-26). */
+export function releaseVestIx(p: Programs, c: CommitmentCtx, authority: PublicKey) {
+  return p.escrow.methods.releaseVest().accountsStrict({
+    commitment: c.address, escrowAta: pdas.escrowAta(c.address), partner: pdas.partner(c.partner),
+    partnerAta: ata(c.partner, c.mint), clientAta: ata(c.client, c.mint), authority, tokenProgram: TOKEN_PROGRAM_ID,
+  }).instruction();
+}
 export function cancelCommitmentIx(p: Programs, c: CommitmentCtx) {
   return p.escrow.methods.cancelCommitment().accountsStrict(closeAccounts(c, c.client))
     .remainingAccounts(remaining.close(c.backings)).instruction();
