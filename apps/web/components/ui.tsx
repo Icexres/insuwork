@@ -31,10 +31,12 @@ type ButtonProps = {
   primary?: boolean;
   icon?: IconName;
   href?: string;
+  onClick?: () => void;
+  disabled?: boolean;
 };
 
-export function Button({ children, primary, icon, href }: ButtonProps) {
-  const cls = `inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-md border-[0.5px] px-4 py-[11px] text-[13px] font-medium ${
+export function Button({ children, primary, icon, href, onClick, disabled }: ButtonProps) {
+  const cls = `inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-md border-[0.5px] px-4 py-[11px] text-[13px] font-medium disabled:opacity-50 ${
     primary ? "border-accent bg-accent text-canvas" : "border-line bg-raised text-fg"
   }`;
   const body = (
@@ -43,13 +45,12 @@ export function Button({ children, primary, icon, href }: ButtonProps) {
       {icon && <Icon name={icon} size={15} />}
     </>
   );
-  // ponytail: no handlers yet; actions get wired with the backend pass.
   return href ? (
     <Link href={href} className={cls}>
       {body}
     </Link>
   ) : (
-    <button type="button" className={cls}>
+    <button type="button" className={cls} onClick={onClick} disabled={disabled}>
       {body}
     </button>
   );
@@ -122,35 +123,56 @@ export function Fact({ label, value, mono }: { label: ReactNode; value: ReactNod
 const inputCls =
   "w-full rounded-md border-[0.5px] border-edge bg-surface p-3 text-sm leading-normal text-fg placeholder:text-faint focus:border-muted focus:outline-none";
 
+/** Text input, textarea (`rows`) or select (`options`). Pass `onChange` to make it controlled. */
 export function Field({
   label,
   value,
   placeholder,
   rows,
+  options,
+  onChange,
+  inputMode,
+  type,
   className = "",
 }: {
   label: ReactNode;
   value?: string;
   placeholder?: string;
   rows?: number;
+  options?: [value: string, label: string][];
+  onChange?: (value: string) => void;
+  inputMode?: "decimal" | "numeric" | "text";
+  type?: "text" | "date" | "datetime-local";
   className?: string;
 }) {
+  const bind = onChange
+    ? { value: value ?? "", onChange: (e: { target: { value: string } }) => onChange(e.target.value) }
+    : { defaultValue: value };
   return (
     <label className={`flex min-w-0 flex-1 flex-col gap-2 ${className}`}>
       <span className="text-xs leading-normal text-muted">{label}</span>
-      {rows ? (
-        <textarea rows={rows} defaultValue={value} placeholder={placeholder} className={`${inputCls} resize-none`} />
+      {options ? (
+        <select {...bind} className={`${inputCls} min-h-[44px]`}>
+          {options.map(([v, l]) => (
+            <option key={v} value={v}>{l}</option>
+          ))}
+        </select>
+      ) : rows ? (
+        <textarea rows={rows} {...bind} placeholder={placeholder} className={`${inputCls} resize-none`} />
       ) : (
-        <input defaultValue={value} placeholder={placeholder} className={`${inputCls} min-h-[44px]`} />
+        <input {...bind} type={type} inputMode={inputMode} placeholder={placeholder} className={`${inputCls} min-h-[44px]`} />
       )}
     </label>
   );
 }
 
-export function Check({ children, defaultChecked }: { children: ReactNode; defaultChecked?: boolean }) {
+export function Check({ children, defaultChecked, checked, onChange }: {
+  children: ReactNode; defaultChecked?: boolean; checked?: boolean; onChange?: (checked: boolean) => void;
+}) {
+  const bind = onChange ? { checked: !!checked, onChange: (e: { target: { checked: boolean } }) => onChange(e.target.checked) } : { defaultChecked };
   return (
     <label className="flex items-start gap-2 text-[13px] leading-normal text-fg">
-      <input type="checkbox" defaultChecked={defaultChecked} className="mt-[3px] accent-accent" />
+      <input type="checkbox" {...bind} className="mt-[3px] accent-accent" />
       {children}
     </label>
   );

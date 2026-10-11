@@ -141,6 +141,54 @@ export function createBackingIx(p: Programs, voucher: PublicKey, freelancerRef: 
   }).instruction();
 }
 
+// ---------------- client (escrow) ----------------
+
+/** spec_hash = sha256(utf8(spec markdown)); the markdown itself stays off-chain (milestone_specs). */
+export const specHash = (markdown: string) => Buffer.from(sha256(new TextEncoder().encode(markdown)));
+
+/** Mirrors the program's `Split::new` client_due (integer math): salary + premium + fee − freelancer's share of both. */
+export function clientDue(amount: bigint, premiumBps: number, feeBps: number, freelancerShareBps: number) {
+  const premium = (amount * BigInt(premiumBps)) / 10_000n;
+  const fee = (amount * BigInt(feeBps)) / 10_000n;
+  const freelancerPart = (premium * BigInt(freelancerShareBps)) / 10_000n + (fee * BigInt(freelancerShareBps)) / 10_000n;
+  return { premium, fee, freelancerPart, clientDue: amount + premium + fee - freelancerPart };
+}
+
+export type NewMilestone = { amount: BNType; dueTs: number; specHash: Uint8Array; githubRef?: { repo: string; pr: number } };
+
+/**
+ * Instruction groups for a new commitment: [create], then add_milestone in pairs (tx size), then fund.
+ * `fundAmount` must equal the commitment's total_required (salary + premium + fee + vest − freelancer share).
+ */
+export async function createCommitmentIxGroups(p: Programs, o: {
+  client: PublicKey; id: bigint; freelancerRef: Uint8Array; partner: PublicKey; mint: PublicKey;
+  backings: { vault: PublicKey; backing: PublicKey }[]; share: boolean; vestAmount: BNType; vestDelaySecs: number;
+  milestones: NewMilestone[]; fundAmount: BNType;
+}) {
+  const commitment = pdas.commitment(o.client, o.id);
+  const create = await p.escrow.methods.createCommitment(new BN(o.id.toString()), [...o.freelancerRef], o.milestones.length, o.share, o.vestAmount, new BN(o.vestDelaySecs))
+    .accountsStrict({
+      config: pdas.escrowConfig(), commitment, escrowAta: pdas.escrowAta(commitment), usdcMint: o.mint, partner: pdas.partner(o.partner),
+      escrowAuthority: pdas.escrowAuthority(), bondConfig: pdas.bondConfig(), bondProgram: BOND_PROGRAM_ID, client: o.client,
+      tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId,
+    }).remainingAccounts(remaining.pairs(o.backings)).instruction();
+  const adds = await Promise.all(o.milestones.map((m, i) => p.escrow.methods.addMilestone(i, {
+    amount: m.amount, dueTs: new BN(m.dueTs), specHash: [...m.specHash],
+    releaseMode: m.githubRef ? { githubOracle: {} } : { clientSig: {} },
+    githubRefHash: [...(m.githubRef ? githubRefHash(m.githubRef.repo, m.githubRef.pr) : Buffer.alloc(32))],
+  }).accountsStrict({ commitment, milestone: pdas.milestone(commitment, i), client: o.client, systemProgram: SystemProgram.programId }).instruction()));
+  const groups: TransactionInstruction[][] = [[create]];
+  for (let i = 0; i < adds.length; i += 2) groups.push(adds.slice(i, i + 2));
+  groups.push([await fundIx(p, o.client, commitment, o.mint, o.fundAmount)]);
+  return { commitment, groups };
+}
+
+export function fundIx(p: Programs, client: PublicKey, commitment: PublicKey, mint: PublicKey, amount: BNType) {
+  return p.escrow.methods.fund(amount).accountsStrict({
+    config: pdas.escrowConfig(), commitment, escrowAta: pdas.escrowAta(commitment), clientAta: ata(client, mint), client, tokenProgram: TOKEN_PROGRAM_ID,
+  }).instruction();
+}
+
 // ---------------- remaining accounts ----------------
 
 const w = (pubkey: PublicKey): AccountMeta => ({ pubkey, isSigner: false, isWritable: true });

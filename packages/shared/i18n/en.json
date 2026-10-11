@@ -53,6 +53,13 @@
     }
   },
   "common": {
+    "tx": {
+      "connect": "Connect your wallet first.",
+      "submitting": "Waiting for your wallet signature…",
+      "done": "Confirmed on devnet. Figures refresh as the indexer catches up.",
+      "failed": "Transaction failed:",
+      "viewTx": "View transaction ↗"
+    },
     "pilotBoundaries": {
       "title": "Pilot boundaries",
       "body": "Test funds only. Mock partner KYC does not establish actual eligibility. The licensed partner route, legal review and external audit remain launch prerequisites."
@@ -222,11 +229,6 @@
   },
   "voucher": {
     "actions": {
-      "connect": "Connect your wallet first.",
-      "submitting": "Waiting for your wallet signature…",
-      "done": "Confirmed on devnet. Figures refresh as the indexer catches up.",
-      "failed": "Transaction failed:",
-      "viewTx": "View transaction ↗",
       "invalidAmount": "Enter a positive USDC amount.",
       "belowMin": "The first deposit must be at least the minimum bond.",
       "overMax": "That is more than your unallocated balance.",
@@ -247,6 +249,13 @@
       "capOf": "{locked} locked of {cap}",
       "locked": "Locked",
       "open": "Open",
+        "claimFee": "Claim fee · refunded if upheld",
+        "submitted": "Submitted",
+        "oracleTitle": "Released by GitHub merge",
+        "oracleBody": "This milestone releases automatically when {link} is merged. You can still approve it yourself.",
+        "attestation": "Paid Delivery Record {address} ↗",
+        "actionsTitle": "Actions",
+        "windowClosed": "The claim window for this milestone has closed; the keeper may auto-release it.",
       "depositButton": "Deposit USDC",
       "alreadyBacked": "You already back this freelancer."
     },
@@ -344,6 +353,60 @@
     }
   },
   "client": {
+    "actions": {
+      "noFreelancers": "No backed freelancers yet.",
+      "claimFee": "Claim fee · refunded if upheld",
+      "submitted": "Submitted",
+      "oracleTitle": "Released by GitHub merge",
+      "oracleBody": "This milestone releases automatically when {link} is merged. You can still approve it yourself.",
+      "attestation": "Paid Delivery Record {address} ↗",
+      "actionsTitle": "Actions",
+      "windowClosed": "The claim window for this milestone has closed; the keeper may auto-release it.",
+      "subtitle": "Define clear deliverables and release conditions. Salary releases only to the registered partner.",
+      "backedBy": "Backed by {name} · free / cap",
+      "stepOf": "STEP {n} OF 5",
+      "milestoneN": "Milestone {n}",
+      "dueDate": "Due date",
+      "spec": "Delivery spec (what counts as done)",
+      "specPlaceholder": "Describe the deliverable and acceptance criteria…",
+      "modeClient": "Client approval",
+      "modeGithub": "GitHub merge (oracle)",
+      "repo": "GitHub repo",
+      "pr": "Pull request #",
+      "remove": "Remove milestone",
+      "addMilestone": "Add milestone",
+      "vestBody": "Optional, forgiveness-only retention vest: paid to the partner a set number of days after the last milestone unless the partner flags that the freelancer left. Never clawed back.",
+      "vestDays": "Vest delay · days after completion",
+      "share": "Freelancer covers {pct}% of premium and fee (deducted from salary)",
+      "freelancerShare": "Freelancer share",
+      "ack": "I understand releases go only to the registered MOCK partner and that funds are devnet test USDC.",
+      "createFund": "Create & fund {total}",
+      "continue": "Continue",
+      "errNoBacking": "This freelancer has no free backing capacity.",
+      "errAmount": "Milestone {n}: enter an amount.",
+      "errDue": "Milestone {n}: pick a future due date.",
+      "errSpec": "Milestone {n}: describe the deliverable.",
+      "errGithub": "Milestone {n}: GitHub release needs owner/repo and a PR number.",
+      "errVest": "Enter a valid vest amount.",
+      "fund": "Fund {amount}",
+      "activate": "Activate M{n}",
+      "cancel": "Cancel commitment",
+      "claimStatement": "Claim for M{n} · what was not delivered",
+      "claimPlaceholder": "Explain what was agreed in the spec and what was or wasn't delivered…",
+      "none": "You have no commitments yet.",
+      "open": "Open",
+      "statusLabels": {
+        "draft": "Draft",
+        "funded": "Funded",
+        "active": "Active",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "pending": "Pending",
+        "released": "Released",
+        "disputed": "Claim open",
+        "resolved": "Resolved"
+      }
+    },
     "freelancers": {
       "title": "Backed freelancers",
       "subtitle": "InsuWork is the trust layer beside marketplaces. These freelancers are backed by a named backer and a specific performance deposit. Claim protection is conditional on failed delivery and an upheld panel claim, up to the milestone or cap — not the whole contract.",
@@ -359,6 +422,7 @@
       "delivered": "Delivered work",
       "deliveryFilters": ["Any history", "1+ paid delivery", "3+ paid deliveries"],
       "backerLabel": "BACKER",
+      "paidDeliveries": "{count} paid deliveries",
       "deliveredLabel": "DELIVERED WORK",
       "protection": {
         "title": "Claim protection",

@@ -63,27 +63,22 @@ await send([
 
 // ── commitment ──────────────────────────────────────────────────────
 step("client: commitment (2 milestones × 400 USDC, vest 100 USDC after 20 s), M1 released by GitHub oracle");
-const commitment = sdk.pdas.commitment(client.publicKey, 1);
 const now = Math.floor(Date.now() / 1000);
-const milestone = (amount: number, mode: object, ref: Uint8Array) => ({
-  amount: sdk.usdc(amount), dueTs: new BN(now + 7 * 86400), specHash: [...createHash("sha256").update(`spec-${amount}-${JSON.stringify(mode)}`).digest()],
-  releaseMode: mode, githubRefHash: [...ref],
+const SPECS = ["Landing page: hero, pricing, signup form; Lighthouse ≥ 90 on mobile.", "Dashboard analytics module with date-range CSV export."];
+const cfg = await p.escrow.account.escrowConfig.fetch(sdk.pdas.escrowConfig());
+const vestAmount = 100_000_000n;
+const expected = [400_000_000n, 400_000_000n].reduce((a, x) => a + sdk.clientDue(x, cfg.premiumBps, cfg.platformFeeBps, 0).clientDue, vestAmount);
+const { commitment, groups } = await sdk.createCommitmentIxGroups(p, {
+  client: client.publicKey, id: 1n, freelancerRef: REF, partner: partner.publicKey, mint, backings: [{ vault, backing }],
+  share: false, vestAmount: new BN(vestAmount.toString()), vestDelaySecs: 20, fundAmount: new BN(expected.toString()),
+  milestones: [
+    { amount: sdk.usdc(400), dueTs: now + 7 * 86400, specHash: sdk.specHash(SPECS[0]) },
+    { amount: sdk.usdc(400), dueTs: now + 7 * 86400, specHash: sdk.specHash(SPECS[1]), githubRef: { repo: REPO, pr: PR } },
+  ],
 });
-await send([
-  await p.escrow.methods.createCommitment(new BN(1), [...REF], 2, false, sdk.usdc(100), new BN(20)).accountsStrict({
-    config: sdk.pdas.escrowConfig(), commitment, escrowAta: sdk.pdas.escrowAta(commitment), usdcMint: mint,
-    partner: sdk.pdas.partner(partner.publicKey), escrowAuthority: sdk.pdas.escrowAuthority(), bondConfig: sdk.pdas.bondConfig(),
-    bondProgram: sdk.BOND_PROGRAM_ID, client: client.publicKey, tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId,
-  }).remainingAccounts(sdk.remaining.pairs([{ vault, backing }])).instruction(),
-  await p.escrow.methods.addMilestone(0, milestone(400, { clientSig: {} }, Buffer.alloc(32))).accountsStrict({
-    commitment, milestone: sdk.pdas.milestone(commitment, 0), client: client.publicKey, systemProgram: SystemProgram.programId }).instruction(),
-  await p.escrow.methods.addMilestone(1, milestone(400, { githubOracle: {} }, sdk.githubRefHash(REPO, PR))).accountsStrict({
-    commitment, milestone: sdk.pdas.milestone(commitment, 1), client: client.publicKey, systemProgram: SystemProgram.programId }).instruction(),
-], [client]);
+for (const g of groups) await send(g, [client]);
 const total = (await p.escrow.account.commitment.fetch(commitment)).totalRequired;
-await send([await p.escrow.methods.fund(total).accountsStrict({
-  config: sdk.pdas.escrowConfig(), commitment, escrowAta: sdk.pdas.escrowAta(commitment), clientAta, client: client.publicKey, tokenProgram: TOKEN_PROGRAM_ID,
-}).instruction()], [client]);
+if (BigInt(total.toString()) !== expected) throw new Error(`clientDue mismatch: sdk ${expected} vs chain ${total}`);
 console.log(`funded ${usd(total)} USDC  (${commitment.toBase58()})`);
 
 const c = await sdk.loadCommitment(p, commitment);
@@ -142,6 +137,9 @@ const [v] = await q("vaults", "deposited, locked, premiums_earned", "pubkey", va
 const bal = async (owner: PublicKey) => (await conn.getTokenAccountBalance(sdk.ata(owner, mint))).value.amount;
 const report = {
   voucher: voucher.publicKey.toBase58(),
+  client: client.publicKey.toBase58(),
+  specs: SPECS,
+  github: { repo: REPO, pr: PR },
   commitment: { address: commitment.toBase58(), status: cm?.status, total_required: usd(cm?.total_required), released: usd(cm?.released), vest_status: cm?.vest_status },
   milestones: ms.map((m: Record<string, unknown>) => ({ ...m, amount: usd(m.amount as string) })),
   voucher_vault: v && { deposited: usd(v.deposited), locked: usd(v.locked), premiums_earned: usd(v.premiums_earned) },

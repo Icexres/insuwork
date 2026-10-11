@@ -52,6 +52,7 @@ export const rules = cache(async () => {
     minBond: BigInt(bond.minBond.toString()),
     premiumBps: escrow.premiumBps,
     feeBps: escrow.platformFeeBps,
+    shareBps: escrow.freelancerShareBps,
     claimWindowDays: escrow.claimWindowSecs.toNumber() / 86_400,
     rulingDays: disputes.rulingSecs.toNumber() / 86_400,
     claimFee: BigInt(disputes.claimFee.toString()),
@@ -126,4 +127,113 @@ export async function readyApplicants() {
     freelancerRef: (kyc ?? []).find((k) => k.freelancer_user_id === a.freelancer_user_id)?.freelancer_ref ?? null,
     report: (reports ?? []).find((r) => r.application_id === a.id) ?? null,
   }));
+}
+
+// ── client ──────────────────────────────────────────────────────────
+const variant = (e: object) => Object.keys(e)[0];
+
+/** wallet → display name (server-only, via wallet_links → profiles). */
+export async function walletNames(wallets: string[]) {
+  if (!wallets.length) return new Map<string, string>();
+  const db = supabaseService();
+  const { data: links } = await db.from("wallet_links").select("wallet, user_id").in("wallet", wallets);
+  const ids = (links ?? []).map((l) => l.user_id);
+  const { data: profiles } = ids.length ? await db.from("profiles").select("id, display_name").in("id", ids) : { data: [] };
+  const byId = new Map((profiles ?? []).map((p) => [p.id, p.display_name as string | null]));
+  return new Map(wallets.map((w) => {
+    const l = (links ?? []).find((x) => x.wallet === w);
+    return [w, (l && byId.get(l.user_id)) || short(w)];
+  }));
+}
+
+export type BackingOption = { vault: string; backing: string; voucher: string; voucherName: string; cap: bigint; locked: bigint };
+
+/** CL-1 browse: every freelancer with at least one open backing, their backers and paid-delivery count. */
+export async function backedFreelancers() {
+  const db = supabaseService();
+  const { data: backings } = await db.from("backings").select("pubkey, vault, freelancer_ref, cap, locked, vaults(voucher)").eq("closed", false);
+  const rows = (backings ?? []) as unknown as { pubkey: string; vault: string; freelancer_ref: string; cap: string; locked: string; vaults: { voucher: string } }[];
+  const refs = [...new Set(rows.map((b) => b.freelancer_ref))];
+  const [names, vouchers, { data: released }] = await Promise.all([
+    freelancerNames(refs),
+    walletNames([...new Set(rows.map((b) => b.vaults.voucher))]),
+    refs.length
+      ? db.from("milestones").select("status, commitments!inner(freelancer_ref)").eq("status", "released").in("commitments.freelancer_ref", refs)
+      : Promise.resolve({ data: [] }),
+  ]);
+  const paid = new Map<string, number>();
+  for (const m of (released ?? []) as unknown as { commitments: { freelancer_ref: string } }[]) {
+    paid.set(m.commitments.freelancer_ref, (paid.get(m.commitments.freelancer_ref) ?? 0) + 1);
+  }
+  return refs.map((ref) => {
+    const options: BackingOption[] = rows.filter((b) => b.freelancer_ref === ref).map((b) => ({
+      vault: b.vault, backing: b.pubkey, voucher: b.vaults.voucher, voucherName: vouchers.get(b.vaults.voucher) ?? short(b.vaults.voucher),
+      cap: BigInt(b.cap), locked: BigInt(b.locked),
+    }));
+    return { ref, name: names.get(ref) ?? short(ref), backings: options, totalCap: options.reduce((a, b) => a + b.cap, 0n), paidDeliveries: paid.get(ref) ?? 0 };
+  });
+}
+
+export async function clientCommitments(wallet: string) {
+  const db = supabaseService();
+  const { data } = await db.from("commitments").select("pubkey, freelancer_ref, status, milestone_count, total_required, released, remaining_salary")
+    .eq("client", wallet);
+  const rows = (data ?? []) as { pubkey: string; freelancer_ref: string; status: string; milestone_count: number; total_required: string; released: string; remaining_salary: string }[];
+  const names = await freelancerNames([...new Set(rows.map((r) => r.freelancer_ref))]);
+  return rows.map((r) => ({ ...r, name: names.get(r.freelancer_ref) ?? short(r.freelancer_ref) }));
+}
+
+/** CL-2..CL-5: live commitment + milestones from chain, with off-chain specs, links, claims, payouts. */
+export async function commitmentView(address: string) {
+  let key: PublicKey;
+  try {
+    key = new PublicKey(address);
+  } catch {
+    return null;
+  }
+  const p = programs();
+  const c = await p.escrow.account.commitment.fetchNullable(key);
+  if (!c) return null;
+  const milestones = await Promise.all(Array.from({ length: c.milestonesAdded }, async (_, i) => {
+    const pda = sdk.pdas.milestone(key, i);
+    const m = await p.escrow.account.milestone.fetch(pda);
+    const claim = await p.disputes.account.claim.fetchNullable(sdk.pdas.claim(pda));
+    return {
+      index: i, pubkey: pda.toBase58(), amount: BigInt(m.amount.toString()), dueTs: m.dueTs.toNumber(), submittedTs: m.submittedTs.toNumber(),
+      releasedTs: m.releasedTs.toNumber(), status: variant(m.status), releaseMode: variant(m.releaseMode), lockedAmount: BigInt(m.lockedAmount.toString()),
+      claim: claim && { status: variant(claim.status), outcome: variant(claim.outcome), deadline: claim.rulingDeadline.toNumber() },
+    };
+  }));
+  const pubkeys = milestones.map((m) => m.pubkey);
+  const db = supabaseService();
+  const [{ data: specs }, { data: links }, { data: payouts }, { data: atts }] = pubkeys.length
+    ? await Promise.all([
+        db.from("milestone_specs").select("milestone_pubkey, spec_markdown").in("milestone_pubkey", pubkeys),
+        db.from("github_links").select("milestone_pubkey, repo, pr_number").in("milestone_pubkey", pubkeys),
+        db.from("payouts").select("milestone_pubkey, kind, usdc_amount, npr_amount, credited_at, commitment").or(`milestone_pubkey.in.(${pubkeys.join(",")}),commitment.eq.${address}`),
+        db.from("attestations").select("milestone_pubkey, kind, address").in("milestone_pubkey", pubkeys),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
+  const ref = Buffer.from(c.freelancerRef).toString("hex");
+  const backings = c.backings.slice(0, c.backingCount).map((b: PublicKey) => b.toBase58());
+  const { data: vaultRows } = backings.length ? await db.from("backings").select("pubkey, vaults(voucher)").in("pubkey", backings) : { data: [] };
+  const voucherWallets = ((vaultRows ?? []) as unknown as { vaults: { voucher: string } }[]).map((r) => r.vaults.voucher);
+  const [names, vouchers] = await Promise.all([freelancerNames([ref]), walletNames(voucherWallets)]);
+  const big = (x: { toString(): string }) => BigInt(x.toString());
+  return {
+    address, client: c.client.toBase58(), freelancerRef: ref, freelancerName: names.get(ref) ?? short(ref),
+    vouchers: voucherWallets.map((w) => vouchers.get(w) ?? short(w)),
+    status: variant(c.status), milestoneCount: c.milestoneCount, activeMilestone: c.activeMilestone as number | null,
+    totalRequired: big(c.totalRequired), funded: big(c.funded), released: big(c.released), remainingSalary: big(c.remainingSalary),
+    vestAmount: big(c.vestAmount), vestStatus: variant(c.vestStatus), vestDueTs: c.vestDueTs.toNumber(),
+    premiumBps: c.premiumBps, feeBps: c.platformFeeBps, shareBps: c.freelancerShareBps,
+    milestones: milestones.map((m) => ({
+      ...m,
+      spec: (specs ?? []).find((s) => s.milestone_pubkey === m.pubkey)?.spec_markdown as string | undefined,
+      github: (links ?? []).find((l) => l.milestone_pubkey === m.pubkey) as { repo: string; pr_number: number } | undefined,
+      payout: (payouts ?? []).find((x) => x.milestone_pubkey === m.pubkey) as { npr_amount: string; credited_at: string } | undefined,
+      attestation: (atts ?? []).find((a) => a.milestone_pubkey === m.pubkey && a.kind === "delivery")?.address as string | undefined,
+    })),
+    vestPayout: (payouts ?? []).find((x) => x.kind === "retention_vest") as { npr_amount: string } | undefined,
+  };
 }

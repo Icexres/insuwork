@@ -28,8 +28,7 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
   client: [
     ["freelancers", "/client/freelancers", "layout-dashboard"],
     ["newCommitment", "/client/new", "folder"],
-    // ponytail: no commitments index yet; links to the demo commitment.
-    ["commitments", "/client/commitments/NW-01", "list-checks"],
+    ["commitments", "/client/commitments", "list-checks"],
   ],
   panel: [["assignedClaims", "/panel", "layout-dashboard"]],
   admin: [
