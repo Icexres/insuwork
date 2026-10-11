@@ -212,7 +212,7 @@ async function signerDeps(connection: Connection, db: SupabaseClient, env: "ATTE
 async function main() {
   const connection = new Connection(process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
   const { createClient } = await import("@supabase/supabase-js");
-  const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+  const db = createClient((process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL)!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
   const ctx = context(connection, db);
   const log = (e: unknown) => console.error("[indexer]", e instanceof Error ? e.message : e);
 
