@@ -22,7 +22,8 @@
     "test:services": "node --test \"packages/attest/test/*.test.ts\" \"packages/shared/test/*.test.ts\" \"packages/triage/test/*.test.ts\" \"services/*/test/*.test.ts\"",
     "sas:setup": "node scripts/sas-setup.mjs",
     "keeper": "node services/keeper/src/cli.ts",
-    "devnet:e2e": "node --env-file=apps/web/.env.local scripts/devnet-e2e.ts"
+    "devnet:e2e": "node --env-file=apps/web/.env.local scripts/devnet-e2e.ts",
+    "devnet:claim": "node --env-file=apps/web/.env.local scripts/devnet-claim.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.31.1",

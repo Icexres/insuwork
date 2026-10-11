@@ -15,7 +15,9 @@ export async function POST(req: Request) {
   }
   try {
     const deps = await chainKeeperDeps(connection(), supabaseService(), keypairFromEnv("KEEPER_SECRET_KEY"));
-    return NextResponse.json(await keeperPass(deps));
+    const result = await keeperPass(deps);
+    await supabaseService().from("keeper_runs").insert({ trigger: "cron", result });
+    return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }

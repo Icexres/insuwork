@@ -97,3 +97,11 @@ The keeper key only pays fees; fund it with a little devnet SOL.
 `pnpm db:start`, web dev server running with `GITHUB_WEBHOOK_SECRET` + `GITHUB_ORACLE_SECRET_KEY` in `apps/web/.env.local`,
 `pnpm sas:setup` done, then `pnpm devnet:e2e`. Costs ≈0.2 devnet SOL per run (deployer pays). The public devnet RPC
 rate-limits (429s are retried); set `SOLANA_RPC_URL` to a dedicated endpoint for smoother runs.
+
+## Admin, panel and the dispute run (E-53)
+- Admin actions must be signed by the config admin wallet (`keys/deployer.json` on devnet): import it into a devnet
+  wallet, grant your account `role = 'admin'` in the local DB, and bind that wallet on `/admin`.
+- `pnpm devnet:claim` runs one full dispute on devnet (claim → 3 panelists → 2 × Rejected → finalize → attestation);
+  result in `deployments/devnet-claim-last.json`.
+- Page checks (dev server running): `cd apps/web && for f in auth voucher client freelancer disputes; do node --env-file=.env.local test/$f.e2e.ts; done`.
+- Local `.env.local` also needs `KEEPER_SECRET_KEY` and `KEEPER_RUN_SECRET`; `AI_PROVIDER=mock` runs triage without an API key (dev only).

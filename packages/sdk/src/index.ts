@@ -189,6 +189,29 @@ export function fundIx(p: Programs, client: PublicKey, commitment: PublicKey, mi
   }).instruction();
 }
 
+// ---------------- admin ----------------
+
+export const VOTE = { upheld: 1, rejected: 2 } as const;
+
+export function setPausedIx(p: Programs, program: "bond" | "escrow" | "disputes", admin: PublicKey, paused: boolean) {
+  const config = program === "bond" ? pdas.bondConfig() : program === "escrow" ? pdas.escrowConfig() : pdas.disputesConfig();
+  return p[program].methods.setPaused(paused).accountsStrict({ config, admin }).instruction();
+}
+
+export function setOracleIx(p: Programs, admin: PublicKey, oracle: PublicKey) {
+  return p.escrow.methods.setOracle(oracle).accountsStrict({ config: pdas.escrowConfig(), admin }).instruction();
+}
+
+export function addPanelistIx(p: Programs, admin: PublicKey, wallet: PublicKey) {
+  return p.disputes.methods.addPanelist(wallet).accountsStrict({
+    config: pdas.disputesConfig(), panelist: pdas.panelist(wallet), admin, systemProgram: SystemProgram.programId,
+  }).instruction();
+}
+
+export function setPanelistActiveIx(p: Programs, admin: PublicKey, wallet: PublicKey, active: boolean) {
+  return p.disputes.methods.setPanelistActive(active).accountsStrict({ config: pdas.disputesConfig(), panelist: pdas.panelist(wallet), admin }).instruction();
+}
+
 // ---------------- remaining accounts ----------------
 
 const w = (pubkey: PublicKey): AccountMeta => ({ pubkey, isSigner: false, isWritable: true });

@@ -56,7 +56,7 @@ After random sequences of valid instructions: I-B1..I-B4, I-E1..I-E4 hold.
 |---|---|---|
 | W-01 | P0 | RLS: family user can read only linked freelancer's milestones/payouts |
 | W-02 | P0 | RLS: freelancer cannot read `partner_kyc.salt` |
-| W-03 | P0 | ESLint rule: no wallet-adapter import under `/freelancer` and `/family` |
+| W-03 | P0 | No wallet code reachable (transitively) from `/freelancer`, `/family`, `/p` — `apps/web/test/wallet-boundary.test.ts` (E-53) |
 | W-04 | P0 | GitHub webhook: bad HMAC rejected; unmerged PR ignored; merged matching PR triggers one `oracle_approve` (idempotent on redelivery) |
 | W-05 | P0 | Attester idempotent: same release event twice → one attestation |
 | W-06 | P0 | Mock partner records have `is_mock=true`; UI shows MOCK badge |

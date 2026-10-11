@@ -1,90 +1,82 @@
 import en from "@insuwork/shared/i18n/en.json";
-import { Avatar, Badge, Button, Detail, Eyebrow, Field, Lifecycle, Metrics, Notice, PageHeading, Panel, Split } from "@/components/ui";
+import { Avatar, Badge, Detail, Eyebrow, Metrics, Notice, PageHeading, Panel, Split } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
-import { claim as d, fmt, users } from "@/lib/demo";
+import { FinalizeButton, VoteForm } from "@/components/dispute-actions";
+import { short, usd, viewer } from "@/lib/data";
+import { claimView } from "@/lib/disputes";
+import { fmt } from "@/lib/demo";
 
-// ponytail: renders demo claim CLM-0009 for any id until claims are fetched by id.
-export default function ClaimReview() {
+// PA-1 claim review: spec, evidence statement, panel, vote (binary, OQ-3), finalize.
+export const dynamic = "force-dynamic";
+
+const day = (ts: number) => (ts ? new Date(ts * 1000).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—");
+
+export default async function ClaimReview({ params }: { params: { id: string } }) {
   const t = en.panel.review;
+  const x = en.disputes;
+  const [v, c] = await Promise.all([viewer(), claimView(params.id)]);
+  const me = c?.panel.find((m) => m.wallet === v?.wallet);
+  if (!c || !me) {
+    return (
+      <Workspace role="panel" active="/panel" crumb={[t.crumb]}>
+        <Panel><p className="text-sm text-muted">{en.voucher.empty.notFound}</p></Panel>
+      </Workspace>
+    );
+  }
+  const majority = ["upheld", "rejected"].some((o) => c.panel.filter((m) => m.vote === o).length >= 2);
+  const canFinalize = c.status === "panelAssigned" && (majority || Date.now() / 1000 > c.deadline);
 
   return (
-    <Workspace role="panel" active="/panel" crumb={[t.crumb, d.id]}>
-      <PageHeading
-        eyebrow={t.eyebrow}
-        title={fmt(t.title, { id: d.id })}
-        subtitle={d.subtitle}
-        action={<Button primary icon="arrow-right">{t.openEvidence}</Button>}
-      />
+    <Workspace role="panel" active="/panel" crumb={[t.crumb, short(c.address)]}>
+      <PageHeading eyebrow={t.eyebrow} title={fmt(t.title, { id: short(c.address) })} subtitle={`${c.client} · M${c.index + 1} · ${c.freelancer}`} />
       <Metrics
         cards
         items={[
-          { label: t.metrics.id, value: d.id, note: d.idNote },
-          { label: t.metrics.client, value: d.client, note: d.milestone },
-          { label: t.metrics.freelancer, value: d.freelancerRef, note: t.metrics.freelancerNote },
-          { label: t.metrics.locked, value: d.stake, note: d.stakeNote },
+          { label: t.metrics.id, value: short(c.address), note: day(c.filedTs) },
+          { label: t.metrics.client, value: c.client, note: `M${c.index + 1}` },
+          { label: t.metrics.freelancer, value: short(c.freelancerRef), note: t.metrics.freelancerNote },
+          { label: t.metrics.locked, value: `$${usd(c.locked)}`, note: `$${usd(c.amount)} ${x.milestoneLabel}` },
         ]}
       />
       <Split
         side={
           <>
-            <Panel title={t.members} badge={fmt(t.pendingCount, { count: d.panel.length })}>
-              {d.panel.map((m) => (
-                <div key={m.name} className="flex items-center gap-3">
-                  <Avatar initials={m.initials} size={36} />
+            <Panel title={t.members} badge={fmt(x.votesIn, { count: c.panel.filter((m) => m.vote).length })}>
+              {c.panel.map((m) => (
+                <div key={m.wallet} className="flex items-center gap-3">
+                  <Avatar initials={m.name.slice(0, 2).toUpperCase()} size={36} />
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <p className="text-sm font-medium text-fg">{m.name}</p>
-                    <p className="font-mono text-[11px] text-muted">{m.role}</p>
+                    <p className="text-sm font-medium text-fg">{m.wallet === v?.wallet ? `${m.name} · ${x.you}` : m.name}</p>
+                    <p className="font-mono text-[11px] text-muted">{short(m.wallet)}</p>
                   </div>
-                  <Badge>{t.memberPending}</Badge>
+                  <Badge>{m.vote ? (m.wallet === v?.wallet ? m.vote : x.voted) : t.memberPending}</Badge>
                 </div>
               ))}
             </Panel>
             <Panel title={t.fees}>
-              <Detail label={en.common.wallet} value={users.panel.wallet} />
-              <Detail label={t.feeLabels.claimFee} value={d.fees.claimFee} />
-              <Detail label={t.feeLabels.networkFee} value={d.fees.networkFee} />
-              <Detail label={t.feeLabels.policy} value={d.fees.policy} />
-              <Notice title={t.oqNotice.title}>{t.oqNotice.body}</Notice>
-            </Panel>
-            <Panel>
-              <div className="flex flex-col items-start gap-3">
-                <Button>{t.saveDraft}</Button>
-                <Button primary>{t.submit}</Button>
-                <p className="text-[11px] text-faint">{t.submitNote}</p>
-              </div>
+              <Detail label={en.common.wallet} value={short(me.wallet)} />
+              <Detail label={t.feeLabels.claimFee} value={`$${usd(c.claimFee)}`} />
+              <Detail label={x.deadline} value={day(c.deadline)} />
+              <p className="text-xs text-muted">{x.unpaid}</p>
             </Panel>
           </>
         }
       >
-        <Panel title={t.overview} badge={t.pending}>
-          <p className="text-sm text-muted">{d.overview}</p>
-          <Lifecycle stages={d.timeline} bare />
-          <div className="flex flex-wrap gap-4">
-            {(
-              [
-                [t.clientEvidence, d.files.client],
-                [t.freelancerEvidence, d.files.freelancer],
-              ] as [string, string[]][]
-            ).map(([label, [file, hash]]) => (
-              <div key={label} className="flex min-w-[200px] flex-1 flex-col gap-1.5 rounded-lg border-[0.5px] border-line bg-surface p-4">
-                <Eyebrow>{label}</Eyebrow>
-                <p className="text-sm text-fg">{file}</p>
-                <p className="font-mono text-[11px] text-faint">{hash}</p>
-              </div>
-            ))}
+        <Panel title={t.overview} badge={c.status === "finalized" ? c.outcome.toUpperCase() : t.pending}>
+          <div className="flex flex-col gap-1.5 rounded-lg border-[0.5px] border-line bg-surface p-4">
+            <Eyebrow>{x.spec}</Eyebrow>
+            <p className="whitespace-pre-wrap text-sm text-fg">{c.spec ?? x.noSpec}</p>
+          </div>
+          <div className="flex flex-col gap-1.5 rounded-lg border-[0.5px] border-line bg-surface p-4">
+            <Eyebrow>{t.clientEvidence}</Eyebrow>
+            <p className="whitespace-pre-wrap text-sm text-fg">{c.evidence ?? x.noEvidence}</p>
+            <p className="font-mono text-[11px] text-faint">{`sha256 ${short(c.evidenceHash)}`}</p>
           </div>
         </Panel>
         <Panel title={t.rationale}>
-          <fieldset className="flex flex-col gap-5">
-            {t.choices.map((ch) => (
-              <label key={ch.label} className="flex cursor-pointer items-center gap-3 rounded-lg border-[0.5px] border-line bg-surface p-4">
-                <input type="radio" name="ruling" value={ch.label} className="size-5 shrink-0 accent-accent" />
-                <span className="flex-1 text-sm text-fg">{ch.label}</span>
-                <span className="w-[220px] text-right font-mono text-[11px] text-muted">{ch.effect}</span>
-              </label>
-            ))}
-          </fieldset>
-          <Field label={t.rationaleLabel} placeholder={t.rationalePlaceholder} rows={3} />
+          {c.status === "panelAssigned" && !me.vote && <VoteForm commitment={c.commitment} index={c.index} />}
+          {me.vote && <p className="text-[13px] text-muted">{fmt(x.yourVote, { vote: me.vote })}</p>}
+          {canFinalize && <FinalizeButton commitment={c.commitment} index={c.index} />}
           <Notice title={t.finalNotice.title}>{t.finalNotice.body}</Notice>
         </Panel>
       </Split>
