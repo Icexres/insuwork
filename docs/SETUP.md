@@ -45,6 +45,11 @@ pnpm deploy:devnet           # deploy/upgrade all three programs
 pnpm devnet:init             # test mint, configs, MOCK partner -> deployments/devnet.json
 pnpm devnet:set-upgrade-authority <SQUADS_VAULT>   # last: upgrades now need the multisig
 ```
+Live devnet addresses: `deployments/devnet.json`. Upgrade authority is the Squads vault (E-39), so
+`pnpm deploy:devnet` can no longer upgrade: write a buffer (`solana program write-buffer`, then
+`solana program set-buffer-authority <buffer> --new-buffer-authority <vault>`) and upgrade through a
+Squads proposal (app.squads.so on devnet, or `squads-multisig-cli`). The Squads CLI is installed in
+the `insuwork-squads-bin` Docker volume at `/opt/squads/bin/squads-multisig-cli` (needs a TTY: wrap it in `script -qec`).
 
 ## Keys (all separate, all git-ignored, in `keys/` or env)
 Upgrade authority (OQ-19) · admin · GitHub oracle · attester · mock partner · keeper fee payer · test client/voucher/panelist wallets.

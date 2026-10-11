@@ -1,0 +1,35 @@
+{
+  "cluster": "devnet",
+  "programs": {
+    "bond": "7DpVomUkF1FfXxsf6gcdvmpFcAZBS7cTm7TvhNSjbKE1",
+    "escrow": "FuY5Vc1im394GVYyg9v4aRdD2NaLkNnhqcH7j2bCFaKw",
+    "disputes": "FWEXDMyxY1ie6K9gvvcA8SxeRmE4cohfE4j3xYSci4qj"
+  },
+  "configs": {
+    "bond": "52Nq5Q5XikmEBjrPpCXRYsFpo7Qruxuf6nP3M41MatuR",
+    "escrow": "G2b8dvKPWPmpYfZR2kGDMSQPu8AaCQtzmgnDbgu9YJTK",
+    "disputes": "DkyxkTawAf2UX5o6pBub5AyuYydnTL8czQcVfTEa5azY"
+  },
+  "usdcMint": "5tjy2AE1ySZJ1Whc8YeoMmj1y96s2BmiVuh7dYq88NzL",
+  "usdcMintIsTest": true,
+  "admin": "591RCNyA6fmrwCwv2RccwsffjnUhnpMqFMA9jvedpL2K",
+  "treasury": "5vV1bXBwwe3GS4ir6xqjHUtZZx1sjBFKRoBdDwVS7uj5",
+  "githubOracle": "CrwE5hzpMZB9DZhxf4pV6kAMD2muD96gHnsvWnJ8KU41",
+  "submitter": "HJAVjpXL6HHQ8G6D3vVvZosxbxiCeVeC9As3LAMoH1CX",
+  "mockPartner": {
+    "wallet": "9hDeWdgne8JiGcXCVnkKbETyV2whrXP6fgyPCmSzgeUb",
+    "record": "8268Y55KwAdy8XRa8fki1T8S8mvLUcUNQfuTChwtJ6Wn",
+    "isMock": true
+  },
+  "upgradeAuthority": {
+    "squadsMultisig": "CBrHqVN6ZKdceT3zxXL26MKQFAJ9kVPE4Yqie2sU1Lq5",
+    "vault": "4D5svwTbciULpoV1L2PdKN1RP5rv8Y8Lfvmdk2JEZHgX",
+    "label": "insuwork",
+    "threshold": 1,
+    "members": [
+      "Ba2yCb9usVRjGyp9rtXUGn727xwkPPrZRbZFyG478aNa",
+      "591RCNyA6fmrwCwv2RccwsffjnUhnpMqFMA9jvedpL2K"
+    ],
+    "squadsProgram": "SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf"
+  }
+}
