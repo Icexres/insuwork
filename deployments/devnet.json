@@ -31,5 +31,16 @@
       "591RCNyA6fmrwCwv2RccwsffjnUhnpMqFMA9jvedpL2K"
     ],
     "squadsProgram": "SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf"
+  },
+  "sas": {
+    "program": "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG",
+    "credential": "BUyYDy8yTbjuvyp3ZR1X7kzZVv1w91RiYcSuh1wYoarE",
+    "credentialAuthority": "591RCNyA6fmrwCwv2RccwsffjnUhnpMqFMA9jvedpL2K",
+    "attester": "9fYv3jdHv81nGvVCx5EzKndDCDZKxFFHnCBj5F4YYrz4",
+    "partnerSigner": "9hDeWdgne8JiGcXCVnkKbETyV2whrXP6fgyPCmSzgeUb",
+    "schemas": {
+      "delivery": "D1CZfLa1A2Ts5HxEXn4NAkb8av5e6wiuGWjifoPFDLk1",
+      "nprCredit": "6hb6Dv7o3hMSaXi74TTv3eW7p2sEKpr3rhNCAdha4vHE"
+    }
   }
 }

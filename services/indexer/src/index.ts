@@ -30,16 +30,17 @@ export function toJson(v: unknown): unknown {
   return v;
 }
 
-/** Events per top-level instruction: [{ ix_index, event_index, program, name, data }]. */
+/** Events per top-level instruction: [{ ix_index, event_index, instruction, program, name, data }]. */
 export function eventsFromLogs(p: sdk.Programs, logs: string[]) {
   const segments: string[][] = [];
   for (const line of logs) {
     if (/^Program \w+ invoke \[1\]$/.test(line)) segments.push([]);
     segments.at(-1)?.push(line);
   }
-  return segments.flatMap((seg, ix_index) =>
-    sdk.decodeEvents(p, seg).map((e, event_index) => ({ ix_index, event_index, program: e.program, name: e.name, data: toJson(e.data) })),
-  );
+  return segments.flatMap((seg, ix_index) => {
+    const instruction = seg.find((l) => l.startsWith("Program log: Instruction: "))?.slice(26) ?? null;
+    return sdk.decodeEvents(p, seg).map((e, event_index) => ({ ix_index, event_index, instruction, program: e.program, name: e.name, data: toJson(e.data) }));
+  });
 }
 
 // account discriminators from the IDLs
@@ -184,6 +185,23 @@ export function context(connection: Connection, db: SupabaseClient): Ctx {
   return { p, db, getAccount: (k) => connection.getAccountInfo(k, "confirmed") };
 }
 
+/** Attester (E-44): ATTESTER_SECRET_KEY (base58) signs and pays; SAS_CREDENTIAL_AUTHORITY locates the credential. */
+async function attesterDeps(connection: Connection, db: SupabaseClient) {
+  if (!process.env.ATTESTER_SECRET_KEY || !process.env.SAS_CREDENTIAL_AUTHORITY) {
+    console.error("[indexer] attester off: ATTESTER_SECRET_KEY / SAS_CREDENTIAL_AUTHORITY not set");
+    return null;
+  }
+  const { default: bs58 } = await import("bs58");
+  const { Transaction, sendAndConfirmTransaction } = await import("@solana/web3.js");
+  const fx = await import("./effects.ts");
+  const kp = Keypair.fromSecretKey(bs58.decode(process.env.ATTESTER_SECRET_KEY));
+  return {
+    db, attester: kp.publicKey, credentialAuthority: new PublicKey(process.env.SAS_CREDENTIAL_AUTHORITY),
+    exists: fx.chainExists(connection),
+    send: (ix: import("@solana/web3.js").TransactionInstruction) => sendAndConfirmTransaction(connection, new Transaction().add(ix), [kp], { commitment: "confirmed" }),
+  };
+}
+
 async function main() {
   const connection = new Connection(process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
   const { createClient } = await import("@supabase/supabase-js");
@@ -197,8 +215,10 @@ async function main() {
     }, "confirmed");
   }
   const every = Number(process.env.INDEXER_POLL_SECS ?? 30) * 1000;
+  const attestDeps = await attesterDeps(connection, db);
   for (;;) {
     await poll(ctx, connection).catch(log);
+    if (attestDeps) await import("./effects.ts").then((fx) => fx.attestPendingDeliveries(attestDeps)).catch(log);
     await new Promise((r) => setTimeout(r, every));
   }
 }

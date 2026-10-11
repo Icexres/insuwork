@@ -170,6 +170,7 @@ describe("@insuwork/sdk", { skip: !programsBuilt() && "run `anchor build` first"
     assert.equal(await indexer.ingest(ctx, "sig1", 7, finalLogs), n, "replay");
     assert.equal(tables.events_raw.size, n, "replay stored nothing new");
     assert.equal([...tables.events_raw.values()].filter((e) => e.name === "claimPaid").length, 4);
+    assert.ok([...tables.events_raw.values()].every((e) => e.instruction === "Finalize"));
 
     const c = tables.commitments.get(finalCommitment.toBase58());
     assert.equal(c.vouchers.length, 4);

@@ -74,3 +74,9 @@ Without `NEXT_PUBLIC_SUPABASE_URL` the role guard is off and the demo screens br
 ## Indexer (E-43)
 `SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… pnpm indexer` (optional `SOLANA_RPC_URL`, `INDEXER_POLL_SECS`).
 On first start it backfills all program history, then follows live logs and polls every 30 s.
+
+## Attestations (SAS, E-44)
+One-time on devnet: `pnpm sas:setup` (creates `keys/attester.json`, funds attester + partner from the deployer,
+creates credential `insuwork` and both schemas; idempotent). The indexer writes delivery attestations when
+`ATTESTER_SECRET_KEY` (base58 of keys/attester.json) and `SAS_CREDENTIAL_AUTHORITY` (deployer pubkey) are set.
+Encoding check against real SAS: `node packages/attest/test/devnet-roundtrip.ts`. Unit tests: `pnpm test:services`.

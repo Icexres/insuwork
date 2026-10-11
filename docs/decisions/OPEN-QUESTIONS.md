@@ -19,5 +19,4 @@ Each item says where it bites and, where `IDEA.md` hints at something, what it s
 | OQ-23 | _(Deferred: always public in v1, E-40.)_ **Public profile revocation.** IDEA §5.5: freelancer can revoke the link. Implemented in v1? | web, DB |
 
 | OQ-25 | **Triage interview design.** Confirm the draft sections/length in AI-TRIAGE.md §2 and whether the report has a numeric score. | packages/triage |
-| OQ-26 | **Amount bands** for the attestation (SPEC-attestation §3) — confirm the band edges. | packages/attest |
 | OQ-27 | **Visual design direction** for the web app (brand colours, tone). | apps/web |
