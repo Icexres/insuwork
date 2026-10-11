@@ -1,0 +1,28 @@
+{
+  "note": "Demo personas (illustrative). Sign in by magic link at /login; read the email in Mailpit (http://localhost:54324). Import keys/demo/*.json into a devnet wallet for the wallet roles; the admin uses keys/deployer.json.",
+  "logins": {
+    "freelancer": "sita@demo.insuwork.local",
+    "voucher": "rajan@demo.insuwork.local",
+    "client": "northwind@demo.insuwork.local",
+    "admin": "ops@demo.insuwork.local",
+    "panel": [
+      "panel1@demo.insuwork.local",
+      "panel2@demo.insuwork.local",
+      "panel3@demo.insuwork.local"
+    ]
+  },
+  "wallets": {
+    "rajan": "5aJYKuNyBgnUHDgz2ognNzg8ry5xQ9zumjUpowF1H7xk",
+    "northwind": "69oCFydkvGDuQaj515Ar8LDeH23bz6TbW9oHbKLRPeE5",
+    "panel": [
+      "Zt8tTCxtKyMneinKc8AcyhLVgYMdkqy5sW9MaLvFZCv",
+      "Wx6mr56axvfPtDc4dCLLq7XCLegfnr6QrWrY6sVBirK",
+      "6t1wPuvGGKTLEAeeEe9BAbnfFFGnkXKJqzg33YzEfaaj"
+    ],
+    "admin": "591RCNyA6fmrwCwv2RccwsffjnUhnpMqFMA9jvedpL2K"
+  },
+  "sita": {
+    "freelancerRef": "039b0ba8aa85ed992a1fa7acb62ce5442bc9c8e4b03240742b85c3fdec40e675",
+    "publicProfile": "/p/039b0ba8aa85ed992a1fa7acb62ce5442bc9c8e4b03240742b85c3fdec40e675"
+  }
+}

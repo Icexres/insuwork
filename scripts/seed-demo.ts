@@ -71,11 +71,12 @@ for (const [i, k] of panel.entries()) {
 }
 
 console.log("▶ Sita: application, report (MOCK), approved, MOCK KYC");
-const { data: app } = await db.from("applications").upsert({
+const { data: app, error: appErr } = await db.from("applications").upsert({
   freelancer_user_id: sitaId, full_name: "Sita Tamang", college: "Pulchowk Campus (IOE)", grad_year: 2026, skills: ["React", "TypeScript", "Supabase"],
   portfolio_urls: ["https://example.com/clinic-booking"], github_handle: "sita-demo", status: "ready",
   intro: "Final-year BCT student building product frontends for remote teams.",
 }, { onConflict: "freelancer_user_id" }).select("id").single();
+if (appErr) throw new Error(`application: ${appErr.message}`);
 await db.from("application_baselines").upsert({ freelancer_user_id: sitaId, open_test_or_consultancy: true, noc_filed: false, consultancy_deposit_paid: false });
 const report = {
   version: "triage.v1",

@@ -23,7 +23,8 @@
     "sas:setup": "node scripts/sas-setup.mjs",
     "keeper": "node services/keeper/src/cli.ts",
     "devnet:e2e": "node --env-file=apps/web/.env.local scripts/devnet-e2e.ts",
-    "devnet:claim": "node --env-file=apps/web/.env.local scripts/devnet-claim.ts"
+    "devnet:claim": "node --env-file=apps/web/.env.local scripts/devnet-claim.ts",
+    "seed:demo": "node --env-file=apps/web/.env.local scripts/seed-demo.ts"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.31.1",
