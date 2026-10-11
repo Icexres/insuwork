@@ -66,6 +66,17 @@ describe("@insuwork/sdk", { skip: !programsBuilt() && "run `anchor build` first"
     assert.ok(env.svm.getAccount(sdk.pdas.partner(partner)));
   });
 
+  it("OQ-6 set_treasury takes any address and creates its USDC account (E-54)", async () => {
+    const vaultLike = Keypair.generate().publicKey; // e.g. a Squads vault: never signs here
+    await send(await sdk.setTreasuryIxs(p, "disputes", admin.publicKey, vaultLike, mint), [admin]);
+    const cfg = p.disputes.coder.accounts.decode("disputesConfig", Buffer.from(env.svm.getAccount(sdk.pdas.disputesConfig()).data));
+    assert.equal(cfg.treasury.toBase58(), vaultLike.toBase58());
+    assert.ok(env.svm.getAccount(sdk.ata(vaultLike, mint)), "treasury USDC account created");
+    const outsider = env.funded();
+    assert.equal(errorName(await env.send(await sdk.setTreasuryIxs(p, "disputes", outsider.publicKey, outsider.publicKey, mint), [outsider])), "Unauthorized");
+    await send(await sdk.setTreasuryIxs(p, "disputes", admin.publicKey, treasury, mint), [admin]); // restore for later tests
+  });
+
   it("4-backing upheld claim: legacy finalize is too large, v0 + lookup table succeeds; events decode", async () => {
     // four vouchers back the same freelancer
     const backers = [];

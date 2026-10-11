@@ -145,3 +145,26 @@ export function PanelistActiveToggle({ wallet, active }: { wallet: string; activ
     </>
   );
 }
+
+/** OQ-6: any address can be the treasury (E-54). */
+export function SetTreasuryForm({ program, current, mint }: { program: "escrow" | "disputes"; current: string; mint: string }) {
+  const [treasury, setTreasury] = useState(current);
+  const [err, setErr] = useState<string>();
+  const s = useSend();
+  const submit = () => {
+    try {
+      const key = new PublicKey(treasury.trim());
+      setErr(undefined);
+      s.run(async (p, me) => sdk.setTreasuryIxs(p, program, me, key, new PublicKey(mint)));
+    } catch {
+      setErr(t.badKey);
+    }
+  };
+  return (
+    <>
+      <Field label={`${t.treasury} · ${program}`} value={treasury} onChange={setTreasury} />
+      <div><Button disabled={s.busy} onClick={submit}>{t.setTreasury}</Button></div>
+      <TxStatus msg={s.msg} sig={s.sig} error={err} />
+    </>
+  );
+}

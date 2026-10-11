@@ -8,7 +8,7 @@ import {
   AddressLookupTableProgram, ComputeBudgetProgram, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction,
   type AccountMeta, type AddressLookupTableAccount, type TransactionInstruction,
 } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { createAssociatedTokenAccountIdempotentInstruction, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { IDL as bondIdl, type InsuworkBond } from "./idl/insuwork_bond.ts";
 import { IDL as escrowIdl, type InsuworkEscrow } from "./idl/insuwork_escrow.ts";
 import { IDL as disputesIdl, type InsuworkDisputes } from "./idl/insuwork_disputes.ts";
@@ -196,6 +196,18 @@ export const VOTE = { upheld: 1, rejected: 2 } as const;
 export function setPausedIx(p: Programs, program: "bond" | "escrow" | "disputes", admin: PublicKey, paused: boolean) {
   const config = program === "bond" ? pdas.bondConfig() : program === "escrow" ? pdas.escrowConfig() : pdas.disputesConfig();
   return p[program].methods.setPaused(paused).accountsStrict({ config, admin }).instruction();
+}
+
+/**
+ * OQ-6 (E-54): the treasury is any address (wallet, Squads vault, PDA). Also creates its USDC token account
+ * (idempotent), because releases and claim fees pay into ata(treasury).
+ */
+export async function setTreasuryIxs(p: Programs, program: "escrow" | "disputes", admin: PublicKey, treasury: PublicKey, mint: PublicKey) {
+  const config = program === "escrow" ? pdas.escrowConfig() : pdas.disputesConfig();
+  return [
+    createAssociatedTokenAccountIdempotentInstruction(admin, ata(treasury, mint), treasury, mint),
+    await p[program].methods.setTreasury(treasury).accountsStrict({ config, admin }).instruction(),
+  ];
 }
 
 export function setOracleIx(p: Programs, admin: PublicKey, oracle: PublicKey) {

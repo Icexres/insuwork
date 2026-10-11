@@ -1,7 +1,7 @@
 import en from "@insuwork/shared/i18n/en.json";
 import { DataTable, Detail, Notice, PageHeading, Panel, Split } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
-import { AddPanelistForm, PanelistActiveToggle, PauseToggle, SetOracleForm } from "@/components/dispute-actions";
+import { AddPanelistForm, PanelistActiveToggle, PauseToggle, SetOracleForm, SetTreasuryForm } from "@/components/dispute-actions";
 import { fmt } from "@/lib/demo";
 import { short, usd, viewer } from "@/lib/data";
 import { adminOverview } from "@/lib/disputes";
@@ -82,6 +82,13 @@ export default async function OperatorConfiguration() {
         <Panel title={t.oracle} badge={t.oracleBadge}>
           <Detail label={t.oracleFields.name} value={short(d.escrow.oracle)} />
           {isAdminWallet && <SetOracleForm current={d.escrow.oracle} />}
+        </Panel>
+        <Panel title={x.treasury} badge="OQ-6 · E-54">
+          <p className="text-sm text-muted">{x.treasuryBody}</p>
+          <Detail label="escrow" value={short(d.escrow.treasury)} />
+          <Detail label="disputes" value={short(d.disputes.treasury)} />
+          {isAdminWallet && <SetTreasuryForm program="escrow" current={d.escrow.treasury} mint={d.bond.mint} />}
+          {isAdminWallet && <SetTreasuryForm program="disputes" current={d.disputes.treasury} mint={d.bond.mint} />}
         </Panel>
         <Panel title={x.allCommitments} badge={String(d.commitments.length)}>
           <DataTable

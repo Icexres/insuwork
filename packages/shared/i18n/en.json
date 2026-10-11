@@ -800,6 +800,9 @@
     }
   },
   "disputes": {
+    "treasury": "Treasury",
+    "setTreasury": "Set treasury",
+    "treasuryBody": "Receives the platform fee (escrow) and forfeited claim fees (disputes). Any address works: a wallet, a Squads vault or a program account. Its USDC account is created with the change.",
     "ruling": "Your ruling",
     "choose": "Choose…",
     "upheld": "Upheld",
