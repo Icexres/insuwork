@@ -56,3 +56,8 @@ Upgrade authority (OQ-19) · admin · GitHub oracle · attester · mock partner 
 
 ## Devnet USDC **[OQ-24]**
 Either Circle's devnet USDC (faucet) or a project test mint created by a script. Set `NEXT_PUBLIC_USDC_MINT`.
+
+## Supabase (local, E-40)
+Docker must be running. `pnpm db:start` starts the local stack and applies `supabase/migrations`;
+`pnpm test:db` runs the pgTAP RLS tests in `supabase/tests`; `pnpm db:reset` reapplies migrations + seed.
+The printed local keys are the public Supabase demo keys; never use them outside localhost.

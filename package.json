@@ -13,7 +13,11 @@
     "devnet:init": "node scripts/devnet-init.mjs",
     "devnet:set-upgrade-authority": "docker run --rm -v \"%INIT_CWD%:/work\" -w /work insuwork-anchor:0.31.1 bash scripts/set-upgrade-authority.sh",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "tsc --noEmit -p tsconfig.base.json"
+    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "db:start": "supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,realtime,inbucket,storage-api",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "test:db": "supabase test db"
   },
   "devDependencies": {
     "@coral-xyz/anchor": "0.31.1",
@@ -22,7 +26,8 @@
     "@types/node": "24",
     "eslint": "9.12.0",
     "litesvm": "^0.8.0",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "supabase": "2.120.0"
   },
   "engines": {
     "node": "24.x"
