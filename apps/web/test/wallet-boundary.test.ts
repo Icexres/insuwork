@@ -6,7 +6,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const FORBIDDEN = /^@solana\/wallet-adapter|^@\/components\/(wallet|wallet-tx|wallet-layout|voucher-actions|client-actions|dispute-actions)$/;
+const FORBIDDEN = /^@solana\/wallet-adapter|^@\/components\/(wallet|wallet-tx|wallet-layout|e2e-wallet|voucher-actions|client-actions|dispute-actions)$/;
 
 function resolveLocal(from: string, spec: string) {
   const base = spec.startsWith("@/") ? join(ROOT, spec.slice(2)) : spec.startsWith(".") ? resolve(dirname(from), spec) : null;

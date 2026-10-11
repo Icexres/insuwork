@@ -16,7 +16,10 @@ export default async function ApplicantReport({ params }: { params: { id: string
   const a = list.find((x) => x.id === params.id);
   const deposit = vault?.deposited ?? 0n, allocated = vault?.allocated ?? 0n, remaining = deposit - allocated;
   const report = (a?.report?.report ?? {}) as Record<string, unknown>;
-  const entries = Object.entries(report).filter(([, val]) => typeof val === "string") as [string, string][];
+  // summary is shown under the name; version/disclaimer are metadata. Arrays (strengths, concerns…) are joined.
+  const entries = Object.entries(report)
+    .filter(([k]) => !["summary", "version", "disclaimer", "evidence"].includes(k))
+    .map(([k, val]) => [k.replace(/_/g, " "), Array.isArray(val) ? val.join(" · ") : String(val)] as [string, string]);
   const initials = (a?.name ?? "?").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
   const alreadyBacked = !!a?.freelancerRef && !!vault?.backings.some((b) => b.freelancer_ref === a.freelancerRef);
 

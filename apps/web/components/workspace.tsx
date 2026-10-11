@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import en from "@insuwork/shared/i18n/en.json";
 import { short, viewer } from "@/lib/data";
+import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Divider, Icon, type IconName, Notice } from "./ui";
 
 // Role workspace shell: left nav, top bar, footer. No wallet code here — the
@@ -34,6 +35,7 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
   admin: [
     ["configuration", "/admin", "layout-dashboard"],
     ["claimsQueue", "/admin/claims", "folder"],
+    ["applications", "/admin/applications", "folder"],
     ["keeper", "/admin/keeper", "list-checks"],
   ],
 };
@@ -54,6 +56,10 @@ export async function Workspace({
 }) {
   const s = en.shell;
   const v = await viewer();
+  // the freelancer's own public profile (exists after MOCK KYC); other roles have none
+  const ownRef = role === "freelancer" && v
+    ? ((await supabaseServer().from("my_kyc").select("freelancer_ref").maybeSingle()).data?.freelancer_ref as string | undefined)
+    : undefined;
   const wallet = v?.wallet && WALLET_ROLES.includes(role) ? short(v.wallet) : undefined;
   const notice = WALLET_ROLES.includes(role) ? s.devnetNotice : s.pilotNotice;
   const today = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
@@ -87,7 +93,7 @@ export async function Workspace({
           <Divider />
           <div className="flex flex-col gap-4 text-xs text-muted">
             {/* ponytail: "Help" has no page yet. */}
-            <Link href="/p/fr_7Kq2c9xA">{s.publicProfile}</Link>
+            {ownRef && <Link href={`/p/${ownRef}`}>{s.publicProfile}</Link>}
             <span>{s.help}</span>
           </div>
         </div>

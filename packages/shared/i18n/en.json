@@ -35,6 +35,7 @@
       "admin": "Operator"
     },
     "nav": {
+      "applications": "Applications",
       "home": "Home",
       "application": "Application",
       "triage": "Triage interview",
@@ -442,6 +443,7 @@
   },
   "client": {
     "actions": {
+      "metaFailed": "The commitment is on-chain, but saving its specs and GitHub links failed. Reload the commitment and try again.",
       "noFreelancers": "No backed freelancers yet.",
       "claimFee": "Claim fee · refunded if upheld",
       "submitted": "Submitted",
@@ -682,6 +684,22 @@
     }
   },
   "admin": {
+    "applications": {
+      "title": "Application review",
+      "subtitle": "Read each advisory report and decide whether vouchers may see the applicant. This is not a credential.",
+      "empty": "No applications have finished the interview yet.",
+      "flagged": "Report generation failed",
+      "flaggedBody": "The model could not produce a valid report. Ask the applicant to retake, or reject.",
+      "strengths": "Strengths",
+      "concerns": "Concerns",
+      "communication": "Communication",
+      "confidence": "Report confidence",
+      "noReport": "No report yet.",
+      "response": "Applicant's response",
+      "approve": "Approve · show to vouchers",
+      "reject": "Reject",
+      "advisory": "ADVISORY"
+    },
     "config": {
       "crumb": "Config",
       "title": "Operator configuration",

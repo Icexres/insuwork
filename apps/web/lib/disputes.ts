@@ -4,6 +4,7 @@ import * as sdk from "@insuwork/sdk";
 import { supabaseService } from "@/lib/supabase/server";
 import { programs } from "@/lib/chain";
 import { freelancerNames, short, walletNames } from "@/lib/data";
+import devnet from "../../../deployments/devnet.json";
 
 const variant = (e: object) => Object.keys(e)[0];
 const big = (x: { toString(): string }) => BigInt(x.toString());
@@ -62,15 +63,21 @@ export async function allClaims() {
 /** AD-1: configs, partners, panelists — live from chain; panelist names from the admin table. */
 export async function adminOverview() {
   const p = programs();
-  const [bond, escrow, disputes, partners, panelists, { data: names }, { data: commitments }] = await Promise.all([
+  // no getProgramAccounts (the public devnet RPC throttles it hardest): panelists come from the admin table,
+  // partners from the deployment record, then one batched fetch each
+  const { data: names } = await supabaseService().from("panelists").select("wallet, name");
+  const panelistWallets = (names ?? []).map((n) => new PublicKey(n.wallet));
+  const partnerWallets = [new PublicKey(devnet.mockPartner.wallet)];
+  const [bond, escrow, disputes, partnerAccs, panelistAccs, { data: commitments }] = await Promise.all([
     p.bond.account.bondConfig.fetch(sdk.pdas.bondConfig()),
     p.escrow.account.escrowConfig.fetch(sdk.pdas.escrowConfig()),
     p.disputes.account.disputesConfig.fetch(sdk.pdas.disputesConfig()),
-    p.escrow.account.partnerRecord.all(),
-    p.disputes.account.panelist.all(),
-    supabaseService().from("panelists").select("wallet, name"),
+    p.escrow.account.partnerRecord.fetchMultiple(partnerWallets.map((w) => sdk.pdas.partner(w))),
+    p.disputes.account.panelist.fetchMultiple(panelistWallets.map((w) => sdk.pdas.panelist(w))),
     supabaseService().from("commitments").select("pubkey, client, freelancer_ref, status, total_required, released").limit(100),
   ]);
+  const partners = partnerAccs.flatMap((a) => (a ? [{ account: a }] : []));
+  const panelists = panelistAccs.flatMap((a) => (a ? [{ account: a }] : []));
   return {
     admin: bond.admin.toBase58(),
     paused: { bond: bond.paused, escrow: escrow.paused, disputes: disputes.paused },

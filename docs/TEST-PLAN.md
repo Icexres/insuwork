@@ -65,5 +65,5 @@ After random sequences of valid instructions: I-B1..I-B4, I-E1..I-E4 hold.
 | W-09 | P1 | Copy lint: freelancer/family message keys contain none of: crypto, USDC, wallet, token, Solana |
 
 ## 3. End-to-end (devnet, Playwright, P0)
-- E2E-1 Happy path from DEMO-SCRIPT acts 1–3.
-- E2E-2 Claim upheld from DEMO-SCRIPT act 4.
+- E2E-1 Happy path from DEMO-SCRIPT acts 1–3 — `apps/web/e2e/demo.spec.ts` (E-55).
+- E2E-2 Claim upheld from DEMO-SCRIPT act 4 — same spec, third test.

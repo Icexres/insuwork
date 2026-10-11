@@ -5,13 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "node --test \"test/*.test.ts\""
+    "test": "node --test \"test/*.test.ts\"",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.31.1",
     "@insuwork/keeper": "workspace:^",
     "@insuwork/sdk": "workspace:^",
     "@insuwork/triage": "workspace:^",
+    "@noble/curves": "1",
     "@solana/wallet-adapter-base": "0",
     "@solana/wallet-adapter-react": "0",
     "@solana/wallet-adapter-react-ui": "0",
@@ -24,6 +26,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.0",
     "@types/node": "26.6.4",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",

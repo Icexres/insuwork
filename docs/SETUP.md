@@ -105,3 +105,10 @@ rate-limits (429s are retried); set `SOLANA_RPC_URL` to a dedicated endpoint for
   result in `deployments/devnet-claim-last.json`.
 - Page checks (dev server running): `cd apps/web && for f in auth voucher client freelancer disputes; do node --env-file=.env.local test/$f.e2e.ts; done`.
 - Local `.env.local` also needs `KEEPER_SECRET_KEY` and `KEEPER_RUN_SECRET`; `AI_PROVIDER=mock` runs triage without an API key (dev only).
+
+## Playwright E2E (E-55)
+`pnpm db:start`, `pnpm sas:setup` once, `apps/web/.env.local` complete (Supabase keys, `GITHUB_WEBHOOK_SECRET`,
+`GITHUB_ORACLE_SECRET_KEY`, `KEEPER_SECRET_KEY`, `AI_PROVIDER=mock`), no other `next dev` running, then
+`pnpm --filter @insuwork/web exec playwright install chromium` (first time) and `pnpm --filter @insuwork/web e2e`.
+It starts its own dev server on :3100 with `NEXT_PUBLIC_E2E_WALLET=1` and the indexer. ≈6 min, ≈0.25 devnet SOL per run.
+For reliable runs use a dedicated devnet RPC: `SOLANA_RPC_URL` and `NEXT_PUBLIC_RPC_URL`.

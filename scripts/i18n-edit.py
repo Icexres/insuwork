@@ -7,17 +7,19 @@ LEAF = re.compile(r'(\[[^\]]*\]|"(?:[^"\\]|\\.)*")')
 
 
 def find_obj(raw, path):
-    pos, ind = 0, ""
+    """Follow the path by indentation depth (2 spaces per level) so a nested key can't match a namesake elsewhere."""
+    pos, ind = 0, "  "
     for k in path:
-        m = re.compile(r'\n(\s*)"' + re.escape(k) + r'": \{\n').search(raw, pos)
+        m = re.compile(r"\n" + ind + '"' + re.escape(k) + r'": \{\n').search(raw, pos)
         if not m:
             raise SystemExit(f"key not found: {'.'.join(path)}")
-        pos, ind = m.end(), m.group(1) + "  "
+        pos, ind = m.end() - 1, ind + "  "  # keep the newline for the next level
     return pos, ind
 
 
 def insert(raw, path, additions):
     pos, ind = find_obj(raw, path)
+    pos += 1  # after the object's opening line
     blk = json.dumps(additions, indent=2, ensure_ascii=False)[1:-1].strip("\n")
     return raw[:pos] + "\n".join(ind + l[2:] for l in blk.split("\n")) + ",\n" + raw[pos:]
 

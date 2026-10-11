@@ -4,7 +4,23 @@ import { Connection, Keypair, type TransactionInstruction } from "@solana/web3.j
 import bs58 from "bs58";
 import * as sdk from "@insuwork/sdk";
 
-export const connection = () => new Connection(process.env.SOLANA_RPC_URL ?? process.env.NEXT_PUBLIC_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
+/** fetch that waits out the public devnet RPC's 429s and connect timeouts (web3.js gives up quickly). */
+const patientFetch: typeof fetch = async (input, init) => {
+  for (let i = 0; ; i++) {
+    try {
+      const res = await fetch(input, init);
+      if (res.status !== 429 || i >= 6) return res;
+    } catch (e) {
+      if (i >= 4) throw e; // network error (e.g. ConnectTimeout): retry a few times
+    }
+    await new Promise((r) => setTimeout(r, 500 * 2 ** i));
+  }
+};
+
+export const connection = () =>
+  new Connection(process.env.SOLANA_RPC_URL ?? process.env.NEXT_PUBLIC_RPC_URL ?? "https://api.devnet.solana.com", {
+    commitment: "confirmed", fetch: patientFetch, disableRetryOnRateLimit: true,
+  });
 
 export const keypairFromEnv = (name: string) => {
   const v = process.env[name];

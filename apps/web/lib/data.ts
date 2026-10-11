@@ -40,7 +40,18 @@ export const viewer = cache(async (): Promise<Viewer | null> => {
 });
 
 /** Protocol parameters read from the on-chain configs (never hard-coded). */
-export const rules = cache(async () => {
+// ponytail: 60 s in-process cache — configs change only by admin tx; a hosted multi-instance setup would use a shared cache.
+let rulesCache: { at: number; value: Promise<Rules> } | null = null;
+type Rules = Awaited<ReturnType<typeof loadRules>>;
+export const rules = (): Promise<Rules> => {
+  if (!rulesCache || Date.now() - rulesCache.at > 60_000) {
+    const value = loadRules();
+    rulesCache = { at: Date.now(), value };
+    value.catch(() => (rulesCache = null));
+  }
+  return rulesCache.value;
+};
+async function loadRules() {
   const p = programs();
   const [bond, escrow, disputes] = await Promise.all([
     p.bond.account.bondConfig.fetch(sdk.pdas.bondConfig()),
@@ -57,7 +68,7 @@ export const rules = cache(async () => {
     rulingDays: disputes.rulingSecs.toNumber() / 86_400,
     claimFee: BigInt(disputes.claimFee.toString()),
   };
-});
+}
 
 export async function usdcBalance(owner: string) {
   const { mint } = await rules();
@@ -194,16 +205,21 @@ export async function commitmentView(address: string) {
   const p = programs();
   const c = await p.escrow.account.commitment.fetchNullable(key);
   if (!c) return null;
-  const milestones = await Promise.all(Array.from({ length: c.milestonesAdded }, async (_, i) => {
-    const pda = sdk.pdas.milestone(key, i);
-    const m = await p.escrow.account.milestone.fetch(pda);
-    const claim = await p.disputes.account.claim.fetchNullable(sdk.pdas.claim(pda));
+  // batched: one RPC for all milestones, one for all claims (public devnet RPC rate-limits)
+  const pdas = Array.from({ length: c.milestonesAdded }, (_, i) => sdk.pdas.milestone(key, i));
+  const [ms, claims] = await Promise.all([
+    p.escrow.account.milestone.fetchMultiple(pdas),
+    p.disputes.account.claim.fetchMultiple(pdas.map((m) => sdk.pdas.claim(m))),
+  ]);
+  const milestones = pdas.map((pda, i) => {
+    const m = ms[i]!;
+    const claim = claims[i];
     return {
       index: i, pubkey: pda.toBase58(), amount: BigInt(m.amount.toString()), dueTs: m.dueTs.toNumber(), submittedTs: m.submittedTs.toNumber(),
       releasedTs: m.releasedTs.toNumber(), status: variant(m.status), releaseMode: variant(m.releaseMode), lockedAmount: BigInt(m.lockedAmount.toString()),
       claim: claim && { status: variant(claim.status), outcome: variant(claim.outcome), deadline: claim.rulingDeadline.toNumber() },
     };
-  }));
+  });
   const pubkeys = milestones.map((m) => m.pubkey);
   const db = supabaseService();
   const [{ data: specs }, { data: links }, { data: payouts }, { data: atts }] = pubkeys.length

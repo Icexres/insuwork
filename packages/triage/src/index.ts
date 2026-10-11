@@ -108,7 +108,7 @@ function mockModel(): LanguageModel {
           suitable_starter_tasks: [], confidence: "low", disclaimer: "Advisory only. Not a credential.",
         }));
       }
-      const turn = prompt.filter((m) => m.role === "user").length;
+      const turn = Math.max(0, prompt.filter((m) => m.role === "user").length - (prompt.some((m) => JSON.stringify(m.content).includes("has opened the interview")) ? 1 : 0));
       return reply(system.includes("LAST turn") || turn >= MIN_TURNS ? `MOCK: thank you, that is all. ${DONE}` : `MOCK question ${turn + 1}: tell me more.`);
     },
   } as unknown as LanguageModel;

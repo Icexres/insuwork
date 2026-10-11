@@ -18,6 +18,18 @@ export const parseUsd = (s: string) => {
 };
 export const bn = (x: bigint | number) => new anchor.BN(x.toString());
 
+/** Retry RPC calls the public devnet endpoint rate-limits (429). Re-sending the same signed tx is safe: a signature lands once. */
+async function withRetry<T>(fn: () => Promise<T>, tries = 6): Promise<T> {
+  for (let i = 0; ; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (i >= tries - 1 || !/429|rate limit|Too Many Requests|fetch failed/i.test((e as Error).message)) throw e;
+      await new Promise((r) => setTimeout(r, 800 * 2 ** i));
+    }
+  }
+}
+
 /** One instruction list = one tx; a list of lists = several txs signed with one wallet prompt, sent in order. */
 type Build = (p: sdk.Programs, me: PublicKey) => Promise<TransactionInstruction[] | TransactionInstruction[][]>;
 
@@ -32,14 +44,14 @@ export function useSend() {
     setState({ busy: true, msg: t.submitting });
     try {
       const p = sdk.programs(new anchor.AnchorProvider(connection, wallet, { commitment: "confirmed" }));
-      const built = await build(p, wallet.publicKey);
+      const built = await withRetry(() => build(p, wallet.publicKey));
       const groups = (Array.isArray(built[0]) ? built : [built]) as TransactionInstruction[][];
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+      const { blockhash, lastValidBlockHeight } = await withRetry(() => connection.getLatestBlockhash("confirmed"));
       const txs = groups.map((ixs) => sdk.buildV0Tx(wallet.publicKey, ixs, blockhash, [], sdk.MULTI_BACKING_COMPUTE_UNITS));
       let sig = "";
       for (const tx of await wallet.signAllTransactions(txs)) {
-        sig = await connection.sendTransaction(tx);
-        const res = await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed");
+        sig = await withRetry(() => connection.sendTransaction(tx));
+        const res = await withRetry(() => connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, "confirmed"));
         if (res.value.err) throw new Error(JSON.stringify(res.value.err));
       }
       await onDone?.(sig);

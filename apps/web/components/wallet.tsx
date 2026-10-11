@@ -7,13 +7,16 @@ import { clusterApiUrl } from "@solana/web3.js";
 import bs58 from "bs58";
 import en from "@insuwork/shared/i18n/en.json";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { E2eWalletAdapter, e2eWalletEnabled } from "./e2e-wallet";
 
 export function WalletProviders({ children }: { children: ReactNode }) {
   const endpoint = useMemo(() => process.env.NEXT_PUBLIC_RPC_URL ?? clusterApiUrl("devnet"), []);
   // Phantom, Solflare, Backpack… register via Wallet Standard, so no adapter list is needed.
+  // The E2E test wallet exists only in dev with NEXT_PUBLIC_E2E_WALLET=1 (E-54).
+  const wallets = useMemo(() => (e2eWalletEnabled() ? [new E2eWalletAdapter()] : []), []);
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} autoConnect>
+      <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

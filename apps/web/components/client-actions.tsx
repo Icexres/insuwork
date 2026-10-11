@@ -82,14 +82,18 @@ export function NewCommitmentWizard({ freelancers, preselect, rules }: { freelan
     created.current = commitment.toBase58();
     return groups;
   }, async () => {
-    await fetch("/api/commitments/meta", {
-      method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        commitment: created.current,
-        specs: ms.map((m, index) => ({ index, markdown: m.spec })),
-        github: ms.flatMap((m, index) => (m.mode === "github" ? [{ index, repo: m.repo.trim().toLowerCase(), pr: Number(m.pr) }] : [])),
-      }),
+    // specs + GitHub links live off-chain; the webhook can't release M-n without its link, so this must succeed
+    const body = JSON.stringify({
+      commitment: created.current,
+      specs: ms.map((m, index) => ({ index, markdown: m.spec })),
+      github: ms.flatMap((m, index) => (m.mode === "github" ? [{ index, repo: m.repo.trim().toLowerCase(), pr: Number(m.pr) }] : [])),
     });
+    let r: Response | null = null;
+    for (let i = 0; i < 5 && !r?.ok; i++) {
+      if (i) await new Promise((res) => setTimeout(res, 1500 * i));
+      r = await fetch("/api/commitments/meta", { method: "POST", headers: { "content-type": "application/json" }, body });
+    }
+    if (!r?.ok) throw new Error(`${t.metaFailed} ${(await r?.json().catch(() => ({})))?.error ?? ""}`);
     router.push(`/client/commitments/${created.current}`);
   });
 

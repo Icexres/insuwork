@@ -152,7 +152,8 @@ export function Field({
   const bind = onChange
     ? { value: value ?? "", onChange: (e: { target: { value: string } }) => onChange(e.target.value) }
     : { defaultValue: value };
-  const common = { name, ...bind };
+  // explicit name: a wrapped textarea would otherwise fold its own text into its accessible name
+  const common = { name, "aria-label": typeof label === "string" ? label : undefined, ...bind };
   return (
     <label className={`flex min-w-0 flex-1 flex-col gap-2 ${className}`}>
       <span className="text-xs leading-normal text-muted">{label}</span>
