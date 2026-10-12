@@ -1,0 +1,23 @@
+{
+  "name": "@insuwork/landing-reel",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Remotion reel of real InsuWork screens for the landing hero (renders into apps/web/public/landing).",
+  "scripts": {
+    "studio": "remotion studio reel/index.ts",
+    "render": "remotion render reel/index.ts Reel ../web/public/landing/reel.mp4 --codec h264 --crf 26 --scale 0.8 --overwrite && remotion still reel/index.ts Reel ../web/public/landing/reel-poster.jpg --frame 40 --scale 0.8 --overwrite"
+  },
+  "dependencies": {
+    "@insuwork/shared": "workspace:^",
+    "@remotion/cli": "4",
+    "@remotion/google-fonts": "4",
+    "@remotion/transitions": "4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "5.6.3"
+  }
+}

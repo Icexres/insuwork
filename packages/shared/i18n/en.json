@@ -127,6 +127,162 @@
     },
     "footer": "InsuWork · Pre-validation pilot · Public profile and bank confirmations use demonstration data."
   },
+  "landing": {
+    "nav": { "how": "How it works", "backers": "Backers", "clients": "Clients", "freelancers": "Freelancers", "signIn": "Sign in", "start": "Get started" },
+    "hero": {
+      "title": "The trust layer for\nNepali freelancers",
+      "body": "A named backer stands behind the work. The client funds each milestone up front. Delivered work is paid in NPR to a Nepali bank account.",
+      "tag": "Pilot",
+      "tagText": "Running on devnet with mock data"
+    },
+    "story": {
+      "lead": "Sita is a final-year Pulchowk CS student.",
+      "body": "Her family is about to pay Rs 30 lakh for a Japan consultancy. Instead, an alumnus in Seattle backs her with $1,000, a client funds six months of her salary, and every delivered month lands in her bank account as NPR. She never touches crypto."
+    },
+    "roles": [
+      { "fig": "FIG 0.1", "title": "For backers", "body": "Diaspora professionals post a bond behind one freelancer they know and earn a premium on each successful release. Your capital is at risk.", "cta": "Back a freelancer" },
+      { "fig": "FIG 0.2", "title": "For clients", "body": "Fund milestones in escrow with a named guarantee behind delivery. If a claim is upheld, the bond pays you back.", "cta": "Hire backed talent" },
+      { "fig": "FIG 0.3", "title": "For freelancers", "body": "Apply with email or Google. No wallet, nothing to buy. Get paid in NPR to your bank and build a record of paid work.", "cta": "Apply as a freelancer" }
+    ],
+    "features": [
+      {
+        "num": "1.0", "label": "Bond", "title": "A named backer.\nA bounded guarantee.",
+        "shot": "/landing/voucher-dashboard.jpg", "alt": "Voucher dashboard: a 1,000 USDC bond vault, its allocation and the backing behind Sita",
+        "body": "Each backer has a bond vault of their own, never pooled. Backing is capped 1:1 with the deposit, so every guarantee is fully covered.",
+        "facts": [["Vault", "One per backer"], ["Deposited", "$1,000"], ["Backing cap", "$1,000 · 1:1"], ["Premium", "Client-paid, per release"]]
+      },
+      {
+        "num": "2.0", "label": "Escrow", "title": "Milestones,\nfunded up front",
+        "shot": "/landing/client-commitment.jpg", "alt": "Client commitment timeline: two milestones released to the mock partner and paid out in NPR",
+        "body": "The client locks each milestone before work starts. On delivery, salary is released only to a licensed conversion partner, which pays the freelancer in NPR.",
+        "facts": [["Milestone", "Month 2 of 6"], ["Locked", "$1,000"], ["Releases to", "Partner · MOCK"], ["Freelancer receives", "NPR, by bank"]]
+      },
+      {
+        "num": "3.0", "label": "Record", "title": "A record no rented\naccount can fake",
+        "shot": "/landing/public-profile.jpg", "alt": "Public profile: Sita’s backer, guarantee band and Paid Delivery Record with a verify link",
+        "body": "Every release writes a Paid Delivery Record the freelancer carries anywhere. Only successes are public. Nothing negative is ever written against a freelancer.",
+        "facts": [["Schema", "paid_delivery.v1"], ["Amount", "Shown as a band"], ["Bank credit", "✓ · MOCK"], ["Transferable", "No"]]
+      },
+      {
+        "num": "4.0", "label": "Claims", "title": "When delivery\nfails",
+        "shot": "/landing/panel-claim.jpg", "alt": "Panelist claim review: agreed spec, client evidence and a three-member panel",
+        "body": "The client files a claim, a panel of three rules on it, and an upheld claim pays the client from the bond. The loss sits on the backer's record, never the freelancer's.",
+        "facts": [["Claim window", "14 days"], ["Panel", "3 named reviewers"], ["Ruling", "Within 7 days"], ["Freelancer profile", "Unchanged"]]
+      }
+    ],
+    "cta": { "title": "Back delivery,\nnot promises.", "body": "Start with one freelancer, one bond and one funded milestone." },
+    "footer": "InsuWork · Pre-validation pilot · Devnet · Demonstration data",
+    "reel": [
+      { "label": "1.0 BOND", "title": "A backer bonds $1,000 behind Sita" },
+      { "label": "2.0 ESCROW", "title": "The client funds each milestone" },
+      { "label": "NPR · MOCK", "title": "Delivered work lands as NPR" },
+      { "label": "3.0 RECORD", "title": "A record she carries anywhere" },
+      { "label": "4.0 CLAIMS", "title": "A panel of three rules on failures" }
+    ],
+    "reelLabel": "Product walkthrough: real screens from the devnet pilot",
+    "site": {
+      "tagline": "Backed delivery, paid in NPR.",
+      "product": "Product", "roles": "Roles", "account": "Account",
+      "anchors": [["bond", "Bond"], ["escrow", "Escrow"], ["record", "Record"], ["claims", "Claims"]]
+    },
+    "pages": {
+      "how": {
+        "eyebrow": "HOW IT WORKS", "title": "Backed delivery,\npaid in NPR.", "cta": "Get started",
+        "body": "A named backer stands behind the work. The client funds each milestone up front. Delivered work is paid in NPR to a Nepali bank account.",
+        "shot": "/landing/reel-poster.jpg", "alt": "Product walkthrough: real screens from the devnet pilot",
+        "sections": [
+          { "id": "bond", "eyebrow": "1.0 BOND", "title": "A named backer.\nA bounded guarantee.",
+            "body": "Each backer has a bond vault of their own, never pooled. Backing is capped 1:1 with the deposit, so every guarantee is fully covered.",
+            "facts": [["Vault", "One per backer"], ["Deposited", "$1,000"], ["Backing cap", "$1,000 · 1:1"], ["Premium", "Client-paid, per release"]],
+            "notice": { "title": "Deposit ≥ allocation ≥ locks", "body": "Total allocated exposure caps must never exceed your deposit. Milestone locks sit inside those allocations." } },
+          { "id": "escrow", "eyebrow": "2.0 ESCROW", "title": "Milestones,\nfunded up front",
+            "body": "The client locks each milestone before work starts. On delivery, salary is released only to a licensed conversion partner, which pays the freelancer in NPR.",
+            "steps": ["Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
+            "facts": [["Milestone", "Month 2 of 6"], ["Locked", "$1,000"], ["Releases to", "Partner · MOCK"], ["Freelancer receives", "NPR, by bank"]],
+            "notice": { "title": "Premium is client-paid", "body": "Premium is earned on successful releases and is paid by the client, not deducted from the freelancer’s contract pay." } },
+          { "id": "record", "eyebrow": "3.0 RECORD", "title": "A record no rented\naccount can fake",
+            "body": "Every release writes a Paid Delivery Record the freelancer carries anywhere. Only successes are public. Nothing negative is ever written against a freelancer.",
+            "facts": [["Schema", "paid_delivery.v1"], ["Amount", "Shown as a band"], ["Bank credit", "✓ · MOCK"], ["Transferable", "No"]],
+            "notice": { "title": "What this record does — and does not — prove", "body": "These are demo attestations, verifiable on Solana Explorer (devnet). A bank-credit confirmation shows a payment arrived, not physical residence in Nepal. The owner can revoke the public identity link while the pseudonymous records persist." } },
+          { "id": "claims", "eyebrow": "4.0 CLAIMS", "title": "When delivery\nfails",
+            "body": "File a claim within 14 days after the milestone due date. A three-person panel rules by majority (2 of 3) within 7 days of assignment. An upheld claim pays from the bond up to the milestone value and refunds that milestone’s salary escrow.",
+            "facts": [["Panel majority", "2 of 3 votes"], ["Upheld bond payout", "Up to milestone value"], ["Escrow refund", "Milestone escrow refunded"], ["Freelancer profile", "Unchanged"]],
+            "notice": { "title": "Claim protection", "body": "Failed delivery claim is conditional on an upheld panel ruling. Protection is capped at the milestone amount, not the full contract." } },
+          { "id": "pilot", "eyebrow": "5.0 PILOT", "title": "Pilot\nboundaries",
+            "body": "Test funds only. Mock partner KYC does not establish actual eligibility. The licensed partner route, legal review and external audit remain launch prerequisites.",
+            "facts": [["Eligibility", "Non-residents"], ["Counsel", "Required before real funds"]],
+            "notice": { "title": "Devnet pilot", "body": "Test funds only. No production financial activity." } }
+        ]
+      },
+      "backers": {
+        "eyebrow": "FOR BACKERS", "title": "Set up your\nbond vault", "cta": "Back a freelancer",
+        "body": "Diaspora professionals post a bond behind one freelancer they know and earn a premium on each successful release. Your capital is at risk.",
+        "shot": "/landing/voucher-dashboard.jpg", "alt": "Voucher dashboard: a 1,000 USDC bond vault, its allocation and the backing behind Sita",
+        "sections": [
+          { "id": "setup", "eyebrow": "01 SETUP", "title": "Fund your\nperformance deposit",
+            "body": "A segregated performance deposit. Your capital backs specific people — never a pooled fund.",
+            "steps": ["Connect wallet", "Verify ownership", "Create bond vault", "Deposit USDC"],
+            "notice": { "title": "Pilot eligibility", "body": "Non-residents, foreign citizens in v1. Jurisdiction-specific counsel is required before real funds." } },
+          { "id": "vault", "eyebrow": "02 VAULT", "title": "How the vault\nworks",
+            "body": "Total allocated exposure must never exceed the deposited balance. Locked milestones sit inside allocated capacity.",
+            "facts": [["Invariant", "Deposit ≥ allocation ≥ locks"], ["Leverage", "1:1"], ["Premium", "Client-paid, per release"], ["Withdrawable", "Unallocated only"]],
+            "notice": { "title": "Only unallocated funds are withdrawable", "body": "To free more capacity, close a backing without a live commitment. A milestone unlock frees the lock, not the freelancer’s allocation." } },
+          { "id": "applicants", "eyebrow": "03 APPLICANTS", "title": "Advisory reports,\nnot credentials.",
+            "body": "These reports summarize delivery risk, communication quality, and fit for the current vault. They are advisory only and do not replace your own judgment.",
+            "steps": ["Read the advisory summary", "Book 30-min call", "Set a cap", "Back the freelancer"],
+            "notice": { "title": "Advisory note", "body": "This report is advisory and not a credential. It summarizes public-facing delivery confidence, communication clarity, and realistic estimation patterns from the provided source." } },
+          { "id": "risk", "eyebrow": "04 RISK", "title": "Your capital\nis at risk",
+            "body": "An upheld failed-delivery claim pays the client from your bond, up to the locked milestone value. Premiums are earned on successful releases — not a guaranteed return.",
+            "facts": [["Claim window", "14 days"], ["Panel", "3 named reviewers"], ["Payout", "Up to milestone value"], ["Freelancer profile", "Unchanged"]] }
+        ]
+      },
+      "clients": {
+        "eyebrow": "FOR CLIENTS", "title": "Hire backed\ntalent", "cta": "Hire backed talent",
+        "body": "Fund milestones in escrow with a named guarantee behind delivery. If a claim is upheld, the bond pays you back.",
+        "shot": "/landing/client-commitment.jpg", "alt": "Client commitment timeline: two milestones released to the mock partner and paid out in NPR",
+        "sections": [
+          { "id": "commitment", "eyebrow": "01 COMMITMENT", "title": "Create a\nnew commitment",
+            "body": "Define clear deliverables and release conditions. Salary releases only to the registered partner.",
+            "steps": ["Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
+            "notice": { "title": "Anti-related-party note", "body": "Your treasury must not belong to this freelancer’s backer. Declared related parties cannot be counterparties." } },
+          { "id": "protection", "eyebrow": "02 PROTECTION", "title": "Conditional on\nfailed delivery",
+            "body": "Protection is capped at the milestone amount or the backer’s allocation cap — whichever is lower. It is never the full contract value.",
+            "facts": [["Trigger", "Failed delivery"], ["Decision", "Panel ruling"], ["Cap", "Milestone or allocation"], ["Claim window", "14 days"]],
+            "notice": { "title": "Premium is client-paid", "body": "Premium is earned on successful releases and is paid by the client, not deducted from the freelancer’s contract pay." } },
+          { "id": "funding", "eyebrow": "03 FUNDING", "title": "Funded from\nyour treasury",
+            "body": "Fund from your Squads treasury, not the backer’s vault. Freelancer pay is not reduced by the client-paid premium or platform fee.",
+            "facts": [["Salary", "Released per milestone"], ["Premium", "3% · client-paid"], ["Platform", "1%"], ["Vest", "Optional"]],
+            "notice": { "title": "Retention vest", "body": "Optional, forgiveness-only retention vest: paid to the partner a set number of days after the last milestone unless the partner flags that the freelancer left. Never clawed back." } },
+          { "id": "recourse", "eyebrow": "04 RECOURSE", "title": "Claim\nrecourse",
+            "body": "File a claim within 14 days after the milestone due date. A three-person panel rules by majority (2 of 3) within 7 days of assignment. An upheld claim pays from the bond up to the milestone value and refunds that milestone’s salary escrow.",
+            "facts": [["Panel majority", "2 of 3 votes"], ["Upheld bond payout", "Up to milestone value"], ["Escrow refund", "Milestone escrow refunded"]] }
+        ]
+      },
+      "freelancers": {
+        "eyebrow": "FOR FREELANCERS", "title": "Tell backers\nwho you are", "cta": "Apply as a freelancer",
+        "body": "Apply with email or Google. No wallet, nothing to buy. Get paid in NPR to your bank and build a record of paid work.",
+        "shot": "/landing/freelancer-home.jpg", "alt": "Freelancer home: contract payments credited in NPR",
+        "sections": [
+          { "id": "application", "eyebrow": "01 APPLICATION · ABOUT 30 MIN", "title": "Your pace.\nYour information.",
+            "body": "Save your application and return later. Research answers are never shown to backers or clients.",
+            "steps": ["Profile", "Portfolio & GitHub", "Baseline", "Triage interview", "Verification", "Done"],
+            "notice": { "title": "A profile is not a guarantee", "body": "A backer reviews your work and decides whether to take a call. Only a client-funded paid delivery becomes part of your public record." } },
+          { "id": "interview", "eyebrow": "02 INTERVIEW", "title": "Your work, in\nyour own words",
+            "body": "A short written interview for backers. Advisory only — never a score or credential. About 25–30 minutes. You can save and return at any time.",
+            "steps": ["Background & goals", "Project walk-through A", "Project walk-through B", "Technical reasoning", "Debugging", "Availability", "Communication"],
+            "notice": { "title": "How your answers are used", "body": "A backer reads your structured summary in about 10 minutes, then decides on a call. The interview never issues credentials or moves money. We never ask about caste, religion, politics or family finances." } },
+          { "id": "verification", "eyebrow": "03 VERIFICATION", "title": "MOCK partner\nverification",
+            "body": "In the pilot a MOCK partner stands in for the licensed bank partner. Only your bank name and the last 4 digits are kept.",
+            "steps": ["Applied", "Interview", "Reviewed", "Verified · MOCK"],
+            "notice": { "title": "Your backer", "body": "Your backer guarantees your work to clients. If something goes wrong, talk to them early. It never costs you money." } },
+          { "id": "paid", "eyebrow": "04 PAID IN NPR", "title": "Delivered work,\npaid in NPR",
+            "body": "Once a backer backs you, clients can fund milestones and payments appear here in NPR.",
+            "facts": [["Freelancer receives", "NPR, by bank"], ["FX", "MOCK 135 NPR per USD"], ["Record", "paid_delivery.v1"], ["Public", "Only successes"]],
+            "notice": { "title": "Pilot workspace", "body": "Bank credits and partner verification are simulated." } }
+        ]
+      }
+    }
+  },
   "freelancer": {
     "flow": {
       "stepBadge": "STEP {n} OF 6",
@@ -793,21 +949,34 @@
     }
   },
   "auth": {
-    "signInTitle": "Sign in to InsuWork",
+    "back": "Back to site",
+    "signin": {
+      "title": "Welcome back", "subtitle": "Sign in to your InsuWork workspace.",
+      "google": "Continue with Google", "submit": "Email me a sign-in link", "busy": "Sending link…",
+      "prompt": "New to InsuWork?", "switch": "Create an account"
+    },
+    "signup": {
+      "title": "Create your account", "subtitle": "Back a freelancer, hire backed talent, or get paid in NPR for delivered work.",
+      "google": "Sign up with Google", "submit": "Email me a sign-up link", "busy": "Sending link…",
+      "prompt": "Already have an account?", "switch": "Sign in",
+      "note": "No password. You choose how you use InsuWork after you open the link."
+    },
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
-    "sendLink": "Email me a sign-in link",
-    "linkSent": "Check your inbox for the sign-in link.",
-    "google": "Continue with Google",
+    "emailRequired": "Enter your email.",
+    "emailInvalid": "That doesn't look like a valid email.",
+    "linkSent": "We sent a link to {email}. Open it on this device to continue.",
+    "differentEmail": "Use a different email",
     "or": "or",
     "error": "Sign-in failed. Try again.",
     "signOut": "Sign out",
     "onboardingTitle": "How will you use InsuWork?",
+    "onboardingSubtitle": "Pick the workspace that fits. Panel and admin access is granted by InsuWork.",
     "roles": {
-      "freelancer": "Freelancer — I deliver work and get paid in NPR",
-      "family": "Family — I follow a freelancer's payments",
-      "client": "Client — I fund milestone escrow",
-      "voucher": "Voucher — I post a bond behind a freelancer"
+      "freelancer": { "title": "Freelancer", "body": "I deliver work and get paid in NPR" },
+      "family": { "title": "Family", "body": "I follow a freelancer's payments" },
+      "client": { "title": "Client", "body": "I fund milestone escrow" },
+      "voucher": { "title": "Voucher", "body": "I post a bond behind a freelancer" }
     },
     "wallet": {
       "title": "Bind your wallet",
