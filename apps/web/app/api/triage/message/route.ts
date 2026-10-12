@@ -6,6 +6,9 @@ import { finish, ownOpenSession } from "@/lib/triage-session";
 
 // POST { sessionId, content } → { message, done, flagged? }. When the interview ends the report is generated
 // in the same request (the separate /finish route from API.md is folded in here).
+// AI calls (and the report at the end) outlast serverless defaults.
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   const v = await viewer();
   if (v?.role !== "freelancer") return NextResponse.json({ error: "freelancers only" }, { status: 403 });

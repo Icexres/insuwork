@@ -5,6 +5,9 @@ import { viewer } from "@/lib/data";
 import { ownApplication } from "@/lib/triage-session";
 
 // POST → { sessionId, message }. Starts the interview from a draft application, or the one allowed retake (E-51).
+// AI calls (and the report at the end) outlast serverless defaults.
+export const maxDuration = 60;
+
 export async function POST() {
   const v = await viewer();
   if (v?.role !== "freelancer") return NextResponse.json({ error: "freelancers only" }, { status: 403 });

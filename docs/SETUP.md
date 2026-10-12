@@ -112,3 +112,34 @@ rate-limits (429s are retried); set `SOLANA_RPC_URL` to a dedicated endpoint for
 `pnpm --filter @insuwork/web exec playwright install chromium` (first time) and `pnpm --filter @insuwork/web e2e`.
 It starts its own dev server on :3100 with `NEXT_PUBLIC_E2E_WALLET=1` and the indexer. ≈6 min, ≈0.25 devnet SOL per run.
 For reliable runs use a dedicated devnet RPC: `SOLANA_RPC_URL` and `NEXT_PUBLIC_RPC_URL`.
+
+## Free hosting (E-56)
+Everything runs on free tiers; there is no long-running process. Programs are already on devnet.
+
+| Piece | Where |
+|---|---|
+| Web + API routes | Vercel Hobby, project root `apps/web` (pnpm workspace is detected; files outside the root are included) |
+| DB + Auth | Supabase Free (pauses after ~7 idle days; the cron below keeps it awake) |
+| Indexer + keeper | `POST /api/indexer/run` and `POST /api/keeper/run`, each with `Authorization: Bearer $KEEPER_RUN_SECRET`, called every minute by cron-job.org (or a Cloudflare Worker cron trigger) |
+| Email | Gmail SMTP with an app password (no domain needed) |
+| RPC | Helius free devnet key |
+
+1. **Supabase.** Create a project, then `npx supabase link --project-ref <ref>` and `npx supabase db push`.
+   Auth → URL Configuration: Site URL `https://<app>.vercel.app`, Redirect URLs `https://<app>.vercel.app/auth/callback`.
+   Auth → SMTP: `smtp.gmail.com`, port 587, user = the Gmail address, password = a Google
+   [app password](https://myaccount.google.com/apppasswords) (needs 2-step verification); raise Auth → Rate Limits → emails/hour.
+   Auth → Providers → Google: client from Google Cloud with redirect URI `https://<ref>.supabase.co/auth/v1/callback`;
+   publish the OAuth consent screen, or only listed test users can sign in.
+2. **Backfill once from your machine** (a 60 s route cannot replay the whole devnet history):
+   `SUPABASE_URL=https://<ref>.supabase.co SUPABASE_SERVICE_ROLE_KEY=… SOLANA_RPC_URL=… node services/indexer/src/index.ts`,
+   stop it once it goes quiet. Then seed: `pnpm seed:demo` with `apps/web/.env.local` pointed at the hosted project.
+3. **Vercel env** (Production): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `NEXT_PUBLIC_RPC_URL`, `SOLANA_RPC_URL`, `GITHUB_WEBHOOK_SECRET`, `GITHUB_ORACLE_SECRET_KEY`, `KEEPER_SECRET_KEY`,
+   `KEEPER_RUN_SECRET`, `SAS_CREDENTIAL_AUTHORITY`, `ATTESTER_SECRET_KEY`, `MOCK_PARTNER_SECRET_KEY`, `AI_PROVIDER`,
+   `AI_MODEL` + the provider key. Never set `NEXT_PUBLIC_E2E_WALLET`. Keys are base58 secrets; the deployer/admin key stays local.
+4. **Cron.** Two cron-job.org jobs, every minute, method POST, header `Authorization: Bearer <KEEPER_RUN_SECRET>`:
+   `https://<app>.vercel.app/api/indexer/run` and `…/api/keeper/run`. The indexer route answers
+   `{ ok, attester, partner, errors }`; `attester`/`partner` false means their keys are missing in Vercel.
+5. **GitHub webhook** payload URL → `https://<app>.vercel.app/api/webhooks/github`.
+
+Trade-off: mirror tables (and pages built on them) trail the chain by up to one cron interval.

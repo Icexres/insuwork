@@ -24,7 +24,7 @@ const DEFAULT_KEY = PublicKey.default.toBase58();
 /** JSON-safe event data: keys → base58, BN → decimal string, 32-byte arrays → hex. */
 export function toJson(v: unknown): unknown {
   if (v instanceof PublicKey) return v.toBase58();
-  if (anchor.BN.isBN(v)) return v.toString();
+  if (anchor.BN.isBN(v)) return (v as anchor.BN).toString();
   if (Array.isArray(v)) return v.length === 32 && v.every((x) => typeof x === "number") ? hex(v) : v.map(toJson);
   if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toJson(x)]));
   return v;
@@ -187,13 +187,14 @@ export async function poll(ctx: Ctx, connection: Connection) {
 }
 
 export function context(connection: Connection, db: SupabaseClient): Ctx {
-  // read-only: the wallet never signs
-  const p = sdk.programs(new anchor.AnchorProvider(connection, new anchor.Wallet(Keypair.generate()), { commitment: "confirmed" }));
+  // read-only: the wallet never signs (no anchor.Wallet: it is missing from anchor's bundled build, which Next uses)
+  const readOnly = { publicKey: Keypair.generate().publicKey, signTransaction: () => Promise.reject(new Error("read-only")), signAllTransactions: () => Promise.reject(new Error("read-only")) };
+  const p = sdk.programs(new anchor.AnchorProvider(connection, readOnly as never, { commitment: "confirmed" }));
   return { p, db, getAccount: (k) => connection.getAccountInfo(k, "confirmed") };
 }
 
 /** SAS signer (E-44): the env key (base58) signs and pays; SAS_CREDENTIAL_AUTHORITY locates the credential. */
-async function signerDeps(connection: Connection, db: SupabaseClient, env: "ATTESTER_SECRET_KEY" | "MOCK_PARTNER_SECRET_KEY") {
+export async function signerDeps(connection: Connection, db: SupabaseClient, env: "ATTESTER_SECRET_KEY" | "MOCK_PARTNER_SECRET_KEY") {
   if (!process.env[env] || !process.env.SAS_CREDENTIAL_AUTHORITY) {
     console.error(`[indexer] ${env === "ATTESTER_SECRET_KEY" ? "attester" : "MOCK partner"} off: ${env} / SAS_CREDENTIAL_AUTHORITY not set`);
     return null;
@@ -222,15 +223,23 @@ async function main() {
     }, "confirmed");
   }
   const every = Number(process.env.INDEXER_POLL_SECS ?? 30) * 1000;
-  const attestDeps = await signerDeps(connection, db, "ATTESTER_SECRET_KEY");
-  const partnerDeps = await signerDeps(connection, db, "MOCK_PARTNER_SECRET_KEY");
+  const attest = await signerDeps(connection, db, "ATTESTER_SECRET_KEY");
+  const partner = await signerDeps(connection, db, "MOCK_PARTNER_SECRET_KEY");
   for (;;) {
-    await poll(ctx, connection).catch(log);
-    if (attestDeps) await import("./effects.ts").then((fx) => fx.attestPendingDeliveries(attestDeps)).catch(log);
-    if (partnerDeps) await import("./effects.ts").then((fx) => fx.mockPartnerPayouts(partnerDeps)).catch(log);
-    await import("./effects.ts").then((fx) => fx.mockVestPayouts({ db })).catch(log);
+    await indexerPass(ctx, connection, { attest, partner }, log);
     await new Promise((r) => setTimeout(r, every));
   }
+}
+
+type Signer = Awaited<ReturnType<typeof signerDeps>>;
+/** One catch-up pass: poll every program, then the side effects. Used by the loop above and by
+ *  POST /api/indexer/run (serverless hosting, E-56: a cron calls it instead of a long-running worker). */
+export async function indexerPass(ctx: Ctx, connection: Connection, s: { attest: Signer; partner: Signer }, log: (e: unknown) => void) {
+  await poll(ctx, connection).catch(log);
+  const fx = await import("./effects.ts");
+  if (s.attest) await fx.attestPendingDeliveries(s.attest).catch(log);
+  if (s.partner) await fx.mockPartnerPayouts(s.partner).catch(log);
+  await fx.mockVestPayouts({ db: ctx.db }).catch(log);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) main();

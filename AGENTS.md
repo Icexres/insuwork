@@ -34,7 +34,7 @@ Full product definition: `IDEA.md`. Hackathon scope: `docs/PRD.md`. Deadline: **
 - **AI:** provider-agnostic via the Vercel AI SDK; provider and model come from env vars.
 - **Partner:** a **mock** conversion partner (devnet wallet + mock webhook), clearly labelled "MOCK" in UI and data.
 - **Language:** English only, with i18n scaffolding (strings in message files, no hard-coded copy in components).
-- **Hosting:** not decided. Keep code hosting-neutral (no vendor-only APIs without an interface).
+- **Hosting:** free tiers for the submission (E-56): Vercel + Supabase Free + an external cron calling `/api/indexer/run` and `/api/keeper/run`. Keep code hosting-neutral (no vendor-only APIs without an interface).
 
 ## 4. Repository layout
 ```

@@ -88,9 +88,9 @@ export const nprCreditData = (d: { commitment: PublicKey; milestoneIndex: number
 // ── addresses + instructions (sas-lib builds @solana/kit ixs; we convert to web3.js v1) ──
 const a = (k: PublicKey) => address(k.toBase58());
 const pk = (x: Address) => new PublicKey(x);
-function toWeb3(ix: { programAddress: Address; accounts?: readonly { address: Address; role: number }[]; data?: ArrayLike<number> }) {
+function toWeb3(ix: { programAddress: Address; accounts?: readonly { address: Address; role: number }[]; data?: object }) {
   const keys: AccountMeta[] = (ix.accounts ?? []).map((m) => ({ pubkey: pk(m.address), isWritable: (m.role & 1) === 1, isSigner: m.role >= 2 }));
-  return new TransactionInstruction({ programId: pk(ix.programAddress), keys, data: Buffer.from(ix.data ?? []) });
+  return new TransactionInstruction({ programId: pk(ix.programAddress), keys, data: Buffer.from((ix.data ?? []) as Uint8Array) });
 }
 
 export const credentialPda = async (authority: PublicKey) => pk((await deriveCredentialPda({ authority: a(authority), name: CREDENTIAL_NAME }))[0]);

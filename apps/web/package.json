@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.31.1",
+    "@insuwork/indexer": "workspace:^",
     "@insuwork/keeper": "workspace:^",
     "@insuwork/sdk": "workspace:^",
     "@insuwork/triage": "workspace:^",
