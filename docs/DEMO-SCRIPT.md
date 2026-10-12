@@ -8,7 +8,7 @@ Lead with the person, not the tech (IDEA risk #7). Persona names are illustrativ
 
 **Act 2 — The contract (60s).** Client creates a 3-milestone commitment, funds salary + 3% premium + 1% fee. Milestone 1 is a GitHub task.
 
-**Act 3 — Delivery (60s).** PR merged → oracle releases → mock partner pays NPR → switch to the **family page**: NPR landed (MOCK badge). Open Sita's **public profile**: Paid Delivery Record, verifiable on explorer. Voucher sees premium.
+**Act 3 — Delivery (60s).** PR merged → oracle releases → mock partner pays NPR → switch to **Sita's home page**: NPR landed (MOCK badge) — family view comes after the pilot (OQ-22, E-54). Open Sita's **public profile**: Paid Delivery Record, verifiable on explorer. Voucher sees premium.
 
 **Act 4 — When it fails (45s).** Milestone 2 not delivered → client files claim → panel of 3 votes Upheld → bond pays client. Voucher dashboard shows the loss. Sita's profile shows nothing negative.
 

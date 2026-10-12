@@ -1,0 +1,16 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --filter insuwork
+      - run: node scripts/check-syntax.mjs
+      # Program suites skip until CI builds the .so files (anchor build not in CI yet).
+      - run: pnpm test:programs

@@ -1,0 +1,19 @@
+{
+  "name": "@insuwork/keeper",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./chain": "./src/chain.ts"
+  },
+  "scripts": {
+    "start": "node src/cli.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@insuwork/sdk": "workspace:^",
+    "@solana/web3.js": "^1.99.0",
+    "@supabase/supabase-js": "2",
+    "bs58": "6"
+  }
+}

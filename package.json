@@ -1,0 +1,48 @@
+{
+  "name": "insuwork",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "test:programs": "node --test \"tests/programs/*.test.mjs\"",
+    "test:programs:docker": "docker run --rm -v \"%INIT_CWD%:/work\" -v insuwork-node-modules:/work/node_modules -w /work node:24-bookworm bash -c \"corepack enable && CI=1 pnpm install --frozen-lockfile --filter insuwork >/dev/null && node --test tests/programs/*.test.mjs\"",
+    "build:programs": "docker run --rm -v \"%INIT_CWD%:/work\" -v insuwork-cargo:/usr/local/cargo/registry -v insuwork-rustup:/usr/local/rustup insuwork-anchor:0.31.1 anchor build",
+    "docker:toolchain": "docker build -f tools/anchor.Dockerfile -t insuwork-anchor:0.31.1 tools",
+    "test:syntax": "node scripts/check-syntax.mjs",
+    "sync:idl": "node scripts/sync-idl.mjs",
+    "deploy:devnet": "docker run --rm -v \"%INIT_CWD%:/work\" -w /work insuwork-anchor:0.31.1 bash scripts/deploy-programs.sh",
+    "devnet:init": "node scripts/devnet-init.mjs",
+    "devnet:set-upgrade-authority": "docker run --rm -v \"%INIT_CWD%:/work\" -w /work insuwork-anchor:0.31.1 bash scripts/set-upgrade-authority.sh",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit -p tsconfig.base.json",
+    "db:start": "supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,realtime,storage-api",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "test:db": "supabase test db",
+    "indexer": "node --env-file=apps/web/.env.local services/indexer/src/index.ts",
+    "test:services": "node --test \"packages/attest/test/*.test.ts\" \"packages/shared/test/*.test.ts\" \"packages/triage/test/*.test.ts\" \"services/*/test/*.test.ts\"",
+    "sas:setup": "node scripts/sas-setup.mjs",
+    "keeper": "node --env-file=apps/web/.env.local services/keeper/src/cli.ts",
+    "devnet:e2e": "node --env-file=apps/web/.env.local scripts/devnet-e2e.ts",
+    "devnet:claim": "node --env-file=apps/web/.env.local scripts/devnet-claim.ts",
+    "start": "pnpm db:start && pnpm run \"/^start:/\"",
+    "start:web": "pnpm --filter @insuwork/web dev",
+    "start:indexer": "pnpm indexer",
+    "seed:demo": "node --env-file=apps/web/.env.local scripts/seed-demo.ts"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@noble/hashes": "1.8.0",
+    "@solana/spl-token": "0.4",
+    "@solana/web3.js": "1",
+    "@supabase/supabase-js": "2",
+    "@types/node": "24",
+    "bs58": "6",
+    "eslint": "9.12.0",
+    "litesvm": "^0.8.0",
+    "supabase": "2.120.0",
+    "typescript": "5.6.3"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

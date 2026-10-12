@@ -1,0 +1,23 @@
+[package]
+name = "insuwork_disputes"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.79"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "insuwork_disputes"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build", "insuwork_bond/idl-build", "insuwork_escrow/idl-build"]
+
+[dependencies]
+anchor-lang = { version = "=0.31.1", features = ["init-if-needed"] }
+anchor-spl = "=0.31.1"
+insuwork_bond = { path = "../insuwork_bond", features = ["cpi"] }
+insuwork_escrow = { path = "../insuwork_escrow", features = ["cpi"] }

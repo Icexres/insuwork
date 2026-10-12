@@ -1,6 +1,6 @@
 # UX flows
 
-English only (E-14), shadcn/ui (E-11). Visual direction **[OQ-27]**. Copy shown to freelancers and families never mentions crypto, USDC, wallets or tokens (hard rule 1): use "contract payment", "guarantee", "backer".
+English only (E-14), shadcn/ui (E-11). Visual direction: Figma dark (E-54). Copy shown to freelancers and families never mentions crypto, USDC, wallets or tokens (hard rule 1): use "contract payment", "guarantee", "backer".
 
 ## Public
 - `/` — landing: the Sita story, three role CTAs.

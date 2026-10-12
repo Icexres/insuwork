@@ -1,0 +1,38 @@
+{
+  "name": "@insuwork/web",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "test": "node --test \"test/*.test.ts\"",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@insuwork/keeper": "workspace:^",
+    "@insuwork/sdk": "workspace:^",
+    "@insuwork/triage": "workspace:^",
+    "@noble/curves": "1",
+    "@solana/wallet-adapter-base": "0",
+    "@solana/wallet-adapter-react": "0",
+    "@solana/wallet-adapter-react-ui": "0",
+    "@solana/web3.js": "1",
+    "@supabase/ssr": "0",
+    "@supabase/supabase-js": "2",
+    "bs58": "6",
+    "motion": "12",
+    "next": "14.2.13",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@types/node": "26.6.4",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.47",
+    "tailwindcss": "3.4.14"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "commitment": "5hdQjJEiLEgBpNMHdzpFw2iCqUNq8umAUXCWnV3G828b",
+  "claim": "DtnuC7GeisA8JvFvNcKCWRnCeNXAxZ25f7WVPHRBDTAe",
+  "client": "CequeiP1Mg35LjrcTSRjWDLd1dELqPRXCW89RVSN6rXY",
+  "spec": "Settings page: profile form with validation and avatar upload.",
+  "statement": "Avatar upload was never delivered and the form has no validation, contrary to the spec.",
+  "panel": [
+    {
+      "wallet": "4axeZBS4tDUJqZoBb3Eyj9k1WGmdZXoMbSVbC5q18S3N"
+    },
+    {
+      "wallet": "EgMpJQq9v8V9oM6ohrXCjfqkZoJ3pcePY43zNk2UVJYe"
+    },
+    {
+      "wallet": "G9kx3FWcCDNb4vwBGa8NA1gv7uhhiGXu4ieTtu2UszYY"
+    }
+  ],
+  "unvoted": "G9kx3FWcCDNb4vwBGa8NA1gv7uhhiGXu4ieTtu2UszYY",
+  "deliveryAttestation": "8otkxjrXT1xKud7aJ2cjtzDCbni3zBn4KJpEK4RBRHip"
+}

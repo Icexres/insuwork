@@ -1,0 +1,10 @@
+{
+  "name": "@insuwork/attest",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "dependencies": {
+    "@solana/kit": "5",
+    "@solana/web3.js": "^1.99.0",
+    "sas-lib": "1.0.10"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@insuwork/indexer",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "start": "node src/index.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@solana/web3.js": "^1.99.0",
+    "@supabase/supabase-js": "2",
+    "bs58": "6"
+  }
+}

@@ -1,0 +1,116 @@
+// W-05: the same release event seen twice (and a second pass) produces one attestation.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { Keypair, PublicKey } from "@solana/web3.js";
+import * as sdk from "../../../packages/sdk/src/index.ts";
+import { attestPendingDeliveries, mockPartnerPayouts, mockVestPayouts } from "../src/effects.ts";
+
+// minimal Supabase query-builder fake: select/eq/in/maybeSingle/upsert(onConflict, ignoreDuplicates)
+function fakeDb(tables: Record<string, Record<string, unknown>[]>) {
+  return {
+    from(t: string) {
+      const filters: ((r: Record<string, unknown>) => boolean)[] = [];
+      const rows = () => (tables[t] ??= []).filter((r) => filters.every((f) => f(r)));
+      const q = {
+        select: () => q,
+        eq: (c: string, v: unknown) => (filters.push((r) => r[c] === v), q),
+        in: (c: string, vs: unknown[]) => (filters.push((r) => vs.includes(r[c])), q),
+        insert: async (row: Record<string, unknown>) => ((tables[t] ??= []).push(row), { error: null }),
+        maybeSingle: async () => ({ data: rows()[0] ?? null, error: null }),
+        then: (res: (x: unknown) => unknown) => res({ data: rows(), error: null }),
+        upsert: async (row: Record<string, unknown>, o: { onConflict: string; ignoreDuplicates?: boolean }) => {
+          const cols = o.onConflict.split(",");
+          const hit = (tables[t] ??= []).find((r) => cols.every((c) => r[c] === row[c]));
+          if (!hit) tables[t].push(row);
+          else if (!o.ignoreDuplicates) Object.assign(hit, row);
+          return { error: null };
+        },
+      };
+      return q;
+    },
+  };
+}
+
+test("W-05 attester is idempotent; upheld claims are never attested", async () => {
+  const commitment = Keypair.generate().publicKey;
+  const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
+  const m1 = sdk.pdas.milestone(commitment, 1).toBase58();
+  const release = { sig: "s1", instruction: "ApproveMilestone", name: "milestoneReleased", received_at: "2026-10-11T00:00:00Z",
+    data: { commitment: commitment.toBase58(), index: 0, mode: { clientSig: {} } } };
+  const upheld = { sig: "s2", instruction: "Finalize", name: "milestoneResolved", received_at: "2026-10-11T00:00:00Z",
+    data: { commitment: commitment.toBase58(), index: 1, outcome: { upheld: {} } } };
+  const tables: Record<string, Record<string, unknown>[]> = {
+    events_raw: [release, { ...release }, upheld], // duplicate delivery of the same release
+    commitments: [{ pubkey: commitment.toBase58(), client: Keypair.generate().publicKey.toBase58(), freelancer_ref: "ab".repeat(32),
+      vouchers: [Keypair.generate().publicKey.toBase58()] }],
+    milestones: [m0, m1].map((pubkey) => ({ pubkey, amount: "1000000000", released_ts: "2026-10-11T00:00:00Z", spec_hash: "09".repeat(32) })),
+    attestations: [],
+  };
+  const onChain = new Set<string>();
+  let sends = 0;
+  const deps = {
+    db: fakeDb(tables) as never,
+    signer: Keypair.generate().publicKey,
+    credentialAuthority: Keypair.generate().publicKey,
+    exists: async (k: PublicKey) => onChain.has(k.toBase58()),
+    send: async () => (sends++, `tx${sends}`),
+  };
+
+  assert.equal(await attestPendingDeliveries(deps), 1);
+  assert.equal(await attestPendingDeliveries(deps), 0, "second pass writes nothing");
+  assert.equal(sends, 1);
+  assert.deepEqual(tables.attestations.map((a) => a.milestone_pubkey), [m0]);
+
+  // DB lost the row but the attestation exists on-chain → record it, don't send again
+  onChain.add(tables.attestations[0].address as string);
+  tables.attestations = [];
+  assert.equal(await attestPendingDeliveries(deps), 1);
+  assert.equal(sends, 1);
+  assert.equal(tables.attestations[0].tx_sig, "already-on-chain");
+});
+
+test("T-24 MOCK partner: one payout + one NPR attestation per release, all MOCK", async () => {
+  const commitment = Keypair.generate().publicKey;
+  const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
+  const release = { name: "milestoneReleased", data: { commitment: commitment.toBase58(), index: 0, partnerPayout: "970000000" } };
+  const tables: Record<string, Record<string, unknown>[]> = {
+    events_raw: [release, { ...release }], milestones: [{ pubkey: m0 }], payouts: [], attestations: [],
+  };
+  let sends = 0;
+  const deps = {
+    db: fakeDb(tables) as never, signer: Keypair.generate().publicKey, credentialAuthority: Keypair.generate().publicKey,
+    exists: async () => false, send: async () => (sends++, "tx"),
+  };
+  assert.equal(await mockPartnerPayouts(deps), 1);
+  assert.equal(await mockPartnerPayouts(deps), 0);
+  assert.equal(sends, 1);
+  assert.equal(tables.payouts.length, 1);
+  assert.equal(tables.payouts[0].is_mock, true);
+  assert.equal(tables.payouts[0].npr_amount, "13095000"); // 970 USDC × 135 NPR = NPR 130,950.00
+  assert.equal(tables.attestations[0].kind, "npr_credit");
+});
+
+test("retention vest: one MOCK payout row per commitment, no milestone", async () => {
+  const vest = { name: "vestReleased", data: { commitment: "C1", amount: "100000000" } };
+  const tables: Record<string, Record<string, unknown>[]> = { events_raw: [vest, { ...vest }], commitments: [{ pubkey: "C1" }], payouts: [] };
+  assert.equal(await mockVestPayouts({ db: fakeDb(tables) as never }), 1);
+  assert.equal(await mockVestPayouts({ db: fakeDb(tables) as never }), 0);
+  assert.deepEqual(
+    [tables.payouts[0].kind, tables.payouts[0].milestone_pubkey, tables.payouts[0].npr_amount, tables.payouts[0].is_mock],
+    ["retention_vest", null, "1350000", true],
+  );
+});
+
+test("partial claim outcome gets a delivery record", async () => {
+  const commitment = Keypair.generate().publicKey;
+  const m0 = sdk.pdas.milestone(commitment, 0).toBase58();
+  const tables: Record<string, Record<string, unknown>[]> = {
+    events_raw: [{ sig: "s", instruction: "Finalize", name: "milestoneResolved", received_at: "2026-10-11T00:00:00Z",
+      data: { commitment: commitment.toBase58(), index: 0, outcome: { partial: {} } } }],
+    commitments: [{ pubkey: commitment.toBase58(), client: Keypair.generate().publicKey.toBase58(), freelancer_ref: "ab".repeat(32), vouchers: [] }],
+    milestones: [{ pubkey: m0, amount: "1", released_ts: null, spec_hash: "00".repeat(32) }], attestations: [],
+  };
+  const deps = { db: fakeDb(tables) as never, signer: Keypair.generate().publicKey, credentialAuthority: Keypair.generate().publicKey,
+    exists: async () => false, send: async () => "tx" };
+  assert.equal(await attestPendingDeliveries(deps), 1);
+});

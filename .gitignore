@@ -12,3 +12,9 @@ id.json
 !.env.example
 supabase/.temp/
 .DS_Store
+.pnpm-store/
+*.tsbuildinfo
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/

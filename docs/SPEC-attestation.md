@@ -11,11 +11,15 @@ freelancer_ref = sha256( utf8("insuwork:v1:") || partner_kyc_id || salt )   // 3
 - Never derived from name, email, phone or bank data alone. Never stored on-chain with any PII.
 - Revoking the profile link (IDEA §5.5, **[OQ-23]**) deletes the off-chain `freelancer_ref → person` mapping; attestations remain.
 
-## 2. Credential and issuers
+## 2. Credential and issuers (decided: E-44)
+Live on devnet; addresses in `deployments/devnet.json` → `sas`. Delivery records: InsuWork attester key. NPR credit: MOCK partner key.
+
 - SAS credential name: `insuwork`.
 - Authorized signers **[OQ-10]**: (a) a InsuWork attester key for delivery attestations, (b) the mock-partner key for NPR-credit confirmation. Verify whether SAS accepts a PDA signer; if yes, the owner may choose program-issued.
 
 ## 3. Schema `insuwork.paid_delivery.v1`
+> As built (E-44): 32-byte fields are Vec<u8>; `voucher` → `vouchers` (concatenated, ≤4); bands are 8 (see E-44) plus `amount_band = 255` + exact `amount` when the freelancer opts in; `npr_credit_confirmed` dropped (option A).
+
 | Field | Type | Source |
 |---|---|---|
 | freelancer_ref | [u8;32] | Commitment |
@@ -32,7 +36,7 @@ freelancer_ref = sha256( utf8("insuwork:v1:") || partner_kyc_id || salt )   // 3
 Attestation nonce/seed: `(commitment, milestone_index)` so it's unique and idempotent.
 
 ## 4. NPR credit confirmation
-Option A: a second schema `insuwork.npr_credit.v1 {commitment, milestone_index, credited_date, is_mock}` signed by the partner key. Option B: the delivery attestation is closed and re-issued with `npr_credit_confirmed = true`. **[OQ-10 — owner to choose A or B]**. In the hackathon the partner is a mock, so `is_mock = true` must be visible on the profile.
+Option A: a second schema `insuwork.npr_credit.v1 {commitment, milestone_index, credited_date, is_mock}` signed by the partner key. Option B: the delivery attestation is closed and re-issued with `npr_credit_confirmed = true`. **Decided: A (E-44).**. In the hackathon the partner is a mock, so `is_mock = true` must be visible on the profile.
 
 ## 5. Rules
 - Only successful releases produce attestations (hard rule 7). Upheld claims produce **no** freelancer attestation.

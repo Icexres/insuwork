@@ -1,0 +1,13 @@
+{
+  "name": "@insuwork/triage",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@ai-sdk/anthropic": "4",
+    "@ai-sdk/google": "4",
+    "@ai-sdk/openai": "4",
+    "ai": "7",
+    "zod": "4"
+  }
+}

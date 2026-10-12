@@ -1,0 +1,21 @@
+# OQ-18 (owner, 2026-10-10): Anchor 0.31.1 + Agave 2.1.21, built in Docker (tools/anchor.Dockerfile).
+[toolchain]
+anchor_version = "0.31.1"
+solana_version = "2.1.21"
+
+[features]
+seeds = true
+
+[programs.localnet]
+insuwork_bond = "7DpVomUkF1FfXxsf6gcdvmpFcAZBS7cTm7TvhNSjbKE1"
+insuwork_escrow = "FuY5Vc1im394GVYyg9v4aRdD2NaLkNnhqcH7j2bCFaKw"
+insuwork_disputes = "FWEXDMyxY1ie6K9gvvcA8SxeRmE4cohfE4j3xYSci4qj"
+
+[programs.devnet]
+insuwork_bond = "7DpVomUkF1FfXxsf6gcdvmpFcAZBS7cTm7TvhNSjbKE1"
+insuwork_escrow = "FuY5Vc1im394GVYyg9v4aRdD2NaLkNnhqcH7j2bCFaKw"
+insuwork_disputes = "FWEXDMyxY1ie6K9gvvcA8SxeRmE4cohfE4j3xYSci4qj"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
