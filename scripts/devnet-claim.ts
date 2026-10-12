@@ -14,7 +14,7 @@ import * as fx from "../services/indexer/src/effects.ts";
 const { BN } = anchor;
 const key = (n: string) => Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(`keys/${n}.json`, "utf8"))));
 const conn = new Connection(process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+const db = createClient((process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL)!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 const deployer = key("deployer");
 const mint = key("test-usdc-mint").publicKey;
 const partner = key("mock-partner");

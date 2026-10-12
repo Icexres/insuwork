@@ -14,7 +14,7 @@ import * as sdk from "../packages/sdk/src/index.ts";
 import { newMockKyc } from "../packages/shared/src/mock-partner.ts";
 
 const conn = new Connection(process.env.SOLANA_RPC_URL ?? "https://api.devnet.solana.com", "confirmed");
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+const db = createClient((process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL)!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 const load = (p: string) => Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(p, "utf8"))));
 const deployer = load("keys/deployer.json");
 const mint = load("keys/test-usdc-mint.json").publicKey;
