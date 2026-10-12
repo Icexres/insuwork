@@ -24,6 +24,9 @@
     "keeper": "node --env-file=apps/web/.env.local services/keeper/src/cli.ts",
     "devnet:e2e": "node --env-file=apps/web/.env.local scripts/devnet-e2e.ts",
     "devnet:claim": "node --env-file=apps/web/.env.local scripts/devnet-claim.ts",
+    "start": "pnpm db:start && pnpm run \"/^start:/\"",
+    "start:web": "pnpm --filter @insuwork/web dev",
+    "start:indexer": "pnpm indexer",
     "seed:demo": "node --env-file=apps/web/.env.local scripts/seed-demo.ts"
   },
   "devDependencies": {
