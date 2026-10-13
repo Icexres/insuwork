@@ -13,21 +13,22 @@
     "signedOut": "Not signed in",
     "envPilot": "PILOT · MOCK DATA",
     "envDevnet": "DEVNET",
-    "notifications": "Notifications",
-    "helpLabel": "Help",
-    "settings": "Settings",
+    "account": "Account",
+    "breadcrumb": "Breadcrumb",
+    "openNav": "Open navigation",
+    "closeNav": "Close navigation",
     "pilotNotice": { "title": "Pilot workspace", "body": "Bank credits and partner verification are simulated." },
     "devnetNotice": { "title": "Devnet pilot", "body": "Test funds only. No production financial activity." },
     "workspace": {
       "freelancer": "FREELANCER WORKSPACE",
-      "voucher": "VOUCHER WORKSPACE",
+      "voucher": "BACKER WORKSPACE",
       "client": "CLIENT WORKSPACE",
       "panel": "PANELIST WORKSPACE",
       "admin": "OPERATOR WORKSPACE"
     },
     "crumb": {
       "freelancer": "Freelancer",
-      "voucher": "Voucher",
+      "voucher": "Backer",
       "client": "Client",
       "panel": "Panelist",
       "admin": "Operator"
@@ -77,7 +78,11 @@
     "network": "Network",
     "paymentColumns": ["Payment / work", "Due / confirmation", "NPR · MOCK", "Status"],
     "fxNote": "Future NPR amounts are conversion estimates, not guaranteed final exchange amounts. Your contract pay is not reduced by the client’s guarantee or platform fees.",
-    "eyebrow": "{role} / INSUWORK"
+    "eyebrow": "{role} / INSUWORK",
+    "stage": { "done": "DONE", "now": "NOW", "next": "NEXT", "last": "LAST" },
+    "open": "Open →",
+    "review": "Review →",
+    "max": "MAX"
   },
   "public": {
     "bands": [
@@ -327,11 +332,16 @@
       "vest": "Retention vest · MOCK",
       "claimNote": "The client raised a concern on this payment. A panel reviews it; it never costs you money.",
       "journey": {
-        "applied": "APPLIED",
-        "interview": "INTERVIEW",
-        "ready": "REVIEWED",
-        "verified": "VERIFIED · MOCK"
-      }
+        "applied": "Applied",
+        "interview": "Interview",
+        "ready": "Reviewed",
+        "verified": "Verified · MOCK"
+      },
+      "continueApplication": "Continue application",
+      "nextStep": "Your next step: {step}.",
+      "summaryEyebrow": "YOUR INTERVIEW SUMMARY · ADVISORY",
+      "addResponse": "Add your response on the application →",
+      "finishProfile": "Finish your profile first →"
     },
     "verify": {
       "mockTitle": "MOCK partner verification",
@@ -465,6 +475,7 @@
       "steps": ["Connect wallet", "Verify ownership", "Create bond vault", "Deposit USDC"],
       "fund": "Fund your performance deposit",
       "stepBadge": "STEP 4 OF 4",
+      "stepOf": "STEP {n} OF 4",
       "intro": "Your Phantom wallet is connected and vault {vault} is created. Deposit at least {min} USDC to begin backing freelancers.",
       "amount": "Amount to deposit · USDC",
       "labels": { "balance": "Wallet balance", "after": "Balance after deposit", "min": "Minimum deposit" },
@@ -482,7 +493,7 @@
       }
     },
     "dashboard": {
-      "title": "{name} bond vault",
+      "title": "{name}’s bond vault",
       "subtitle": "Segregated performance deposit · 1:1 leverage · capital at risk · no guaranteed yield",
       "backFreelancer": "Back freelancer",
       "metrics": { "deposited": "Deposited · USDC", "allocated": "Allocated · USDC", "locked": "Locked · USDC", "unallocated": "Unallocated · USDC", "withdrawable": "Only unallocated funds are withdrawable" },
@@ -522,6 +533,7 @@
       "reportsBadge": "{count} REPORTS",
       "reportsBody": "These reports summarize delivery risk, communication quality, and fit for the current vault. They are advisory only and do not replace your own judgment.",
       "columns": ["Applicant", "Background", "Communication", "Status", "Action"],
+      "statusLabels": { "ready": "Ready for review", "backed": "Backed" },
       "review": "Review",
       "pending": "Report pending",
       "guidance": "Review guidance",
@@ -529,13 +541,16 @@
       "yourDecision": "Your decision",
       "premiumOnSuccess": "{rate} on success",
       "guidanceNote": "Review the advisory summary, then book a call before making a backing decision.",
+      "guidanceSteps": ["Read the advisory summary", "Book a 30-min call", "Set a cap within your remaining capacity", "Back the freelancer · {rate} premium on success"],
       "capacityNotice": {
         "title": "Capacity reminder",
         "body": "Total exposure caps must remain within the {deposit} deposit. {remaining} remains available for new backings."
       }
     },
     "report": {
-      "title": "Voucher report for {name}",
+      "title": "{name}",
+      "eyebrow": "BACKER / ADVISORY REPORT",
+      "allApplicants": "← All applicants",
       "subtitle": "Advisory review for backing decision. This report is not a credential or employment verification.",
       "bookCall": "Book 30-min call",
       "summary": "Candidate summary",
@@ -624,6 +639,10 @@
       "deliveryFilters": ["Any history", "1+ paid delivery", "3+ paid deliveries"],
       "backerLabel": "BACKER",
       "paidDeliveries": "{count} paid deliveries",
+      "noDeliveries": "New · no paid deliveries yet",
+      "freeCapLabel": "FREE / CAP",
+      "free": "{amount} free",
+      "fullyCommitted": "Backing fully committed",
       "deliveredLabel": "DELIVERED WORK",
       "protection": {
         "title": "Claim protection",
@@ -651,6 +670,15 @@
       "saveDraft": "Save milestone draft",
       "steps": ["Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
       "details": "Commitment details",
+      "choose": "Choose a backed freelancer",
+      "backedBy": "Backed by {name}",
+      "live": "LIVE",
+      "optional": "OPTIONAL",
+      "count": "{n} / 12",
+      "continueTo": "Continue to {step}",
+      "totalToFund": "Total to fund",
+      "capWarn": "Protection on this milestone is capped at {cap} (backing free capacity).",
+      "reviewLine": "M{n} · due {date} · {mode}",
       "selected": "SELECTED FREELANCER",
       "fields": {
         "title": "Commitment title",
@@ -687,6 +715,32 @@
     "commitment": {
       "crumb": "Commitment timeline",
       "title": "Commitment timeline",
+      "eyebrow": "COMMITMENT · {address}",
+      "all": "← All commitments",
+      "nextAction": "Next action",
+      "act": {
+        "fundBadge": "FUNDING",
+        "fund": "Fund the remaining {amount} to start the first milestone.",
+        "activeBadge": "ACTIVE",
+        "submittedBadge": "SUBMITTED · REVIEW",
+        "working": "{name} is working on M{n}. Approve to release {amount} to the MOCK partner — {first} receives ≈ {npr}.",
+        "submitted": "{name} submitted M{n}. Approve to release {amount} to the MOCK partner — {first} receives ≈ {npr}.",
+        "github": "It also releases automatically when {link} merges.",
+        "claimBadge": "CLAIM OPEN",
+        "claim": "Your claim on M{n} is with a panel of three. They rule within {days} days; the backing stays locked until then.",
+        "betweenBadge": "BETWEEN MILESTONES",
+        "between": "M{n} is funded. Activate it when {first} starts work — this locks {amount} of the backing.",
+        "completed": "Every milestone has been released. Paid Delivery Records were written for each release.",
+        "cancelled": "This commitment was cancelled. Unreleased escrow was refunded to your treasury.",
+        "fileClaim": "File a claim",
+        "cancelClaim": "Cancel claim",
+        "claimNote": "A {fee} claim fee is refunded if the claim is upheld. A panel of three rules within {days} days."
+      },
+      "backing": "Backing",
+      "lockedFor": "{amount} locked for M{n}",
+      "noLock": "No milestone locked",
+      "progress": "{done} of {total} released",
+      "funded": "Funded",
       "approve": "Approve & release {milestone}",
       "metrics": {
         "contract": "Salary contract · MOCK",
@@ -735,7 +789,11 @@
         "body": "Compare the delivery against the approved spec and evidence. If the work does not meet the agreed requirements, uphold the claim. If it meets the requirements, dismiss the claim."
       },
       "openEvidence": "Open evidence",
-      "reviewClaim": "Review claim",
+      "reviewClaim": "Review and vote →",
+      "viewClaim": "View claim →",
+      "votes": "Votes",
+      "votesOf": "{count} of 3",
+      "daysLeft": "{date} · {days} days",
       "checklist": "Review checklist",
       "checklistItems": [
         "Compare delivery against the approved spec and evidence.",
@@ -760,7 +818,12 @@
     },
     "review": {
       "crumb": "Claim review",
-      "eyebrow": "CLAIM REVIEW / INSUWORK",
+      "eyebrow": "CLAIM REVIEW / {id}",
+      "all": "← All claims",
+      "spec": "AGREED SPEC",
+      "majority": "MAJORITY REACHED",
+      "votesIn": "{count} OF 3 VOTES IN",
+      "you": "you",
       "title": "Review claim {id}",
       "openEvidence": "Open evidence ↗",
       "metrics": { "id": "Claim ID", "client": "Client", "freelancer": "Freelancer", "freelancerNote": "Pseudonymous delivery record", "locked": "Backing locked" },

@@ -1,13 +1,14 @@
 "use client";
 // Freelancer forms that need client state. No wallet code here, ever (rule 1).
 import { useRef, useState, type KeyboardEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import en from "@insuwork/shared/i18n/en.json";
-import { Button, Eyebrow, Field, Notice } from "@/components/ui";
+import { Button, Field, FieldRow, Notice } from "@/components/ui";
 
 /** Prints only the `.print-area` (income statement); see globals.css. */
 export function PrintButton({ children }: { children: string }) {
-  return <Button primary onClick={() => window.print()}>{children}</Button>;
+  return <Button onClick={() => window.print()}>{children}</Button>;
 }
 
 /** Step 5: MOCK partner KYC → freelancer_ref. Only bank name + last 4 digits are kept (rule 2). */
@@ -28,12 +29,12 @@ export function KycForm() {
   return (
     <>
       <Notice title={t.mockTitle}>{t.mockBody}</Notice>
-      <div className="flex flex-wrap gap-4">
+      <FieldRow min="15rem">
         <Field label={t.bank} value={bank} onChange={setBank} placeholder="Nabil Bank" />
-        <Field label={t.account} value={account} onChange={setAccount} inputMode="numeric" />
-      </div>
-      <div><Button primary icon="arrow-right" disabled={state.busy} onClick={submit}>{t.submit}</Button></div>
-      {state.error && <p role="alert" className="text-[13px] text-muted">{state.error}</p>}
+        <Field label={t.account} value={account} onChange={setAccount} inputMode="numeric" mono />
+      </FieldRow>
+      {state.error && <p role="alert" className="text-xs text-danger">{state.error}</p>}
+      <div className="flex justify-end"><Button large primary icon="arrow-right" disabled={state.busy} onClick={submit}>{t.submit}</Button></div>
     </>
   );
 }
@@ -92,37 +93,55 @@ export function TriageChat({ initial, sessionId: initialId, canStart, maxTurns, 
 
   if (!sessionId) {
     return (
-      <>
-        <p className="text-[13px] text-muted">{canStart ? t.startBody : t.cannotStart}</p>
-        {canStart && <div><Button primary icon="arrow-right" disabled={state.busy} onClick={start}>{t.start}</Button></div>}
-        {state.error && <p role="alert" className="text-[13px] text-muted">{state.error}</p>}
-      </>
+      <div className="flex flex-col items-start gap-4">
+        <p className="text-sm leading-[1.55] text-muted">{canStart ? t.startBody : t.cannotStart}</p>
+        {canStart ? (
+          <Button large primary icon="arrow-right" disabled={state.busy} onClick={start}>{t.start}</Button>
+        ) : (
+          <Link href="/freelancer" className="text-[13px] text-fg underline underline-offset-[3px] hover:text-bright">{en.freelancer.flow.finishProfile}</Link>
+        )}
+        {state.error && <p role="alert" className="text-xs text-danger">{state.error}</p>}
+      </div>
     );
   }
+  const progress = Math.min(100, (turn / maxTurns) * 100);
   return (
     <>
-      <div className="h-[3px] w-full bg-line">
-        <div className="h-full bg-fg" style={{ width: `${Math.min(100, (turn / maxTurns) * 100)}%` }} />
-      </div>
-      <Eyebrow>{`${section} · ${turn} / ~${maxTurns}`}</Eyebrow>
-      {messages.map((m, i) => (
-        <div key={i} className={`flex flex-col gap-2 rounded-md border-[0.5px] border-line p-[18px] ${m.role === "assistant" ? "bg-surface" : "bg-raised"}`}>
-          <Eyebrow>{m.role === "assistant" ? t.interviewer.replace("{section}", section.toUpperCase()) : name.toUpperCase()}</Eyebrow>
-          <p className="whitespace-pre-wrap text-sm leading-normal text-fg">{m.content}</p>
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-between gap-3 font-mono text-[11px] text-muted">
+          <span>{section.toUpperCase()}</span>
+          <span>{`${turn} / ~${maxTurns}`}</span>
         </div>
-      ))}
-      <div ref={end} />
+        <div role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} className="h-[3px] overflow-hidden rounded-sm bg-line">
+          <div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+      <div role="log" aria-live="polite" className="-mr-1 flex max-h-[min(58vh,560px)] flex-col gap-3 overflow-y-auto overscroll-contain pr-1">
+        {messages.map((m, i) => (
+          <div key={i} className={`flex max-w-[88%] flex-col gap-1.5 rounded-[10px] px-4 py-3.5 shadow-[inset_0_0_0_0.5px_theme(colors.line)] ${m.role === "assistant" ? "self-start bg-canvas" : "self-end bg-raised"}`}>
+            <span className="font-mono text-[10px] text-faint">{m.role === "assistant" ? t.interviewer.replace("{section}", section.toUpperCase()) : name.toUpperCase()}</span>
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-fg">{m.content}</p>
+          </div>
+        ))}
+        {state.busy && <p className="font-mono text-[11px] text-faint">…</p>}
+        <div ref={end} />
+      </div>
       {!state.done && (
-        <>
+        <div className="flex flex-col gap-2.5 border-t-[0.5px] border-line pt-3">
           <div onKeyDown={onKey}><Field label={t.answer} value={draft} onChange={setDraft} rows={3} /></div>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-xs text-muted">{t.hint}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-faint">{t.hint}</p>
             <Button primary icon="arrow-up" disabled={state.busy || !draft.trim()} onClick={send}>{t.send}</Button>
           </div>
-        </>
+        </div>
       )}
-      {state.done && <Notice title={t.doneTitle}>{t.doneBody}</Notice>}
-      {state.error && <p role="alert" className="text-[13px] text-muted">{state.error}</p>}
+      {state.done && (
+        <Notice tone="positive" title={t.doneTitle}>
+          {t.doneBody}{" "}
+          <Link href="/freelancer" className="text-accent hover:underline">{en.freelancer.flow.addResponse}</Link>
+        </Notice>
+      )}
+      {state.error && <p role="alert" className="text-xs text-danger">{state.error}</p>}
     </>
   );
 }

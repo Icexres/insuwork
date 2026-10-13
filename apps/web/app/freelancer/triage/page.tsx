@@ -1,6 +1,6 @@
 import en from "@insuwork/shared/i18n/en.json";
 import { MAX_TURNS } from "@insuwork/triage";
-import { Badge, Button, Divider, Notice, PageHeading, Panel, Split, Steps } from "@/components/ui";
+import { Button, Checklist, Notice, PageHeading, Panel, Split } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
 import { TriageChat } from "@/components/freelancer-forms";
 import { fmt } from "@/lib/demo";
@@ -19,6 +19,8 @@ export default async function TriageInterview() {
   const usedRetake = (s.app?.retakes_used ?? 0) >= 1;
   const canStart = !!s.app?.full_name && !!s.baseline && s.app.status !== "backed" && (s.sessionCount === 0 || !usedRetake);
   const turn = open ? open.transcript.filter((m) => m.role === "user").length : 0;
+  const done = !!s.summary && !open;
+  const at = done ? t.sectionList.length : Math.min(t.sectionList.length - 1, Math.floor((turn / MAX_TURNS) * t.sectionList.length));
 
   return (
     <Workspace role="freelancer" active="/freelancer/triage" crumb={[en.shell.nav.triage]}>
@@ -26,23 +28,22 @@ export default async function TriageInterview() {
       <Split
         side={
           <>
-            <Panel title={t.sections} badge={`${turn} / ~${MAX_TURNS}`}>
-              <Steps steps={t.sectionList} current={Math.min(t.sectionList.length, Math.floor((turn / MAX_TURNS) * t.sectionList.length) + 1)} />
-              <p className="text-xs text-muted">{t.duration}</p>
+            <Panel side="action" title={t.sections} action={<span className="font-mono text-[11px] text-muted">{`${turn} / ~${MAX_TURNS}`}</span>}>
+              <Checklist items={t.sectionList.map((label, i) => ({ label, state: i < at ? "done" : i === at && open ? "current" : "todo" }))} />
+              <p className="text-xs text-faint">{t.duration}</p>
             </Panel>
-            <Notice title={t.usageNotice.title}>{t.usageNotice.body}</Notice>
-            <Panel title={t.control}>
-              <p className="text-[13px] text-muted">{t.controlBody}</p>
-              <div><Badge>{usedRetake ? t.retakeUsed : t.retakeAvailable}</Badge></div>
+            <Notice title={t.usageNotice.title}>{t.usageNotice.body} {t.neverAsk}</Notice>
+            <Panel side="action" title={t.control} badge={usedRetake ? t.retakeUsed : t.retakeAvailable}>
+              <p className="text-[13px] leading-[1.55] text-muted">{t.controlBody}</p>
               <div><Button href="/freelancer">{en.common.saveAndLeave}</Button></div>
-              <Divider />
-              <p className="text-xs text-muted">{t.neverAsk}</p>
             </Panel>
           </>
         }
       >
-        <Panel title={t.title} badge={t.advisoryBadge}>
-          {s.summary && !open && <Notice title={en.freelancer.flow.reviewTitle}>{s.summary.summary}</Notice>}
+        <Panel title={en.freelancer.application.steps[3]} badge={t.advisoryBadge}>
+          {done && (
+            <Notice tone="positive" title={en.freelancer.flow.reviewTitle}>{s.summary!.summary}</Notice>
+          )}
           <TriageChat
             key={open?.id ?? "new"}
             initial={open?.transcript ?? []}

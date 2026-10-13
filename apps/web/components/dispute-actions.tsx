@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import * as sdk from "@insuwork/sdk";
 import en from "@insuwork/shared/i18n/en.json";
-import { Button, Check, Field } from "@/components/ui";
+import { Button, Check, Field, RadioCards } from "@/components/ui";
 import { TxStatus, useSend } from "@/components/wallet-tx";
 
 const t = en.disputes;
@@ -17,14 +17,18 @@ export function VoteForm({ commitment, index }: { commitment: string; index: num
   const s = useSend();
   return (
     <>
-      <Field label={t.ruling} value={vote} onChange={(v) => setVote(v as typeof vote)}
-        options={[["", t.choose], ["upheld", t.upheld], ["rejected", t.rejected]]} />
+      <RadioCards columns label={t.ruling} value={vote} onChange={setVote}
+        options={[
+          { value: "upheld", title: t.upheld, body: t.upheldEffect },
+          { value: "rejected", title: t.rejected, body: t.rejectedEffect },
+        ]} />
       <Check checked={ack} onChange={setAck}>{t.voteAck}</Check>
-      <div>
-        <Button primary icon="arrow-right" disabled={!vote || !ack || s.busy}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <Button large primary icon="arrow-right" disabled={!vote || !ack || s.busy}
           onClick={() => s.run(async (p, me) => [await sdk.castVoteIx(p, await load(p, commitment), index, me, sdk.VOTE[vote as "upheld" | "rejected"])])}>
-          {t.submitVote}
+          {vote ? `${t.submitVote} · ${vote === "upheld" ? t.upheld : t.rejected}` : t.submitVote}
         </Button>
+        <span className="text-xs text-faint">{en.panel.review.submitNote}</span>
       </div>
       <TxStatus msg={s.msg} sig={s.sig} />
     </>
@@ -36,7 +40,7 @@ export function FinalizeButton({ commitment, index }: { commitment: string; inde
   const s = useSend();
   return (
     <>
-      <div><Button disabled={s.busy} onClick={() => s.run(async (p) => [await sdk.finalizeClaimIx(p, await load(p, commitment), index)])}>{t.finalize}</Button></div>
+      <div><Button large primary disabled={s.busy} onClick={() => s.run(async (p) => [await sdk.finalizeClaimIx(p, await load(p, commitment), index)])}>{t.finalize}</Button></div>
       <TxStatus msg={s.msg} sig={s.sig} />
     </>
   );

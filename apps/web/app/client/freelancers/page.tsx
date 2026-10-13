@@ -1,8 +1,8 @@
 import en from "@insuwork/shared/i18n/en.json";
-import { Avatar, Button, Detail, Divider, Fact, Notice, PageHeading, Panel, Split } from "@/components/ui";
+import { Avatar, Button, Detail, Divider, Fact, Facts, Notice, PageHeading, Panel, Split, initialsOf } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
 import { fmt } from "@/lib/demo";
-import { backedFreelancers, clientCommitments, rules, short, usd, viewer } from "@/lib/data";
+import { backedFreelancers, rules, short, usd } from "@/lib/data";
 
 // CL-1 browse: freelancers with an open backing (named backer + cap).
 export const dynamic = "force-dynamic";
@@ -10,74 +10,62 @@ export const dynamic = "force-dynamic";
 export default async function BackedFreelancers() {
   const t = en.client.freelancers;
   const c = en.common;
-  const v = await viewer();
-  const [list, r, mine] = await Promise.all([backedFreelancers(), rules(), v?.wallet ? clientCommitments(v.wallet) : []]);
-  const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const [list, r] = await Promise.all([backedFreelancers(), rules()]);
 
   return (
     <Workspace role="client" active="/client/freelancers" crumb={[en.shell.nav.freelancers]}>
-      <PageHeading
-        eyebrow={fmt(c.eyebrow, { role: "CLIENT" })}
-        title={t.title}
-        subtitle={t.subtitle}
-        action={<Button primary icon="arrow-right" href="/client/new">{t.start}</Button>}
-      />
+      <PageHeading eyebrow={fmt(c.eyebrow, { role: "CLIENT" })} title={t.title} subtitle={t.subtitle} />
       <Split
         side={
           <>
-            <Panel title={v?.name ?? ""} badge={en.shell.envDevnet}>
-              <p className="text-xl font-medium leading-[1.2] text-white">{v?.wallet ? short(v.wallet) : "—"}</p>
-              <p className="text-[13px] text-muted">{t.clientBody}</p>
-              <Detail label={t.clientLabels.exposure} value={fmt(en.voucher.live.commitments, { count: mine.filter((x) => x.status === "active" || x.status === "funded").length })} />
-              <div><Button href="/client/commitments">{en.shell.nav.commitments}</Button></div>
-            </Panel>
-            <Panel title={t.protection.title}>
-              <p className="text-[22px] font-medium leading-[1.2] text-white">{t.protectionHeadline}</p>
-              <p className="text-[13px] text-muted">{t.protectionBody}</p>
+            <Panel side="info" title={t.protection.title}>
+              <p className="text-lg font-medium leading-[1.3] text-bright">{t.protectionHeadline}</p>
+              <p className="text-[13px] leading-[1.55] text-muted">{t.protectionBody}</p>
               <Divider />
               <Detail label={t.protectionLabels.trigger} value={t.protectionValues.trigger} />
               <Detail label={t.protectionLabels.decision} value={t.protectionValues.decision} />
               <Detail label={t.protectionLabels.cap} value={t.protectionValues.cap} />
               <Detail label={c.claimWindow} value={`${r.claimWindowDays} days`} />
-              <Notice title={t.premiumNotice.title}>{t.premiumNotice.body}</Notice>
             </Panel>
-            <Panel title={c.pilotBoundaries.title} badge={en.shell.envDevnet}>
-              <p className="text-[13px] text-muted">{c.pilotBoundaries.body}</p>
-              <Detail label={t.boundaryLabels.eligibility} value={t.boundaryValues.eligibility} />
-              <Detail label={t.boundaryLabels.counsel} value={t.boundaryValues.counsel} />
-            </Panel>
+            <Notice title={t.premiumNotice.title}>{t.premiumNotice.body}</Notice>
+            <Notice title={c.pilotBoundaries.title}>{c.pilotBoundaries.body}</Notice>
           </>
         }
       >
-        <Panel title={t.title} badge={fmt(t.matches, { count: list.length })}>
-          {list.length === 0 && <p className="text-[13px] text-muted">{en.client.actions.noFreelancers}</p>}
-        </Panel>
-        {list.map((f, i) => (
-          <section key={f.ref} className="flex flex-col gap-4 rounded-xl border-[0.5px] border-line bg-surface p-5">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <Avatar initials={initials(f.name)} />
-                <div className="flex flex-col gap-1">
-                  <p className="text-base font-medium text-white">{f.name}</p>
-                  <p className="font-mono text-[11px] text-muted">{short(f.ref)}</p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="font-mono text-[11px] text-faint">{fmt(t.matches, { count: list.length })}</p>
+        </div>
+        {list.length === 0 && (
+          <Panel dashed>
+            <p className="text-sm text-fg">{en.client.actions.noFreelancers}</p>
+          </Panel>
+        )}
+        {list.map((f) => {
+          const free = f.backings.reduce((a, b) => a + (b.cap > b.locked ? b.cap - b.locked : 0n), 0n);
+          return (
+            <article key={f.ref} className="flex flex-col gap-4 rounded-xl border-[0.5px] border-line bg-surface p-5">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+                <div className="flex min-w-0 flex-[1_1_14rem] items-center gap-3">
+                  <Avatar initials={initialsOf(f.name)} />
+                  <div className="flex min-w-0 flex-col gap-[3px]">
+                    <p className="text-[15px] font-medium text-bright">{f.name}</p>
+                    <p className="font-mono text-[11px] text-faint">{short(f.ref)}</p>
+                  </div>
                 </div>
+                {free > 0n ? (
+                  <Button primary icon="arrow-right" href={`/client/new?ref=${f.ref}`}>{t.start}</Button>
+                ) : (
+                  <span className="inline-flex min-h-10 items-center rounded-lg px-3.5 text-[13px] text-muted shadow-[inset_0_0_0_0.5px_theme(colors.line)]">{t.fullyCommitted}</span>
+                )}
               </div>
-              <Button primary={i === 0} icon={i === 0 ? "arrow-right" : undefined} href={`/client/new?ref=${f.ref}`}>
-                {t.start}
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex flex-1 flex-col gap-2">
+              <Facts>
                 <Fact label={t.backerLabel} value={f.backings.map((b) => b.voucherName).join(", ")} />
-                <p className="text-[13px] text-muted">{`$${usd(f.totalCap)} cap`}</p>
-              </div>
-              <div className="flex flex-1 flex-col gap-2">
-                <Fact label={t.deliveredLabel} value={fmt(t.paidDeliveries, { count: f.paidDeliveries })} />
-              </div>
-            </div>
-            <Notice title={t.protection.title}>{t.protection.body}</Notice>
-          </section>
-        ))}
+                <Fact label={t.freeCapLabel} value={<span className="font-mono">{`$${usd(free)} / $${usd(f.totalCap)}`}</span>} />
+                <Fact label={t.deliveredLabel} value={f.paidDeliveries ? fmt(t.paidDeliveries, { count: f.paidDeliveries }) : t.noDeliveries} />
+              </Facts>
+            </article>
+          );
+        })}
       </Split>
     </Workspace>
   );

@@ -1,5 +1,5 @@
 import en from "@insuwork/shared/i18n/en.json";
-import { Avatar, Badge, Detail, Eyebrow, Metrics, Notice, PageHeading, Panel, Split } from "@/components/ui";
+import { Avatar, Badge, Detail, Metrics, Notice, PageHeading, Panel, Split, TextLink, initialsOf } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
 import { FinalizeButton, VoteForm } from "@/components/dispute-actions";
 import { short, usd, viewer } from "@/lib/data";
@@ -18,19 +18,22 @@ export default async function ClaimReview({ params }: { params: { id: string } }
   const me = c?.panel.find((m) => m.wallet === v?.wallet);
   if (!c || !me) {
     return (
-      <Workspace role="panel" active="/panel" crumb={[t.crumb]}>
-        <Panel><p className="text-sm text-muted">{en.voucher.empty.notFound}</p></Panel>
+      <Workspace role="panel" active="/panel" crumb={[en.shell.nav.assignedClaims, t.crumb]}>
+        <TextLink href="/panel">{t.all}</TextLink>
+        <Panel dashed><p className="text-sm text-fg">{en.voucher.empty.notFound}</p></Panel>
       </Workspace>
     );
   }
   const majority = ["upheld", "rejected"].some((o) => c.panel.filter((m) => m.vote === o).length >= 2);
   const canFinalize = c.status === "panelAssigned" && (majority || Date.now() / 1000 > c.deadline);
+  const canVote = c.status === "panelAssigned" && !me.vote;
+  const votesIn = c.panel.filter((m) => m.vote).length;
 
   return (
-    <Workspace role="panel" active="/panel" crumb={[t.crumb, short(c.address)]}>
-      <PageHeading eyebrow={t.eyebrow} title={fmt(t.title, { id: short(c.address) })} subtitle={`${c.client} · M${c.index + 1} · ${c.freelancer}`} />
+    <Workspace role="panel" active="/panel" crumb={[en.shell.nav.assignedClaims, short(c.address)]}>
+      <TextLink href="/panel">{t.all}</TextLink>
+      <PageHeading eyebrow={fmt(t.eyebrow, { id: short(c.address) })} title={fmt(t.title, { id: short(c.address) })} subtitle={`${c.client} · M${c.index + 1} · ${c.freelancer}`} />
       <Metrics
-        cards
         items={[
           { label: t.metrics.id, value: short(c.address), note: day(c.filedTs) },
           { label: t.metrics.client, value: c.client, note: `M${c.index + 1}` },
@@ -41,42 +44,47 @@ export default async function ClaimReview({ params }: { params: { id: string } }
       <Split
         side={
           <>
-            <Panel title={t.members} badge={fmt(x.votesIn, { count: c.panel.filter((m) => m.vote).length })}>
+            <Panel side="action" title={t.members} action={<span className="font-mono text-[11px] text-muted">{fmt(t.votesIn, { count: votesIn })}</span>}>
               {c.panel.map((m) => (
                 <div key={m.wallet} className="flex items-center gap-3">
-                  <Avatar initials={m.name.slice(0, 2).toUpperCase()} size={36} />
+                  <Avatar initials={initialsOf(m.name)} size={34} />
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <p className="text-sm font-medium text-fg">{m.wallet === v?.wallet ? `${m.name} · ${x.you}` : m.name}</p>
-                    <p className="font-mono text-[11px] text-muted">{short(m.wallet)}</p>
+                    <p className="truncate text-[13px] text-bright">{m.wallet === v?.wallet ? `${m.name} · ${t.you}` : m.name}</p>
+                    <p className="font-mono text-[11px] text-faint">{short(m.wallet)}</p>
                   </div>
-                  <Badge>{m.vote ? (m.wallet === v?.wallet ? m.vote : x.voted) : t.memberPending}</Badge>
+                  <Badge>{m.vote ? (m.wallet === v?.wallet || c.status === "finalized" ? m.vote.toUpperCase() : x.voted.toUpperCase()) : t.memberPending}</Badge>
                 </div>
               ))}
             </Panel>
-            <Panel title={t.fees}>
+            <Panel side="info" title={t.fees}>
               <Detail label={en.common.wallet} value={short(me.wallet)} />
               <Detail label={t.feeLabels.claimFee} value={`$${usd(c.claimFee)}`} />
               <Detail label={x.deadline} value={day(c.deadline)} />
-              <p className="text-xs text-muted">{x.unpaid}</p>
+              <p className="text-xs text-faint">{x.unpaid}</p>
             </Panel>
           </>
         }
       >
-        <Panel title={t.overview} badge={c.status === "finalized" ? c.outcome.toUpperCase() : t.pending}>
-          <div className="flex flex-col gap-1.5 rounded-lg border-[0.5px] border-line bg-surface p-4">
-            <Eyebrow>{x.spec}</Eyebrow>
-            <p className="whitespace-pre-wrap text-sm text-fg">{c.spec ?? x.noSpec}</p>
+        <Panel title={t.overview}>
+          <div className="flex flex-col gap-2 rounded-lg bg-canvas p-4 shadow-[inset_0_0_0_0.5px_theme(colors.line)]">
+            <p className="font-mono text-[10px] text-muted">{t.spec}</p>
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-fg">{c.spec ?? x.noSpec}</p>
           </div>
-          <div className="flex flex-col gap-1.5 rounded-lg border-[0.5px] border-line bg-surface p-4">
-            <Eyebrow>{t.clientEvidence}</Eyebrow>
-            <p className="whitespace-pre-wrap text-sm text-fg">{c.evidence ?? x.noEvidence}</p>
-            <p className="font-mono text-[11px] text-faint">{`sha256 ${short(c.evidenceHash)}`}</p>
+          <div className="flex flex-col gap-2 rounded-lg bg-canvas p-4 shadow-[inset_0_0_0_0.5px_theme(colors.line)]">
+            <p className="font-mono text-[10px] text-muted">{t.clientEvidence}</p>
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-fg">{c.evidence ?? x.noEvidence}</p>
+            <p className="break-all font-mono text-[11px] text-faint">{`sha256 ${short(c.evidenceHash)}`}</p>
           </div>
         </Panel>
-        <Panel title={t.rationale}>
-          {c.status === "panelAssigned" && !me.vote && <VoteForm commitment={c.commitment} index={c.index} />}
-          {me.vote && <p className="text-[13px] text-muted">{fmt(x.yourVote, { vote: me.vote })}</p>}
-          {canFinalize && <FinalizeButton commitment={c.commitment} index={c.index} />}
+        <Panel title={x.ruling} highlight={canVote}
+          badge={c.status === "finalized" ? c.outcome.toUpperCase() : majority ? t.majority : t.pending}>
+          {canVote && <VoteForm commitment={c.commitment} index={c.index} />}
+          {me.vote && <p className="text-sm leading-[1.55] text-fg">{fmt(x.yourVote, { vote: me.vote })}</p>}
+          {canFinalize && (
+            <div className="flex flex-col items-start gap-2.5 border-t-[0.5px] border-line pt-3">
+              <FinalizeButton commitment={c.commitment} index={c.index} />
+            </div>
+          )}
           <Notice title={t.finalNotice.title}>{t.finalNotice.body}</Notice>
         </Panel>
       </Split>

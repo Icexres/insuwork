@@ -1,5 +1,5 @@
 import en from "@insuwork/shared/i18n/en.json";
-import { Button, DataTable, Detail, Metrics, PageHeading, Panel, Split } from "@/components/ui";
+import { Bar, Button, Detail, Metrics, PageHeading, Pair, Panel, Row, RowList, Split, StatusDot } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
 import { WithdrawForm } from "@/components/voucher-actions";
 import { fmt } from "@/lib/demo";
@@ -12,68 +12,66 @@ export default async function BondDashboard() {
   const t = en.voucher.dashboard;
   const c = en.common;
   const e = en.voucher.empty;
+  const l = en.voucher.live;
   const v = await viewer();
   const r = await rules();
   const d = v?.wallet ? await voucherVault(v.wallet) : null;
-  const twoLine = (a: string, b: string) => (
-    <span className="flex flex-col gap-1">
-      <span className="text-[13px] text-fg">{a}</span>
-      <span className="text-[11px] text-muted">{b}</span>
-    </span>
-  );
+  const first = v?.name && !v.name.includes("@") ? v.name.split(" ")[0] : "";
 
   return (
     <Workspace role="voucher" active="/voucher/dashboard" crumb={[en.shell.nav.dashboard]}>
       <PageHeading
-        eyebrow={fmt(c.eyebrow, { role: "VOUCHER" })}
-        title={fmt(t.title, { name: v?.name ?? "" })}
+        eyebrow={fmt(c.eyebrow, { role: "BACKER" })}
+        title={first ? fmt(t.title, { name: first }) : en.shell.nav.vault}
         subtitle={t.subtitle}
         action={<Button primary icon="arrow-right" href={d?.exists ? "/voucher/applicants" : "/voucher"}>{d?.exists ? t.backFreelancer : e.createVault}</Button>}
       />
       {!d?.exists ? (
-        <Panel><p className="text-sm text-muted">{v?.wallet ? e.noVault : e.noWallet}</p></Panel>
+        <Panel dashed><p className="text-sm text-fg">{v?.wallet ? e.noVault : e.noWallet}</p></Panel>
       ) : (
         <>
           <Metrics
-            cards
             items={[
-              { label: t.metrics.deposited, value: usd(d.deposited), note: `Vault ${short(d.address)} · DEVNET` },
-              { label: t.metrics.allocated, value: usd(d.allocated), note: `${pct(d.allocated, d.deposited)}% of deposited capital` },
-              { label: t.metrics.locked, value: usd(d.locked), note: `${pct(d.locked, d.deposited)}% of deposited capital` },
-              { label: t.metrics.unallocated, value: usd(d.unallocated), note: t.metrics.withdrawable },
+              { label: t.metrics.deposited, value: `$${usd(d.deposited)}`, note: `Vault ${short(d.address)} · DEVNET` },
+              { label: t.metrics.allocated, value: `$${usd(d.allocated)}`, note: `${pct(d.allocated, d.deposited)}% of deposited capital` },
+              { label: t.metrics.locked, value: `$${usd(d.locked)}`, note: `${pct(d.locked, d.deposited)}% of deposited capital` },
+              { label: t.metrics.unallocated, value: `$${usd(d.unallocated)}`, note: t.metrics.withdrawable },
             ]}
           />
           <Split
             side={
               <>
-                <Panel title={t.overview} badge={en.shell.envDevnet}>
-                  <p className="text-[22px] font-medium leading-[1.2] text-white">{fmt(t.vault, { vault: short(d.address) })}</p>
-                  <Detail label={t.bars.deposited} value={usd(d.deposited)} />
-                  <Detail label={t.bars.allocated} value={usd(d.allocated)} />
-                  <Detail label={t.bars.locked} value={usd(d.locked)} />
-                  <Detail label={t.bars.unallocated} value={usd(d.unallocated)} />
-                  <Detail label={t.premiumsEarned} value={usd(d.premiums)} />
-                  <Detail label={t.claimsPaid} value={usd(d.claimsPaid)} />
+                <Panel side="info" title={t.overview}>
+                  <p className="mb-1 font-mono text-lg text-bright">{fmt(t.vault, { vault: short(d.address) })}</p>
+                  <Detail label={t.bars.deposited} value={`$${usd(d.deposited)}`} />
+                  <Detail label={t.bars.allocated} value={`$${usd(d.allocated)}`} />
+                  <Detail label={t.bars.locked} value={`$${usd(d.locked)}`} />
+                  <Detail label={t.bars.unallocated} value={`$${usd(d.unallocated)}`} />
+                  <Detail label={t.premiumsEarned} value={`$${usd(d.premiums)}`} />
+                  <Detail label={t.claimsPaid} value={`$${usd(d.claimsPaid)}`} />
                 </Panel>
-                <Panel title={t.withdraw} badge={`${usd(d.unallocated)} USDC`}>
-                  <p className="text-[13px] text-muted">{t.withdrawBody}</p>
+                <Panel side="action" title={t.withdraw} action={<span className="font-mono text-[11px] text-muted">{`$${usd(d.unallocated)}`}</span>}>
+                  <p className="text-xs leading-[1.55] text-muted">{t.withdrawBody}</p>
                   <WithdrawForm max={d.unallocated.toString()} mint={r.mint} label={t.withdrawAmount} button={t.withdrawButton} />
                 </Panel>
               </>
             }
           >
             <Panel title={t.utilisation} badge={t.leverageBadge}>
-              <p className="text-[13px] text-muted">{t.utilisationBody}</p>
-              <div className="flex flex-wrap gap-3">
-                {(["deposited", "allocated", "locked", "unallocated"] as const).map((k) => (
-                  <div key={k} className="flex min-w-[120px] flex-1 flex-col gap-2 font-mono text-[11px]">
-                    <div className="flex justify-between">
-                      <span className="text-muted">{t.bars[k]}</span>
-                      <span className="text-fg">{usd(d[k])}</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-raised">
-                      <div className="h-full rounded-full bg-edge" style={{ width: `${pct(d[k], d.deposited)}%` }} />
-                    </div>
+              <p className="text-[13px] leading-[1.55] text-muted">{t.utilisationBody}</p>
+              <div role="img" aria-label={`${t.bars.allocated} ${pct(d.allocated, d.deposited)}%, ${t.bars.locked} ${pct(d.locked, d.deposited)}%`}
+                className="relative h-3.5 overflow-hidden rounded-full bg-raised shadow-[inset_0_0_0_0.5px_theme(colors.edge)]">
+                <div className="absolute inset-y-0 left-0 bg-muted transition-[width] duration-500" style={{ width: `${pct(d.allocated, d.deposited)}%` }} />
+                <div className="absolute inset-y-0 left-0 bg-accent transition-[width] duration-500" style={{ width: `${pct(d.locked, d.deposited)}%` }} />
+              </div>
+              <div className="grid gap-x-4 gap-y-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr))]">
+                {([["locked", "bg-accent"], ["allocated", "bg-muted"], ["unallocated", "bg-raised"]] as const).map(([k, sw]) => (
+                  <div key={k} className="flex min-w-0 flex-col gap-1">
+                    <span className="flex items-center gap-2 text-xs text-muted">
+                      <span className={`size-2 rounded-sm shadow-[inset_0_0_0_0.5px_theme(colors.edge)] ${sw}`} />
+                      {t.bars[k]}
+                    </span>
+                    <span className="font-mono text-[13px] text-bright">{`$${usd(d[k])}`}</span>
                   </div>
                 ))}
               </div>
@@ -82,18 +80,30 @@ export default async function BondDashboard() {
               {d.backings.length === 0 ? (
                 <p className="text-[13px] text-muted">{e.noBackings}</p>
               ) : (
-                <DataTable
-                  columns={t.backingColumns}
-                  rows={d.backings.map((b) => [
-                    twoLine(b.name, b.commitments.length ? b.commitments.map((x) => `${short(x.client)} · ${x.status}`).join(", ") : en.voucher.live.noCommitment),
-                    twoLine(usd(b.cap), fmt(en.voucher.live.capOf, { locked: usd(b.locked), cap: usd(b.cap) })),
-                    <span key="p" className="text-[13px] text-fg">{fmt(en.voucher.live.commitments, { count: b.active_commitments })}</span>,
-                    twoLine(BigInt(b.locked) > 0n ? en.voucher.live.locked : en.voucher.live.open, ""),
-                  ])}
-                />
+                <RowList>
+                  {d.backings.map((b) => {
+                    const lockedB = BigInt(b.locked), cap = BigInt(b.cap);
+                    return (
+                      <Row key={b.pubkey} min="10rem">
+                        <span className="flex min-w-0 flex-col gap-1">
+                          <span className="text-sm text-bright">{b.name}</span>
+                          <span className="truncate text-xs text-muted">
+                            {b.commitments.length ? b.commitments.map((x) => `${short(x.client)} · ${x.status}`).join(", ") : l.noCommitment}
+                          </span>
+                        </span>
+                        <span className="flex min-w-0 flex-col gap-1.5">
+                          <span className="font-mono text-xs text-fg">{fmt(l.capOf, { locked: `$${usd(lockedB)}`, cap: `$${usd(cap)}` })}</span>
+                          <Bar accent pct={pct(lockedB, cap)} />
+                        </span>
+                        <Pair mono top={fmt(l.commitments, { count: b.active_commitments })} />
+                        <StatusDot tone={lockedB > 0n ? "accent" : "muted"}>{lockedB > 0n ? l.locked : l.open}</StatusDot>
+                      </Row>
+                    );
+                  })}
+                </RowList>
               )}
-              <Detail label={t.totalPremiums} value={usd(d.premiums)} />
-              <Detail label={t.claimsPaid} value={usd(d.claimsPaid)} />
+              <Detail label={t.totalPremiums} value={`$${usd(d.premiums)}`} />
+              <Detail label={t.claimsPaid} value={`$${usd(d.claimsPaid)}`} />
             </Panel>
           </Split>
         </>

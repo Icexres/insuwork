@@ -67,10 +67,10 @@ export function useSend() {
 export function TxStatus({ msg, sig, error }: { msg?: string; sig?: string; error?: string }) {
   if (!msg && !error) return null;
   return (
-    <p role={error ? "alert" : "status"} className="text-[13px] text-muted">
+    <p role={error ? "alert" : "status"} className={`font-mono text-xs leading-normal ${error || msg?.startsWith(t.failed) ? "text-danger" : sig ? "text-accent" : "text-muted"}`}>
       {error ?? msg}{" "}
       {sig && !error && (
-        <a className="underline" href={`https://explorer.solana.com/tx/${sig}?cluster=devnet`} target="_blank" rel="noreferrer">{t.viewTx}</a>
+        <a className="underline underline-offset-2" href={`https://explorer.solana.com/tx/${sig}?cluster=devnet`} target="_blank" rel="noreferrer">{t.viewTx}</a>
       )}
     </p>
   );
