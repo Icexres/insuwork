@@ -8,6 +8,7 @@
   },
   "shell": {
     "publicProfile": "Public profile ↗",
+    "settings": "Settings",
     "help": "Help & pilot guidance ↗",
     "footer": "InsuWork · Pre-validation pilot · Demonstration data",
     "signedOut": "Not signed in",
@@ -965,6 +966,13 @@
       "ruleLabels": { "release": "Salary release", "unlock": "Backing unlock" },
       "rulesNote": "Illustrative historical events. MOCK bank credits are simulated and are not evidence of a real payout."
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "deleteTitle": "Delete account",
+    "deleteBody": "Removes your profile, sign-in, KYC and application data. On-chain records (bonds, escrow, Paid Delivery Records) cannot be erased.",
+    "deleteConfirm": "I understand this cannot be undone",
+    "deleteButton": "Delete my account"
   },
   "auth": {
     "back": "Back to site",

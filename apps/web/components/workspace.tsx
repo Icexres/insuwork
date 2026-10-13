@@ -165,6 +165,7 @@ export async function Workspace({
                 </>
               )}
               <div className="h-[0.5px] bg-line" />
+              <Link role="menuitem" href="/settings" className="-mx-2 -my-1 flex min-h-[34px] items-center rounded-md px-2 text-[13px] text-fg hover:bg-raised">{s.settings}</Link>
               <form action={signOut}>
                 <button role="menuitem" type="submit" className="flex min-h-[38px] w-full items-center justify-center rounded-lg bg-raised text-[13px] text-fg shadow-[inset_0_0_0_0.5px_theme(colors.edge)] hover:text-bright">
                   {en.auth.signOut}
