@@ -2,6 +2,8 @@ import Link from "next/link";
 import en from "@insuwork/shared/i18n/en.json";
 import { Icon } from "@/components/ui";
 import { HeaderShell } from "@/components/landing-motion";
+import { viewer } from "@/lib/data";
+import { HOME } from "@/lib/roles";
 
 // Marketing-site header and footer, shared by the landing page and the /how, /backers, /clients, /freelancers pages.
 const t = en.landing;
@@ -12,7 +14,14 @@ export const pill = "press inline-flex h-8 shrink-0 items-center whitespace-nowr
 export const accentPill = "bg-accent font-medium text-canvas hover:text-canvas hover:brightness-[1.06] motion-safe:[transition:transform_160ms_var(--ease-out),filter_160ms_var(--ease-out)]";
 const brand = "press flex items-center gap-2 whitespace-nowrap text-[15px] font-medium text-bright";
 
-export function SiteHeader({ active }: { active: SitePage }) {
+/** Signed-in visitors get a link back to their workspace instead of Sign in / Get started (the session lives in cookies). */
+const workspaceHref = async () => {
+  const v = await viewer();
+  return v ? HOME[v.role] : null;
+};
+
+export async function SiteHeader({ active }: { active: SitePage }) {
+  const home = await workspaceHref();
   return (
     <HeaderShell className="content-grid fixed z-50 [inset-inline:0] [inset-block-start:0] [border-block-end:0.5px_solid_transparent] [transition:background-color_280ms_var(--ease-out),border-color_280ms_var(--ease-out)] data-[solid]:bg-[rgb(8_9_10/0.72)] data-[solid]:backdrop-blur-[16px] data-[solid]:backdrop-saturate-[1.4] data-[solid]:[border-block-end-color:theme(colors.hair)]">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -22,8 +31,14 @@ export function SiteHeader({ active }: { active: SitePage }) {
             <Link key={k} href={`/${k}`} aria-current={active === k ? "page" : undefined} className={`${pill} hidden hover:text-bright aria-[current]:text-bright md:inline-flex`}>{l}</Link>
           ))}
           <span className="mx-2 hidden h-4 w-px bg-white/[0.08] md:block" />
-          <Link href="/login" className={`${pill} hover:text-fg`}>{t.nav.signIn}</Link>
-          <Link href="/login?mode=signup" className={`${pill} ${accentPill}`}>{t.nav.start}</Link>
+          {home ? (
+            <Link href={home} className={`${pill} ${accentPill}`}>{t.nav.workspace}</Link>
+          ) : (
+            <>
+              <Link href="/login" className={`${pill} hover:text-fg`}>{t.nav.signIn}</Link>
+              <Link href="/login?mode=signup" className={`${pill} ${accentPill}`}>{t.nav.start}</Link>
+            </>
+          )}
         </nav>
       </div>
     </HeaderShell>
@@ -41,7 +56,8 @@ function Col({ title, children }: { title: string; children: React.ReactNode }) 
   );
 }
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const home = await workspaceHref();
   return (
     <>
       <section className="content-grid">
@@ -51,8 +67,12 @@ export function SiteFooter() {
           </h2>
           <p className="text-[15px] leading-6 text-muted">{t.cta.body}</p>
           <div className="flex flex-wrap justify-center gap-2">
-            <Link href="/login?mode=signup" className={`${pill} h-9 px-4 ${accentPill}`}>{t.nav.start}</Link>
-            <Link href="/login" className={`${pill} h-9 bg-white/[0.04] px-4 text-fg shadow-[inset_0_0_0_0.5px_rgb(255_255_255/0.08)] hover:bg-white/[0.07] hover:text-bright`}>{t.nav.signIn}</Link>
+            {home ? <Link href={home} className={`${pill} h-9 px-4 ${accentPill}`}>{t.nav.workspace}</Link> : (
+              <>
+                <Link href="/login?mode=signup" className={`${pill} h-9 px-4 ${accentPill}`}>{t.nav.start}</Link>
+                <Link href="/login" className={`${pill} h-9 bg-white/[0.04] px-4 text-fg shadow-[inset_0_0_0_0.5px_rgb(255_255_255/0.08)] hover:bg-white/[0.07] hover:text-bright`}>{t.nav.signIn}</Link>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -71,8 +91,12 @@ export function SiteFooter() {
               {NAV.slice(1).map(([k, l]) => <Link key={k} href={`/${k}`} className={footLink}>{l}</Link>)}
             </Col>
             <Col title={t.site.account}>
-              <Link href="/login" className={footLink}>{t.nav.signIn}</Link>
-              <Link href="/login?mode=signup" className={footLink}>{t.nav.start}</Link>
+              {home ? <Link href={home} className={footLink}>{t.nav.workspace}</Link> : (
+                <>
+                  <Link href="/login" className={footLink}>{t.nav.signIn}</Link>
+                  <Link href="/login?mode=signup" className={footLink}>{t.nav.start}</Link>
+                </>
+              )}
             </Col>
           </div>
           <div className="rule-bs flex flex-wrap items-end justify-between gap-6 [padding-block-start:24px]">

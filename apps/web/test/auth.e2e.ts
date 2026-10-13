@@ -9,7 +9,7 @@ import { APP, get, post, service, signIn } from "./session.ts";
 // route guard
 assert.equal(await get("/client/freelancers"), "/login");
 assert.equal(await get("/client/freelancers", (await signIn(null)).cookie), "/onboarding");
-const homes = { freelancer: "/freelancer/home", family: "/family", voucher: "/voucher/dashboard", client: "/client/freelancers", panelist: "/panel", admin: "/admin" };
+const homes = { freelancer: "/freelancer/home", voucher: "/voucher/dashboard", client: "/client/freelancers", panelist: "/panel", admin: "/admin" };
 const sessions: Record<string, { id: string; cookie: string }> = {};
 for (const [role, home] of Object.entries(homes)) {
   sessions[role] = await signIn(role);
@@ -18,8 +18,8 @@ for (const [role, home] of Object.entries(homes)) {
   assert.equal(await get(other, sessions[role].cookie), home, `${role} bounced from ${other}`);
 }
 
-// SIWS: freelancer/family cannot bind (rule 1)
-for (const role of ["freelancer", "family"]) assert.equal((await post("/api/auth/siws/nonce", sessions[role].cookie, { wallet: "x" })).status, 403);
+// SIWS: freelancer cannot bind (rule 1)
+for (const role of ["freelancer"]) assert.equal((await post("/api/auth/siws/nonce", sessions[role].cookie, { wallet: "x" })).status, 403);
 
 // SIWS: client binds a wallet; nonce is single use; wrong key rejected
 const { publicKey, privateKey } = generateKeyPairSync("ed25519");

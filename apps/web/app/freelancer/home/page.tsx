@@ -2,6 +2,7 @@ import en from "@insuwork/shared/i18n/en.json";
 import { MOCK_NPR_PAISA_PER_USDC } from "@insuwork/shared/src/mock-partner";
 import { Badge, Button, DataTable, Detail, Fact, Lifecycle, Metrics, Notice, PageHeading, Panel, Split } from "@/components/ui";
 import { Workspace } from "@/components/workspace";
+import { PrintButton } from "@/components/freelancer-forms";
 import { fmt } from "@/lib/demo";
 import { viewer } from "@/lib/data";
 import { dateText, freelancerContracts, freelancerState, nprText } from "@/lib/freelancer";
@@ -60,9 +61,6 @@ export default async function FreelancerHome() {
                 </>
               ) : <p className="text-xs text-muted">{x.profileAfterKyc}</p>}
             </Panel>
-            <Panel title={t.family} badge={x.comingLater}>
-              <p className="text-xs text-muted">{x.familyLater}</p>
-            </Panel>
           </>
         }
       >
@@ -86,6 +84,7 @@ export default async function FreelancerHome() {
             <p className="text-xs text-muted">{en.common.fxNote}</p>
           </Panel>
         ))}
+        <Statement name={s.app?.full_name ?? v.name} kyc={s.kyc} contracts={k.commitments} npr={npr} />
         <Panel title={t.journey}>
           <div className="flex flex-wrap gap-4">
             <Fact label={x.journey.applied} value={s.app?.full_name ? "✓" : "—"} />
@@ -98,5 +97,82 @@ export default async function FreelancerHome() {
         </Panel>
       </Split>
     </Workspace>
+  );
+}
+
+/** Printable income statement (was the family view): received MOCK credits only; scheduled payments listed apart as estimates. */
+function Statement({ name, kyc, contracts, npr }: {
+  name: string;
+  kyc: { bank_name: string; account_masked: string } | null;
+  contracts: Awaited<ReturnType<typeof freelancerContracts>>["commitments"];
+  npr: (usdcBase: string) => bigint;
+}) {
+  const t = en.freelancer.statement;
+  const credits = contracts.flatMap((c) => [
+    ...c.milestones.filter((m) => m.payout).map((m) => ({ at: m.payout!.credited_at, what: fmt(t.credit, { client: c.clientName, n: m.index + 1 }), npr: BigInt(m.payout!.npr_amount) })),
+    ...(c.vestPayout ? [{ at: c.vestPayout.credited_at, what: fmt(t.vest, { client: c.clientName }), npr: BigInt(c.vestPayout.npr_amount) }] : []),
+  ]).sort((a, b) => a.at.localeCompare(b.at));
+  const remaining = contracts.flatMap((c) => c.milestones.filter((m) => !m.payout && ["pending", "active", "disputed"].includes(m.status))
+    .map((m) => `${dateText(m.due_ts)} · ${fmt(t.credit, { client: c.clientName, n: m.index + 1 })} · ≈ ${nprText(npr(m.amount))}`));
+  const rule = <div className="h-px w-full bg-rule" />;
+  const today = dateText(new Date().toISOString());
+
+  return (
+    <Panel title={t.title} badge={en.mock.badge}>
+      <p className="text-[13px] text-muted">{t.subtitle}</p>
+      <article className="print-area flex flex-col gap-6 rounded-md bg-paper p-6 leading-[1.6] text-ink md:p-10">
+        <div className="flex flex-wrap justify-between gap-6">
+          <div className="flex flex-col gap-1">
+            <p className="text-[22px]">{en.app.name}</p>
+            <p className="text-[13px] text-ink-2">{t.docTitle}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-ink-2">{fmt(t.issued, { date: today })}</p>
+            <p className="font-mono text-[11px]">{t.mockData}</p>
+          </div>
+        </div>
+        {rule}
+        <div className="flex flex-wrap gap-8">
+          <div className="flex flex-1 flex-col gap-1">
+            <p className="text-[11px] text-ink-2">{t.holder}</p>
+            <p className="text-base">{name}</p>
+            {kyc && <p className="text-xs">{`${kyc.bank_name} · ${kyc.account_masked}`}</p>}
+          </div>
+          <div className="flex flex-1 flex-col gap-1">
+            <p className="text-[11px] text-ink-2">{t.payer}</p>
+            <p className="text-base">{[...new Set(contracts.map((c) => c.clientName))].join(", ") || "—"}</p>
+            <p className="text-xs">{t.payerBody}</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-4 text-[11px] text-ink-2">{t.columns.map((c) => <p key={c} className="flex-1">{c}</p>)}</div>
+          {rule}
+          {credits.length === 0 && <p className="text-[13px] text-ink-2">{t.empty}</p>}
+          {credits.map((c) => (
+            <div key={c.at + c.what} className="flex gap-4 text-[13px]">
+              <p className="flex-1">{dateText(c.at)}</p>
+              <p className="flex-1">{c.what}</p>
+              <p className="flex-1 font-mono">{nprText(c.npr)}</p>
+            </div>
+          ))}
+          {rule}
+          <div className="flex gap-4">
+            <p className="flex-[2] text-base">{t.total}</p>
+            <p className="flex-1 font-mono text-xl">{nprText(credits.reduce((a, c) => a + c.npr, 0n))}</p>
+          </div>
+        </div>
+        <p className="text-xs text-ink-2">{t.disclaimer}</p>
+        {remaining.length > 0 && (
+          <div className="flex flex-col gap-2 bg-paper-2 p-4">
+            <p className="text-[13px]">{t.remaining}</p>
+            {remaining.map((r) => <p key={r} className="font-mono text-xs">{r}</p>)}
+          </div>
+        )}
+        {rule}
+        <p className="text-[10px] text-ink-2">{t.pilotCopy}</p>
+      </article>
+      <p className="text-xs text-muted">{t.receivedNotice}</p>
+      <div><PrintButton>{t.print}</PrintButton></div>
+    </Panel>
   );
 }

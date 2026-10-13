@@ -1,9 +1,8 @@
 // DB role (profiles.role) ↔ route prefix. The UI calls the panelist role "panel".
-export type DbRole = "freelancer" | "family" | "voucher" | "client" | "panelist" | "admin";
+export type DbRole = "freelancer" | "voucher" | "client" | "panelist" | "admin";
 
 export const HOME: Record<DbRole, string> = {
   freelancer: "/freelancer/home",
-  family: "/family",
   voucher: "/voucher/dashboard",
   client: "/client/freelancers",
   panelist: "/panel",
@@ -11,8 +10,8 @@ export const HOME: Record<DbRole, string> = {
 };
 
 export const PREFIX_ROLE: Record<string, DbRole> = {
-  freelancer: "freelancer", family: "family", voucher: "voucher", client: "client", panel: "panelist", admin: "admin",
+  freelancer: "freelancer", voucher: "voucher", client: "client", panel: "panelist", admin: "admin",
 };
 
 export const WALLET_ROLES: DbRole[] = ["voucher", "client", "panelist", "admin"];
-export const SELF_SERVICE_ROLES = ["freelancer", "family", "client", "voucher"] as const;
+export const SELF_SERVICE_ROLES = ["freelancer", "client", "voucher"] as const;

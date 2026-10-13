@@ -67,7 +67,7 @@ The printed local keys are the public Supabase demo keys; never use them outside
    `apps/web/.env.local` as `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
 2. `pnpm --filter @insuwork/web dev`, open http://localhost:3000/login. Magic-link emails land in Mailpit at http://localhost:54324.
 3. Google: set `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` / `_SECRET` and `enabled = true` under `[auth.external.google]` in `supabase/config.toml`.
-4. Panelist/admin roles are granted server-side, e.g. `update profiles set role = 'admin' where id = '<user id>'` in the local DB.
+4. Panelist/admin roles are granted server-side: list your email in `ADMIN_EMAILS` (signing in at `/login` then lands on `/admin`), or `update profiles set role = 'admin' where id = '<user id>'`. Panelists are granted from `/admin` by email.
 5. End-to-end auth check (dev server running): `cd apps/web && node --env-file=.env.local test/auth.e2e.ts`.
 Without `NEXT_PUBLIC_SUPABASE_URL` the role guard is off and the demo screens browse freely.
 
@@ -136,7 +136,7 @@ Everything runs on free tiers; there is no long-running process. Programs are al
 3. **Vercel env** (Production): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
    `NEXT_PUBLIC_RPC_URL`, `SOLANA_RPC_URL`, `GITHUB_WEBHOOK_SECRET`, `GITHUB_ORACLE_SECRET_KEY`, `KEEPER_SECRET_KEY`,
    `KEEPER_RUN_SECRET`, `SAS_CREDENTIAL_AUTHORITY`, `ATTESTER_SECRET_KEY`, `MOCK_PARTNER_SECRET_KEY`, `AI_PROVIDER`,
-   `AI_MODEL` + the provider key. Never set `NEXT_PUBLIC_E2E_WALLET`. Keys are base58 secrets; the deployer/admin key stays local.
+   `AI_MODEL` + the provider key, `ADMIN_EMAILS` (your real email — set it before `pnpm seed:demo` so the deployer wallet binds to you, not the `.local` demo inbox). Never set `NEXT_PUBLIC_E2E_WALLET`. Keys are base58 secrets; the deployer/admin key stays local.
 4. **Cron.** Two cron-job.org jobs, every minute, method POST, header `Authorization: Bearer <KEEPER_RUN_SECRET>`:
    `https://<app>.vercel.app/api/indexer/run` and `…/api/keeper/run`. The indexer route answers
    `{ ok, attester, partner, errors }`; `attester`/`partner` false means their keys are missing in Vercel.

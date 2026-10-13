@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import en from "@insuwork/shared/i18n/en.json";
 import { Button, Eyebrow, Field, Notice } from "@/components/ui";
 
+/** Prints only the `.print-area` (income statement); see globals.css. */
+export function PrintButton({ children }: { children: string }) {
+  return <Button primary onClick={() => window.print()}>{children}</Button>;
+}
+
 /** Step 5: MOCK partner KYC → freelancer_ref. Only bank name + last 4 digits are kept (rule 2). */
 export function KycForm() {
   const t = en.freelancer.verify;

@@ -19,8 +19,10 @@ export async function middleware(req: NextRequest) {
   });
   const { data: { user } } = await supabase.auth.getUser();
 
-  const needed = PREFIX_ROLE[req.nextUrl.pathname.split("/")[1]];
-  if (!needed) return res;
+  const seg = req.nextUrl.pathname.split("/")[1];
+  const needed = PREFIX_ROLE[seg];
+  // a signed-in user opening /login goes straight back to their workspace
+  if (!needed && !(seg === "login" && user)) return res;
   const to = (path: string) => {
     const r = NextResponse.redirect(new URL(path, req.url));
     res.cookies.getAll().forEach((c) => r.cookies.set(c));

@@ -11,7 +11,8 @@ export type IconName =
   | "bell"
   | "circle-help"
   | "arrow-right"
-  | "arrow-up";
+  | "arrow-up"
+  | "settings";
 
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
   // eslint-disable-next-line @next/next/no-img-element

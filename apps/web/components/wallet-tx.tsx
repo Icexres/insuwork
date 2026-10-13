@@ -1,5 +1,5 @@
 "use client";
-// Shared wallet-transaction plumbing for the wallet roles' action forms (rule 1: never imported by freelancer/family).
+// Shared wallet-transaction plumbing for the wallet roles' action forms (rule 1: never imported by freelancer pages).
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import * as anchor from "@coral-xyz/anchor";

@@ -1,5 +1,5 @@
 -- T-20 RLS checks (TEST-PLAN W-02 + role escalation). Run: pnpm test:db
--- W-01 (family access) is deferred with OQ-22.
+-- W-01 (family access) dropped: the family role was removed (E-57).
 begin;
 select plan(12);
 

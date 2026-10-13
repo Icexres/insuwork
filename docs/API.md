@@ -3,14 +3,13 @@
 ## 1. Supabase schema (public schema; RLS on every table)
 | Table | Key columns | RLS (read / write) |
 |---|---|---|
-| `profiles` | `user_id` (auth.users), `role` enum(freelancer, family, voucher, client, panelist, admin), `display_name` (wallet lives in `wallet_links`) | self / self (`display_name` only; admin/panelist roles server-granted) |
+| `profiles` | `user_id` (auth.users), `role` enum(freelancer, voucher, client, panelist, admin) — family removed (E-57), `display_name` (wallet lives in `wallet_links`) | self / self (`display_name` only; admin/panelist roles server-granted) |
 | `wallet_links` | `user_id`, `wallet`, `verified_sig`, `created_at` — wallet users sign a nonce (SIWS) to bind wallet ↔ profile | self / server (after SIWS verify) |
 | `applications` | `id`, `freelancer_user_id`, `college`, `grad_year`, `skills[]`, `portfolio_urls[]`, `github_handle`, `status` enum(draft, triage, ready, backed, rejected) | owner, vouchers, admin / owner |
 | `triage_sessions` | `id`, `application_id`, `transcript jsonb`, `model`, `provider`, `started_at`, `ended_at` | owner, admin / server |
 | `triage_reports` | `id`, `application_id`, `report jsonb` (schema in AI-TRIAGE.md), `created_at` | owner (summary), vouchers, admin / server |
 | `partner_kyc` (MOCK) | `freelancer_user_id`, `kyc_id`, `salt`, `freelancer_ref`, `bank_name`, `account_masked`, `is_mock=true` | server only (owner sees masked) — masked via `my_kyc` view (E-40) |
-| `family_links` (deferred, OQ-22) | `freelancer_user_id`, `family_user_id`, `invited_email`, `status` | both / freelancer — OQ-22 |
-| `commitments` (mirror) | `pubkey`, `client`, `freelancer_ref`, `partner`, `backing`, `voucher`, `status`, totals | parties, family of freelancer, admin / indexer |
+| `commitments` (mirror) | `pubkey`, `client`, `freelancer_ref`, `partner`, `backing`, `voucher`, `status`, totals | parties, admin / indexer |
 | `milestones` (mirror) | `pubkey`, `commitment`, `index`, `amount`, `due_ts`, `spec_hash`, `status`, `release_mode`, `released_ts`, `tx_sig` | same |
 | `milestone_specs` | `milestone_pubkey` (nullable until created), `spec_markdown`, `spec_hash`, storage path | parties / client |
 | `github_links` | `milestone_pubkey`, `repo`, `pr_number`, `ref_hash` | parties / client |
@@ -18,7 +17,7 @@
 | `claims` (mirror) + `claim_evidence` | evidence files in Storage, `evidence_hash` | parties, panel, admin / client (evidence) |
 | `panelists` | `wallet`, `name`, `active` | admin / admin |
 | `relationships` | `party_a`, `party_b`, `kind`, `declared_by` | admin / declarer — OQ-20 |
-| `payouts` (MOCK) | `milestone_pubkey`, `usdc_amount`, `fx_rate`, `npr_amount`, `credited_at`, `is_mock=true` | freelancer, family, admin / mock-partner |
+| `payouts` (MOCK) | `milestone_pubkey`, `usdc_amount`, `fx_rate`, `npr_amount`, `credited_at`, `is_mock=true` | freelancer, admin / mock-partner |
 | `attestations` | `milestone_pubkey`, `schema`, `address`, `tx_sig`, `kind` | public / attester |
 | `siws_nonces` | `user_id`, `nonce`, `issued_at` (single use, 5 min) | server only |
 | `indexer_cursors` | `program`, `last_sig` | server only |
@@ -40,7 +39,6 @@ FX rate for the mock: `MOCK_NPR_PAISA_PER_USDC` in `packages/shared/src/mock-par
 | `/api/keeper/run` | POST | `Bearer KEEPER_RUN_SECRET` | Run one keeper pass; called by a scheduled job (E-41, E-47) |
 | `/api/indexer/run` | POST | `Bearer KEEPER_RUN_SECRET` | Run one indexer catch-up pass (poll + attestations + MOCK payouts); called by a scheduled job when hosted serverless (E-56) |
 | `/api/indexer/*` | — | internal | Live subscription + polling catch-up (E-41) |
-| `/api/family/[freelancerUserId]` | GET | family | Schedule + payouts in NPR |
 
 All request/response bodies are defined as zod schemas in `packages/shared/schemas`.
 

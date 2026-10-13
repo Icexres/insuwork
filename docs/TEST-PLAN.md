@@ -54,15 +54,15 @@ After random sequences of valid instructions: I-B1..I-B4, I-E1..I-E4 hold.
 ## 2. Off-chain
 | ID | P | Case |
 |---|---|---|
-| W-01 | P0 | RLS: family user can read only linked freelancer's milestones/payouts |
+| W-01 | — | _Dropped (E-57): no family role._ |
 | W-02 | P0 | RLS: freelancer cannot read `partner_kyc.salt` |
-| W-03 | P0 | No wallet code reachable (transitively) from `/freelancer`, `/family`, `/p` — `apps/web/test/wallet-boundary.test.ts` (E-53) |
+| W-03 | P0 | No wallet code reachable (transitively) from `/freelancer`, `/p` — `apps/web/test/wallet-boundary.test.ts` (E-53) |
 | W-04 | P0 | GitHub webhook: bad HMAC rejected; unmerged PR ignored; merged matching PR triggers one `oracle_approve` (idempotent on redelivery) |
 | W-05 | P0 | Attester idempotent: same release event twice → one attestation |
 | W-06 | P0 | Mock partner records have `is_mock=true`; UI shows MOCK badge |
 | W-07 | P1 | Triage report validates against zod schema; injection string in portfolio does not change system behaviour |
 | W-08 | P1 | Keeper pass is idempotent and skips disputed milestones |
-| W-09 | P1 | Copy lint: freelancer/family message keys contain none of: crypto, USDC, wallet, token, Solana |
+| W-09 | P1 | Copy lint: freelancer message keys contain none of: crypto, USDC, wallet, token, Solana |
 
 ## 3. End-to-end (devnet, Playwright, P0)
 - E2E-1 Happy path from DEMO-SCRIPT acts 1–3 — `apps/web/e2e/demo.spec.ts` (E-55).

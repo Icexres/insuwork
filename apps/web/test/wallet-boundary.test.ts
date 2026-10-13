@@ -1,4 +1,4 @@
-// W-03 (rule 1): nothing reachable from /freelancer, /family or the public profile may import wallet code.
+// W-03 (rule 1): nothing reachable from /freelancer or the public profile may import wallet code.
 // Follows local imports transitively, so a shared component that pulls in the adapter is caught too.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -37,9 +37,9 @@ function walletImports(entry: string) {
 const pages = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? pages(join(dir, d.name)) : /\.(tsx?)$/.test(d.name) ? [join(dir, d.name)] : []));
 
-test("W-03 no wallet code reachable from freelancer, family or public pages", () => {
-  const entries = ["app/freelancer", "app/family", "app/p"].flatMap((d) => pages(join(ROOT, d)));
-  assert.ok(entries.length >= 6);
+test("W-03 no wallet code reachable from freelancer or public pages", () => {
+  const entries = ["app/freelancer", "app/p"].flatMap((d) => pages(join(ROOT, d)));
+  assert.ok(entries.length >= 4);
   assert.deepEqual(entries.flatMap(walletImports), []);
 });
 

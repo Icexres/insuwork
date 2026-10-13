@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import en from "@insuwork/shared/i18n/en.json";
 import { short, viewer } from "@/lib/data";
@@ -16,10 +17,6 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
     ["home", "/freelancer/home", "layout-dashboard"],
     ["application", "/freelancer", "folder"],
     ["triage", "/freelancer/triage", "list-checks"],
-  ],
-  family: [
-    ["overview", "/family", "layout-dashboard"],
-    ["statement", "/family/statement", "folder"],
   ],
   voucher: [
     ["dashboard", "/voucher/dashboard", "layout-dashboard"],
@@ -41,6 +38,12 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
 };
 
 const WALLET_ROLES: Role[] = ["voucher", "client", "panel", "admin"];
+
+async function signOut() {
+  "use server";
+  await supabaseServer().auth.signOut();
+  redirect("/");
+}
 
 export async function Workspace({
   role,
@@ -117,13 +120,35 @@ export async function Workspace({
             <button type="button" aria-label={s.helpLabel}>
               <Icon name="circle-help" size={18} />
             </button>
+            {/* Settings menu: native <details>, works without the sidebar on small screens. */}
+            {v && (
+              <details className="relative">
+                <summary aria-label={s.settings} className="flex cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <Icon name="settings" size={18} />
+                </summary>
+                <div className="absolute right-0 top-8 z-50 flex w-64 flex-col gap-3 rounded-md border-[0.5px] border-line bg-surface p-4 shadow-lg">
+                  <p className="font-mono text-[11px] text-muted">{s.settings.toUpperCase()}</p>
+                  <div className="flex flex-col gap-1">
+                    <p className="truncate text-[13px] text-fg">{v.name}</p>
+                    <p className="truncate text-[11px] text-muted">{v.email}</p>
+                    <p className="font-mono text-[11px] text-muted">{s.workspace[role]}</p>
+                    {wallet && <p className="font-mono text-[11px] text-muted">{wallet}</p>}
+                  </div>
+                  {ownRef && <Link href={`/p/${ownRef}`} className="text-xs text-muted hover:text-fg">{s.publicProfile}</Link>}
+                  <Divider />
+                  <form action={signOut}>
+                    <button type="submit" className="w-full rounded-md border-[0.5px] border-line bg-raised px-3 py-2 text-left text-[13px] text-fg hover:border-edge">{en.auth.signOut}</button>
+                  </form>
+                </div>
+              </details>
+            )}
           </div>
         </header>
         <main className="flex flex-col gap-7 px-6 pb-14 pt-10 md:px-10">
           {children}
           <Divider />
           <footer className="flex flex-wrap justify-between gap-4 text-[11px] text-faint">
-            <p>{role === "family" ? s.footerFamily : s.footer}</p>
+            <p>{s.footer}</p>
             <p className="font-mono">{today}</p>
           </footer>
         </main>

@@ -8,7 +8,7 @@
 
 ## 1. Goal
 
-Demonstrate the full lifecycle of one **bonded contract** end to end: voucher bonds → backs a freelancer → client funds milestones → delivery → release to (mock) partner → premium to voucher → Paid Delivery attestation → NPR shown on the family page; plus one claim that the panel upholds and the bond pays.
+Demonstrate the full lifecycle of one **bonded contract** end to end: voucher bonds → backs a freelancer → client funds milestones → delivery → release to (mock) partner → premium to voucher → Paid Delivery attestation → NPR shown on the freelancer's home page; plus one claim that the panel upholds and the bond pays.
 
 ## 2. In scope (v1)
 
@@ -25,8 +25,8 @@ Demonstrate the full lifecycle of one **bonded contract** end to end: voucher bo
 | F9  | Paid Delivery Record: SAS attestation on every release; NPR-credit confirmation by mock partner         | OQ-10             |
 | F10 | Mock conversion partner, labelled MOCK                                                                  | E-08              |
 | F11 | AI triage interview → report for vouchers (advisory)                                                    | E-09              |
-| F12 | Web app views: client, voucher, freelancer, family, panel, admin, public profile                        | UX-FLOWS          |
-| F13 | Auth: wallets for client/voucher/panel/admin; Supabase email + Google for freelancer/family             | E-12              |
+| F12 | Web app views: client, voucher, freelancer, panel, admin, public profile                                | UX-FLOWS          |
+| F13 | Auth: wallets for client/voucher/panel/admin; Supabase email + Google for freelancer                    | E-12              |
 
 ## 3. Out of scope (v1)
 
@@ -48,7 +48,7 @@ Freelancer (no wallet) · Voucher (wallet) · Client (wallet / Squads) · Paneli
   - AC: mock partner creates a `kyc_id`; `freelancer_ref` is derived (SPEC-attestation); my bank account (fake) is stored only in the mock-partner table, marked MOCK.
 - **FR-4** I see my public profile link `/p/{freelancer_ref}` listing my Paid Delivery Records and backers.
   - AC: page reads on-chain attestations; shows no negative records.
-- **FR-5** I invite family members (OQ-22).
+- **FR-5** I print or share an income statement of my received payments (replaces family access, E-57).
 
 ### Voucher
 

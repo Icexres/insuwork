@@ -44,7 +44,7 @@ export async function freelancerContracts() {
       milestones: ((ms ?? []) as { pubkey: string; commitment: string; index: number; amount: string; due_ts: string; status: string; released_ts: string | null }[])
         .filter((m) => m.commitment === c.pubkey)
         .map((m) => ({ ...m, payout: (pays ?? []).find((p) => p.milestone_pubkey === m.pubkey) as { npr_amount: string; credited_at: string } | undefined })),
-      vestPayout: (pays ?? []).find((p) => p.kind === "retention_vest" && p.commitment === c.pubkey) as { npr_amount: string } | undefined,
+      vestPayout: (pays ?? []).find((p) => p.kind === "retention_vest" && p.commitment === c.pubkey) as { npr_amount: string; credited_at: string } | undefined,
     })),
   };
 }

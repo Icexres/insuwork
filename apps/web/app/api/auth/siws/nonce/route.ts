@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  // rule 1: freelancer and family never bind a wallet
+  // rule 1: freelancers never bind a wallet
   if (!profile || !WALLET_ROLES.includes(profile.role as DbRole)) {
     return NextResponse.json({ error: "role has no wallet" }, { status: 403 });
   }

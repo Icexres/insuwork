@@ -11,16 +11,15 @@
     "help": "Help & pilot guidance ↗",
     "footer": "InsuWork · Pre-validation pilot · Demonstration data",
     "signedOut": "Not signed in",
-    "footerFamily": "Read-only · Only the payment schedule and statement are shared.",
     "envPilot": "PILOT · MOCK DATA",
     "envDevnet": "DEVNET",
     "notifications": "Notifications",
     "helpLabel": "Help",
+    "settings": "Settings",
     "pilotNotice": { "title": "Pilot workspace", "body": "Bank credits and partner verification are simulated." },
     "devnetNotice": { "title": "Devnet pilot", "body": "Test funds only. No production financial activity." },
     "workspace": {
       "freelancer": "FREELANCER WORKSPACE",
-      "family": "FAMILY WORKSPACE",
       "voucher": "VOUCHER WORKSPACE",
       "client": "CLIENT WORKSPACE",
       "panel": "PANELIST WORKSPACE",
@@ -28,7 +27,6 @@
     },
     "crumb": {
       "freelancer": "Freelancer",
-      "family": "Family",
       "voucher": "Voucher",
       "client": "Client",
       "panel": "Panelist",
@@ -95,7 +93,7 @@
     "notFound": "No profile at this link.",
     "noRecords": "No paid deliveries yet.",
     "pending": "Pending",
-    "nav": { "backers": "For backers", "clients": "For clients", "families": "For families", "verify": "Verify a record", "signIn": "Sign in" },
+    "nav": { "backers": "For backers", "clients": "For clients", "verify": "Verify a record", "signIn": "Sign in" },
     "eyebrow": "PUBLIC PROFILE / {ref}",
     "url": "insuwork.app/p/{ref}",
     "backed": "BACKED",
@@ -128,7 +126,7 @@
     "footer": "InsuWork · Pre-validation pilot · Public profile and bank confirmations use demonstration data."
   },
   "landing": {
-    "nav": { "how": "How it works", "backers": "Backers", "clients": "Clients", "freelancers": "Freelancers", "signIn": "Sign in", "start": "Get started" },
+    "nav": { "how": "How it works", "backers": "Backers", "clients": "Clients", "freelancers": "Freelancers", "signIn": "Sign in", "start": "Get started", "workspace": "Open workspace" },
     "hero": {
       "title": "The trust layer for\nNepali freelancers",
       "body": "A named backer stands behind the work. The client funds each milestone up front. Delivered work is paid in NPR to a Nepali bank account.",
@@ -318,8 +316,6 @@
       "fxNote": "At MOCK FX 135 NPR per USD",
       "backerBody": "Your backer guarantees your work to clients. If something goes wrong, talk to them early. It never costs you money.",
       "profileAfterKyc": "Your public profile appears after verification.",
-      "comingLater": "COMING LATER",
-      "familyLater": "Family access arrives after the pilot run.",
       "noContracts": "No contracts yet",
       "noContractsBody": "Once a backer backs you, clients can fund milestones and payments appear here in NPR.",
       "credited": "Credited",
@@ -408,68 +404,27 @@
       "open": "Open ↗",
       "profileHint": "Share on your CV or LinkedIn. You control the link to your identity.",
       "revoke": "Revoke profile link",
-      "revokeBadge": "OQ-23 · REVOCATION",
-      "family": "Family access",
-      "familyStatus": "Active · Read-only payment access",
-      "removeAccess": "Remove access",
-      "invite": "Invite family",
-      "invitePlaceholder": "family@email.com",
-      "inviteButton": "Invite family member",
-      "limitBadge": "OQ-22 · ACCESS LIMIT"
-    }
-  },
-  "family": {
-    "later": {
-      "title": "Family access is coming later",
-      "body": "This page shows demonstration data. Family invitations open after the pilot run (OQ-22)."
-    },
-    "overview": {
-      "title": "{name}’s contract payments",
-      "subtitle": "Read-only. Payments arrive in Nepali rupees in {name}’s bank account.",
-      "openStatement": "Open income statement",
-      "metrics": { "received": "Received so far · MOCK", "total": "Total contract estimate · MOCK", "monthly": "Monthly estimate · MOCK", "monthlyNote": "Future conversion amounts may vary" },
-      "progress": "Received, not just scheduled",
-      "progressBadge": "MOCK BANK DATA",
-      "schedule": "Payment schedule",
-      "reviewNotice": {
-        "title": "What “under review” means",
-        "body": "{client} is checking the delivered work before approving payment. It is not yet a bank credit. Ask {name} for an update if the payment is delayed."
-      },
-      "fxNote": "Future estimates use a mock conversion rate of {rate}. Final exchange rates, fees and bank timing may differ.",
-      "glance": "Contract at a glance",
-      "glanceLabels": { "freelancer": "Freelancer", "period": "Period", "bank": "Bank", "backer": "Backer" },
-      "readOnly": "READ-ONLY ACCESS",
-      "guaranteeNotice": {
-        "title": "A guarantee protects the client",
-        "body": "The backer’s guarantee covers upheld failed-delivery claims by the client. It does not pay missed milestones to {name} or the family. A short contract is not permanent income security."
-      },
-      "update": "Need a clearer update?",
-      "updateBody": "{name} can explain delivery progress. You cannot approve work or change contract payments from this page.",
-      "contact": "Contact {name}"
+      "revokeBadge": "OQ-23 · REVOCATION"
     },
     "statement": {
       "title": "Income statement",
-      "subtitle": "A printable record of received contract payments — estimates are kept separate.",
+      "subtitle": "A printable record of your received payments — for a bank, or to share with your family. Estimates are kept separate.",
       "print": "Print / Save PDF",
       "docTitle": "Contract income statement",
       "issued": "Issued {date}",
       "mockData": "MOCK PARTNER DATA",
       "holder": "ACCOUNT HOLDER",
       "payer": "PAYER / SERVICE",
-      "period": "Reporting period: {period} · Contract {contract}",
-      "columns": ["PERIOD", "DESCRIPTION / CREDIT DATE", "CREDITED (NPR)"],
+      "payerBody": "Converted and credited by the payout partner (MOCK)",
+      "columns": ["CREDIT DATE", "DESCRIPTION", "CREDITED (NPR)"],
+      "credit": "{client} · payment M{n}",
+      "vest": "{client} · retention release",
       "total": "Total credited · MOCK",
+      "empty": "No bank credits yet. Your statement fills in as payments arrive.",
       "disclaimer": "Foreign-currency receipts for IT services, converted and credited by the simulated payout partner. This demonstration statement is not evidence of an actual SWIFT receipt and is not a bank-issued document.",
       "remaining": "Remaining scheduled payments — not credited income",
-      "pilotCopy": "PILOT COPY / NOT FOR FINANCIAL RELIANCE · Page 1 of 1",
-      "details": "Statement details",
-      "detailLabels": { "received": "Payments received", "total": "Credited total", "preparedFor": "Prepared for" },
-      "detailsNote": "Formatted for discussion with a bank or the NRB freelancer FX facility. Acceptance by a bank has not been validated.",
-      "receivedNotice": {
-        "title": "Received income only",
-        "body": "The total includes the one mock bank credit. Future scheduled payments are estimates and must not be treated as received income."
-      },
-      "back": "Back to overview"
+      "pilotCopy": "PILOT COPY / NOT FOR FINANCIAL RELIANCE",
+      "receivedNotice": "Only received credits count toward the total. Scheduled payments are estimates and must not be treated as received income."
     }
   },
   "voucher": {
@@ -974,7 +929,6 @@
     "onboardingSubtitle": "Pick the workspace that fits. Panel and admin access is granted by InsuWork.",
     "roles": {
       "freelancer": { "title": "Freelancer", "body": "I deliver work and get paid in NPR" },
-      "family": { "title": "Family", "body": "I follow a freelancer's payments" },
       "client": { "title": "Client", "body": "I fund milestone escrow" },
       "voucher": { "title": "Voucher", "body": "I post a bond behind a freelancer" }
     },

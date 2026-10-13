@@ -9,10 +9,7 @@ English only (E-14), shadcn/ui (E-11). Visual direction: Figma dark (E-54). Copy
 ## Freelancer (email/Google, no wallet)
 1. `/freelancer` onboarding stepper: Profile → Portfolio & GitHub → Baseline (NOC/consultancy status, for the study in IDEA §8.2) → Triage interview → Mock KYC → Done.
 2. `/freelancer/triage` chat UI with progress, end screen shows report summary.
-3. `/freelancer/home` status: application state, backers, active contract milestones (in NPR), profile link + copy button, invite family (OQ-22), revoke link (OQ-23).
-
-## Family (email/Google, no wallet)
-- `/family` — one card per linked freelancer: contract schedule (month, NPR amount, status Upcoming / Paid ✓ / Under review), total landed, a "statement" view printable for banks. MOCK badge on every amount.
+3. `/freelancer/home` status: application state, backers, active contract milestones (in NPR), profile link + copy button, revoke link (OQ-23), and a printable income statement (received MOCK credits only, estimates kept apart) the freelancer can share with a bank or family (E-57).
 
 ## Voucher (wallet)
 1. `/voucher` connect wallet → bind (SIWS) → create vault → deposit.

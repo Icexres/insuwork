@@ -62,7 +62,9 @@ console.log("▶ accounts");
 const sitaId = await user("sita@demo.insuwork.local", "freelancer", "Sita T.");
 await user("rajan@demo.insuwork.local", "voucher", "Rajan Gurung", rajan);
 await user("northwind@demo.insuwork.local", "client", "Northwind Labs", northwind);
-await user("ops@demo.insuwork.local", "admin", "InsuWork Ops", deployer);
+// hosted: a real ADMIN_EMAILS address (the .local demo inbox only exists in local Mailpit) gets the deployer wallet
+const adminEmail = process.env.ADMIN_EMAILS?.split(",")[0]?.trim().toLowerCase() || "ops@demo.insuwork.local";
+await user(adminEmail, "admin", "InsuWork Ops", deployer);
 const panelNames = ["Anil Maharjan", "Maya Shrestha", "Bikram Rai"];
 for (const [i, k] of panel.entries()) {
   await user(`panel${i + 1}@demo.insuwork.local`, "panelist", panelNames[i], k);
@@ -111,7 +113,7 @@ const out = {
   note: "Demo personas (illustrative). Sign in by magic link at /login; read the email in Mailpit (http://localhost:54324). Import keys/demo/*.json into a devnet wallet for the wallet roles; the admin uses keys/deployer.json.",
   logins: {
     freelancer: "sita@demo.insuwork.local", voucher: "rajan@demo.insuwork.local", client: "northwind@demo.insuwork.local",
-    admin: "ops@demo.insuwork.local", panel: panel.map((_, i) => `panel${i + 1}@demo.insuwork.local`),
+    admin: adminEmail, panel: panel.map((_, i) => `panel${i + 1}@demo.insuwork.local`),
   },
   wallets: { rajan: rajan.publicKey.toBase58(), northwind: northwind.publicKey.toBase58(), panel: panel.map((k) => k.publicKey.toBase58()), admin: deployer.publicKey.toBase58() },
   sita: { freelancerRef: ref, publicProfile: `/p/${ref}` },
