@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { PublicKey } from "@solana/web3.js";
 import * as sdk from "@insuwork/sdk";
-import { supabaseService } from "@/lib/supabase/server";
+import { supabaseServer, supabaseService } from "@/lib/supabase/server";
 import { programs } from "@/lib/chain";
 import { viewer } from "@/lib/data";
 
-// POST { commitment, specs: [{ index, markdown }], github: [{ index, repo, pr }] } — after the client created the
+// POST { commitment, project?, specs: [{ index, markdown }], github: [{ index, repo, pr }] } — after the client created the
 // commitment on-chain. Only the commitment's client may write, and every value must match its on-chain hash.
 export async function POST(req: Request) {
   const v = await viewer();
@@ -46,6 +46,10 @@ export async function POST(req: Request) {
       { onConflict: "milestone_pubkey" },
     );
     if (error) return NextResponse.json({ error: error.code === "23505" ? "that PR is already linked to another milestone" : error.message }, { status: 409 });
+  }
+  // E-59: the client's own project brief this commitment came from (RLS: own rows only)
+  if (typeof body.project === "string") {
+    await supabaseServer().from("projects").update({ commitment: key.toBase58() }).eq("id", body.project).is("commitment", null);
   }
   return NextResponse.json({ ok: true });
 }

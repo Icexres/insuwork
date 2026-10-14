@@ -17,9 +17,11 @@ English only (E-14), shadcn/ui (E-11). Visual direction: Figma dark (E-54). Copy
 3. `/voucher/dashboard` tiles: deposited, allocated, locked, premiums earned, claims paid; table of backings with live commitments; withdraw.
 
 ## Client (wallet)
-1. `/client/freelancers` browse backed freelancers (profile + backer + cap).
-2. `/client/new` wizard: freelancer → milestones (amount, due date, spec editor, release mode client/GitHub + repo/PR) → vest (OQ-5) → review totals (salary + 3% premium + 1% fee) → create → fund.
-3. `/client/commitments/[id]` milestone timeline: Activate, Approve, link PR, File claim (evidence upload), status of claims.
+1. `/client/projects` private project briefs (E-59, not a job board): brief → AI-drafted milestones → AI shortlist of backed freelancers (fit, reasons, first question) → Message / Start commitment.
+2. `/client/freelancers` browse backed freelancers (profile + backer + cap), Message any of them.
+3. `/client/new` wizard (`?project=` prefills): project title + brief → freelancer → milestones (title, amount, due date in order, deliverables, acceptance criteria, release mode client/GitHub + repo/PR; optional AI draft) → vest (OQ-5) → review totals (salary + 3% premium + 1% fee) → create → fund. Each spec = project context + that milestone's deliverables and criteria.
+4. `/client/messages` direct messages with freelancers (also `/voucher/messages`, `/freelancer/messages`; only clients/backers open a conversation, freelancers reply).
+5. `/client/commitments/[id]` milestone timeline: Activate, Approve, link PR, File claim (evidence upload), status of claims.
 
 ## Panelist (wallet)
 - `/panel` assigned claims → claim page: spec, evidence, timeline, vote form, deadline countdown.

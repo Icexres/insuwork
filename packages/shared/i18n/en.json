@@ -1,4 +1,35 @@
 {
+  "messages": {
+    "title": "Messages",
+    "eyebrow": "{role} / MESSAGES",
+    "subtitle": {
+      "member": "Talk directly with freelancers who applied for backing. Agree the scope here, then put it in a commitment.",
+      "freelancer": "Clients and backers who want to talk with you. Reply here."
+    },
+    "none": {
+      "member": "No conversations yet. Open a freelancer from Applicants, Backed freelancers or a project shortlist and press Message.",
+      "freelancer": "No messages yet. When a client or backer writes to you, it appears here."
+    },
+    "pick": "Select a conversation.",
+    "back": "← All conversations",
+    "placeholder": "Write a message…",
+    "send": "Send",
+    "sending": "Sending…",
+    "you": "You",
+    "roles": {
+      "client": "Client",
+      "voucher": "Backer",
+      "freelancer": "Freelancer"
+    },
+    "empty": "No messages yet. Say hello.",
+    "safety": {
+      "member": "Pay only through a commitment: off-platform payments have no backing behind them.",
+      "freelancer": "InsuWork pays you only through the partner bank. Never share passwords, OTPs or card details, and never pay anyone to get work."
+    },
+    "draft": "Hi {name}, I'm looking for help with “{title}”.\n\n{brief}\n\nWould you be interested? Happy to answer questions first.",
+    "message": "Message {name}",
+    "error": "Message not sent: {error}"
+  },
   "app": {
     "name": "InsuWork",
     "tagline": "Backed delivery, paid in NPR."
@@ -35,6 +66,8 @@
       "admin": "Operator"
     },
     "nav": {
+      "projects": "Projects",
+      "messages": "Messages",
       "applications": "Applications",
       "home": "Home",
       "application": "Application",
@@ -569,7 +602,101 @@
     }
   },
   "client": {
+    "projects": {
+      "labels": {
+        "skills": "Skills",
+        "budget": "Budget",
+        "deadline": "Deadline"
+      },
+      "title": "Projects",
+      "eyebrow": "CLIENT / PROJECTS",
+      "subtitle": "Describe the work once. The assistant drafts checkable milestones and shortlists backed freelancers who fit. Briefs are private to you.",
+      "newTitle": "New project",
+      "fields": {
+        "title": "Project title",
+        "brief": "What do you need built?",
+        "skills": "Skills · comma separated",
+        "budget": "Budget · optional",
+        "deadline": "Deadline · optional"
+      },
+      "placeholders": {
+        "title": "Clinic booking web app",
+        "brief": "Who it is for, what exists today, what must be delivered, stack or hosting constraints…",
+        "skills": "React, Node, PostgreSQL"
+      },
+      "create": "Save project",
+      "errTitle": "Give the project a title (3–120 characters).",
+      "errBrief": "Describe the project in 20–4000 characters.",
+      "errBudget": "Enter the budget in whole dollars.",
+      "none": "No projects yet. Write a brief and the assistant will plan it with you.",
+      "private": "Private to you. A freelancer sees a brief only if you send it in a message.",
+      "how": {
+        "title": "How the assistant works",
+        "steps": [
+          "Write a brief: the outcome, constraints and budget.",
+          "Draft milestones, each with deliverables and acceptance criteria you can check.",
+          "Shortlist backed freelancers ranked for fit, with a first question to ask each.",
+          "Message them, then start a commitment with the plan prefilled."
+        ]
+      },
+      "status": {
+        "brief": "Brief",
+        "planned": "Milestones drafted",
+        "shortlisted": "Shortlist ready",
+        "committed": "Commitment created"
+      },
+      "all": "← All projects",
+      "brief": "Brief",
+      "budget": "Budget {amount}",
+      "deadline": "Due {date}",
+      "plan": "Milestone plan",
+      "planEmpty": "No milestones yet. Let the assistant draft them from your brief; you can edit every line when you start the commitment.",
+      "planDraft": "Draft milestones with AI",
+      "planRedraft": "Redraft",
+      "planTotal": "{n} milestones · {amount}",
+      "deliverables": "Deliverables",
+      "acceptance": "Acceptance criteria",
+      "shortlist": "Best-fit freelancers",
+      "shortlistEmpty": "Rank backed freelancers with free cover against this brief and plan.",
+      "match": "Find best candidates",
+      "rematch": "Run again",
+      "matchedAt": "Ranked {date}",
+      "noMatches": "No backed freelancer with free cover fits yet.",
+      "fit": {
+        "strong": "Strong fit",
+        "good": "Good fit",
+        "partial": "Partial fit"
+      },
+      "ask": "Ask first",
+      "cover": "Free cover {amount}",
+      "deliveries": "{count} paid deliveries",
+      "message": "Message",
+      "start": "Start commitment",
+      "working": "The assistant is working…",
+      "advisory": "ADVISORY",
+      "advisoryNote": "AI suggestions only. The assistant reads applicants' interview reports and public delivery records; it never contacts anyone, signs or moves money. You decide.",
+      "committed": "A commitment was created from this project.",
+      "viewCommitment": "View commitment",
+      "failed": "The assistant could not finish: {error}"
+    },
     "actions": {
+      "msTitle": "Milestone title · the outcome",
+      "msTitlePlaceholder": "Booking flow live on staging",
+      "deliverables": "Deliverables · what is handed over",
+      "deliverablesPlaceholder": "Merged PR, staging URL, a short handover note…",
+      "acceptance": "Acceptance criteria · how you'll check it",
+      "acceptancePlaceholder": "A patient can book, reschedule and cancel; tests pass in CI…",
+      "ofSalary": "{pct}% of salary",
+      "aiDraft": "Draft milestones with AI",
+      "aiDrafting": "Drafting…",
+      "aiReplaces": "Replaces the milestones below. Advisory: check every line before you fund.",
+      "aiNeedsBrief": "Add a project title and brief first.",
+      "aiFailed": "The assistant could not draft milestones: {error}",
+      "errProject": "Give the project a title (3+ characters) and a brief (20+ characters).",
+      "errTitle": "Milestone {n}: give it a title.",
+      "errDeliverables": "Milestone {n}: list the deliverables.",
+      "errAcceptance": "Milestone {n}: say how you'll check it.",
+      "errOrder": "Milestone {n} is due before milestone {prev}.",
       "metaFailed": "The commitment is on-chain, but saving its specs and GitHub links failed. Reload the commitment and try again.",
       "noFreelancers": "No backed freelancers yet.",
       "claimFee": "Claim fee · refunded if upheld",
@@ -584,8 +711,6 @@
       "stepOf": "STEP {n} OF 5",
       "milestoneN": "Milestone {n}",
       "dueDate": "Due date",
-      "spec": "Delivery spec (what counts as done)",
-      "specPlaceholder": "Describe the deliverable and acceptance criteria…",
       "modeClient": "Client approval",
       "modeGithub": "GitHub merge (oracle)",
       "repo": "GitHub repo",
@@ -602,9 +727,9 @@
       "errNoBacking": "This freelancer has no free backing capacity.",
       "errAmount": "Milestone {n}: enter an amount.",
       "errDue": "Milestone {n}: pick a future due date.",
-      "errSpec": "Milestone {n}: describe the deliverable.",
       "errGithub": "Milestone {n}: GitHub release needs owner/repo and a PR number.",
       "errVest": "Enter a valid vest amount.",
+      "errFunds": "This wallet holds {have} devnet test USDC; funding needs {need}. Nothing was submitted.",
       "fund": "Fund {amount}",
       "activate": "Activate M{n}",
       "cancel": "Cancel commitment",
@@ -664,12 +789,19 @@
       "boundaryValues": { "eligibility": "Non-residents", "counsel": "Required before real funds" }
     },
     "new": {
+      "project": "What is this commitment for?",
+      "projectBody": "This context is written into every milestone spec, so the freelancer, the backer and a claims panel all read the same scope.",
+      "fromProject": "Prefilled from your project brief. Edits here don't change the saved project.",
+      "projectTitle": "Project title",
+      "projectBrief": "Project brief",
+      "projectBriefPlaceholder": "Who it is for, what exists today, what must be delivered, stack or hosting constraints…",
+      "budget": "Budget · optional, guides the AI draft",
       "crumb": "Client commitment",
       "eyebrow": "CLIENT COMMITMENT / INSUWORK",
       "title": "Create new commitment",
       "subtitle": "Define clear deliverables and release conditions. Step 2 of 5 · Milestones.",
       "saveDraft": "Save milestone draft",
-      "steps": ["Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
+      "steps": ["Project", "Freelancer", "Milestones", "Retention vest", "Review", "Create & fund"],
       "details": "Commitment details",
       "choose": "Choose a backed freelancer",
       "backedBy": "Backed by {name}",
@@ -698,7 +830,7 @@
       "milestones": "Milestones",
       "stepBadge": "STEP 2 OF 5",
       "continue": "Continue to retention vest",
-      "milestonesBody": "Specify what counts as delivery. Each active milestone has up to {cap} of backing.",
+      "milestonesBody": "Break the work into outcomes you can check. Each milestone's spec is hashed on-chain at creation: approval and any claim are judged against it. Up to {cap} of backing per active milestone.",
       "due": "Due {date}",
       "amount": "Amount",
       "totals": { "salary": "Total salary", "premium": "Client-paid premium", "fee": "Platform fee", "vest": "Optional forgiveness-only vest", "fund": "Total fund" },

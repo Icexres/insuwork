@@ -19,6 +19,9 @@
 | `relationships` | `party_a`, `party_b`, `kind`, `declared_by` | admin / declarer — OQ-20 |
 | `payouts` (MOCK) | `milestone_pubkey`, `usdc_amount`, `fx_rate`, `npr_amount`, `credited_at`, `is_mock=true` | freelancer, admin / mock-partner |
 | `attestations` | `milestone_pubkey`, `schema`, `address`, `tx_sig`, `kind` | public / attester |
+| `projects` (E-59) | `client_user_id`, `title`, `brief`, `skills[]`, `budget` (base units), `deadline`, `plan jsonb` (AI milestone drafts), `shortlist jsonb` (AI match), `commitment` | owner client / owner client — never freelancers |
+| `conversations` (E-59) | `freelancer_user_id`, `member_user_id` (client or backer), unique pair | participants / server (freelancer must have a ready/backed application) |
+| `messages` (E-59) | `conversation_id`, `sender_user_id`, `body` (≤ 2000) | participants / participants (as themselves) |
 | `siws_nonces` | `user_id`, `nonce`, `issued_at` (single use, 5 min) | server only |
 | `indexer_cursors` | `program`, `last_sig` | server only |
 | `events_raw` | `slot`, `sig`, `program`, `name`, `data jsonb` (key `sig+ix_index+event_index`) | admin / indexer |
@@ -34,6 +37,8 @@ FX rate for the mock: `MOCK_NPR_PAISA_PER_USDC` in `packages/shared/src/mock-par
 | `/api/triage/message` | POST | freelancer | Interview turn; generates the report when the interview ends (E-52) |
 | `/api/specs` | POST | client wallet | Upload spec, return `spec_hash` |
 | `/api/claims/evidence` | POST | client wallet | Upload evidence, return `evidence_hash` |
+| `/api/projects/plan` | POST | client | `{ project }` drafts + saves that brief's milestones; `{ title, brief, budgetUsd? }` (wizard) returns a plan only. Advisory (E-59) |
+| `/api/projects/match` | POST | client | Ranks backed freelancers with free cover against a brief + plan; saves the shortlist. Advisory (E-59) |
 | `/api/webhooks/github` | POST | GitHub HMAC secret | On `pull_request.closed && merged`: look up `github_links`, sign `oracle_approve` |
 | `/api/mock-partner/kyc` | POST | freelancer | Create MOCK kyc, `freelancer_ref` |
 | `/api/keeper/run` | POST | `Bearer KEEPER_RUN_SECRET` | Run one keeper pass; called by a scheduled job (E-41, E-47) |

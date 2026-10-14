@@ -3,6 +3,7 @@ import { Avatar, Button, Detail, Divider, Fact, Facts, Notice, PageHeading, Pane
 import { Workspace } from "@/components/workspace";
 import { fmt } from "@/lib/demo";
 import { backedFreelancers, rules, short, usd } from "@/lib/data";
+import { startConversation } from "@/lib/message-actions";
 
 // CL-1 browse: freelancers with an open backing (named backer + cap).
 export const dynamic = "force-dynamic";
@@ -52,11 +53,17 @@ export default async function BackedFreelancers() {
                     <p className="font-mono text-[11px] text-faint">{short(f.ref)}</p>
                   </div>
                 </div>
-                {free > 0n ? (
-                  <Button primary icon="arrow-right" href={`/client/new?ref=${f.ref}`}>{t.start}</Button>
-                ) : (
-                  <span className="inline-flex min-h-10 items-center rounded-lg px-3.5 text-[13px] text-muted shadow-[inset_0_0_0_0.5px_theme(colors.line)]">{t.fullyCommitted}</span>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  <form action={startConversation}>
+                    <input type="hidden" name="ref" value={f.ref} />
+                    <Button submit>{en.client.projects.message}</Button>
+                  </form>
+                  {free > 0n ? (
+                    <Button primary icon="arrow-right" href={`/client/new?ref=${f.ref}`}>{t.start}</Button>
+                  ) : (
+                    <span className="inline-flex min-h-10 items-center rounded-lg px-3.5 text-[13px] text-muted shadow-[inset_0_0_0_0.5px_theme(colors.line)]">{t.fullyCommitted}</span>
+                  )}
+                </div>
               </div>
               <Facts>
                 <Fact label={t.backerLabel} value={f.backings.map((b) => b.voucherName).join(", ")} />

@@ -4,6 +4,7 @@ import { Workspace } from "@/components/workspace";
 import { BackForm } from "@/components/voucher-actions";
 import { fmt } from "@/lib/demo";
 import { readyApplicants, usd, viewer, voucherVault } from "@/lib/data";
+import { startConversation } from "@/lib/message-actions";
 
 // VO-2 detail. Advisory report only — never a credential (AGENTS.md rule 9).
 export const dynamic = "force-dynamic";
@@ -30,7 +31,13 @@ export default async function ApplicantReport({ params }: { params: { id: string
         <Panel dashed><p className="text-sm text-fg">{en.voucher.empty.notFound}</p></Panel>
       ) : (
         <>
-          <PageHeading eyebrow={t.eyebrow} title={fmt(t.title, { name: a.name })} subtitle={t.subtitle} />
+          <PageHeading eyebrow={t.eyebrow} title={fmt(t.title, { name: a.name })} subtitle={t.subtitle}
+            action={
+              <form action={startConversation}>
+                <input type="hidden" name="user" value={a.freelancer_user_id} />
+                <Button submit icon="arrow-right">{fmt(en.messages.message, { name: a.name.split(" ")[0] })}</Button>
+              </form>
+            } />
           <Split
             sticky
             side={

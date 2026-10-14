@@ -12,7 +12,8 @@ export type IconName =
   | "circle-help"
   | "arrow-right"
   | "arrow-up"
-  | "settings";
+  | "settings"
+  | "message";
 
 export function Icon({ name, size = 16, className = "" }: { name: IconName; size?: number; className?: string }) {
   // eslint-disable-next-line @next/next/no-img-element

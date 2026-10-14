@@ -4,6 +4,8 @@ import { generateText, type LanguageModel } from "ai";
 import { z } from "zod";
 import interviewPrompt from "../prompts/interview.ts";
 import reportPrompt from "../prompts/report.ts";
+import planPrompt from "../prompts/plan.ts";
+import matchPrompt from "../prompts/match.ts";
 
 export const INTERVIEW_PROMPT_VERSION = "interview.v1";
 export const REPORT_PROMPT_VERSION = "report.v1";
@@ -69,25 +71,83 @@ export async function interviewTurn(model: LanguageModel, app: Application, tran
   return { message: text.replace(DONE, "").trim(), done: done || turns + 1 >= MAX_TURNS };
 }
 
-/** Validated report; retried once on invalid JSON/schema, then throws (caller flags the session). */
-export async function generateReport(model: LanguageModel, app: Application, transcript: Turn[]): Promise<Report> {
+/** Model output parsed against `schema`; retried once on invalid JSON/schema, then throws. */
+async function generateJson<T>(model: LanguageModel, system: string, data: string, schema: z.ZodType<T>): Promise<T> {
   let lastError = "";
   for (let attempt = 0; attempt < 2; attempt++) {
     const { text } = await generateText({
       model,
-      system: reportPrompt,
-      prompt: `${quoteApp(app)}\n${quoteTranscript(transcript)}${lastError ? `\nYour previous output was invalid: ${lastError}. Return only the JSON object.` : ""}`,
+      system,
+      prompt: `${data}${lastError ? `\nYour previous output was invalid: ${lastError}. Return only the JSON object.` : ""}`,
     });
     const json = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
     try {
-      const parsed = reportSchema.safeParse(JSON.parse(json));
+      const parsed = schema.safeParse(JSON.parse(json));
       if (parsed.success) return parsed.data;
       lastError = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
     } catch (e) {
       lastError = (e as Error).message;
     }
   }
-  throw new Error(`report invalid after retry: ${lastError}`);
+  throw new Error(`output invalid after retry: ${lastError}`);
+}
+
+/** Validated report; retried once on invalid JSON/schema, then throws (caller flags the session). */
+export const generateReport = (model: LanguageModel, app: Application, transcript: Turn[]): Promise<Report> =>
+  generateJson(model, reportPrompt, `${quoteApp(app)}\n${quoteTranscript(transcript)}`, reportSchema);
+
+// ── E-59 client projects: milestone planner + candidate matcher. Advisory only (rule 9). ─────────────
+export const PLAN_PROMPT_VERSION = "plan.v1";
+export const MATCH_PROMPT_VERSION = "match.v1";
+
+export const planSchema = z.object({
+  milestones: z.array(z.object({
+    title: z.string().min(3).max(120),
+    deliverables: z.string().min(10),
+    acceptance: z.string().min(10),
+    amount_usd: z.number().int().positive(),
+    days_from_start: z.number().int().positive(),
+  })).min(1).max(12),
+});
+export type Brief = { title: string; brief: string; skills?: string[]; budgetUsd?: number | null; deadline?: string | null };
+export type PlannedMilestone = { title: string; deliverables: string; acceptance: string; amountUsd: number; due: string };
+
+const quoteBrief = (b: Brief) => `<project_brief>\n${JSON.stringify(b)}\n</project_brief>`;
+const addDays = (today: Date, n: number) => new Date(today.getTime() + n * 86_400_000).toISOString().slice(0, 10);
+
+/** Brief → milestone drafts. Amounts are made to add up to the budget (remainder on the last one); due days increase. */
+export async function planMilestones(model: LanguageModel, brief: Brief, today = new Date()): Promise<PlannedMilestone[]> {
+  const { milestones } = await generateJson(model, planPrompt, quoteBrief(brief), planSchema);
+  const out = milestones.map((m) => ({ ...m }));
+  const budget = brief.budgetUsd ?? 0;
+  const head = out.slice(0, -1).reduce((a, m) => a + m.amount_usd, 0);
+  if (budget > head) out[out.length - 1].amount_usd = budget - head;
+  let day = 0;
+  return out.map((m) => {
+    day = Math.max(day + 1, m.days_from_start);
+    return { title: m.title, deliverables: m.deliverables, acceptance: m.acceptance, amountUsd: m.amount_usd, due: addDays(today, day) };
+  });
+}
+
+export const matchSchema = z.object({
+  candidates: z.array(z.object({
+    id: z.string(),
+    fit: z.enum(["strong", "good", "partial"]),
+    reasons: z.array(z.string().min(1)).min(1).max(3),
+    ask: z.string().min(1),
+  }).strict()).max(5), // .strict(): a "score" key fails, like the triage report (E-51)
+}).strict();
+export type Candidate = { id: string; [k: string]: unknown };
+export type Match = z.infer<typeof matchSchema>["candidates"][number];
+
+/** Shortlist of up to 5 candidates, best first. Ids not in `candidates` are dropped, duplicates too. */
+export async function matchFreelancers(model: LanguageModel, brief: Brief & { plan?: unknown }, candidates: Candidate[]): Promise<Match[]> {
+  if (!candidates.length) return [];
+  const data = `${quoteBrief(brief)}\n<candidates>\n${candidates.map((c) => JSON.stringify(c)).join("\n")}\n</candidates>`;
+  const { candidates: picked } = await generateJson(model, matchPrompt, data, matchSchema);
+  const ids = new Set(candidates.map((c) => c.id));
+  const seen = new Set<string>();
+  return picked.filter((m) => ids.has(m.id) && !seen.has(m.id) && seen.add(m.id));
 }
 
 /** Scripted model for local runs and e2e checks (AI_PROVIDER=mock). */
@@ -101,6 +161,16 @@ function mockModel(): LanguageModel {
     doStream: () => Promise.reject(new Error("mock model does not stream")),
     doGenerate: async ({ prompt }: { prompt: { role: string; content: unknown }[] }) => {
       const system = JSON.stringify(prompt.find((m) => m.role === "system")?.content ?? "");
+      if (system.includes(PLAN_PROMPT_VERSION)) {
+        return reply(JSON.stringify({ milestones: [1, 2, 3].map((n) => ({
+          title: `MOCK milestone ${n}`, deliverables: "MOCK: a merged pull request and a short handover note.",
+          acceptance: "MOCK: the client can run it and the agreed checks pass.", amount_usd: 300, days_from_start: n * 10,
+        })) }));
+      }
+      if (system.includes(MATCH_PROMPT_VERSION)) {
+        const ids = [...new Set(JSON.stringify(prompt).match(/[0-9a-f]{64}/g) ?? [])].slice(0, 3);
+        return reply(JSON.stringify({ candidates: ids.map((id) => ({ id, fit: "good", reasons: ["MOCK: skills overlap with the brief."], ask: "MOCK: ask about a similar project." })) }));
+      }
       if (system.includes("report.v1")) {
         return reply(JSON.stringify({
           version: "triage.v1", summary: "MOCK report generated without an AI provider.", stated_skills: [], evidence: [],

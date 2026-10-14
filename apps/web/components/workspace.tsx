@@ -18,16 +18,20 @@ const NAV: Record<Role, [NavKey, string, IconName][]> = {
     ["home", "/freelancer/home", "layout-dashboard"],
     ["application", "/freelancer", "folder"],
     ["triage", "/freelancer/triage", "list-checks"],
+    ["messages", "/freelancer/messages", "message"],
   ],
   voucher: [
     ["dashboard", "/voucher/dashboard", "layout-dashboard"],
     ["applicants", "/voucher/applicants", "folder"],
     ["vault", "/voucher", "list-checks"],
+    ["messages", "/voucher/messages", "message"],
   ],
   client: [
+    ["projects", "/client/projects", "layers"],
     ["freelancers", "/client/freelancers", "layout-dashboard"],
     ["newCommitment", "/client/new", "folder"],
     ["commitments", "/client/commitments", "list-checks"],
+    ["messages", "/client/messages", "message"],
   ],
   panel: [["assignedClaims", "/panel", "layout-dashboard"]],
   admin: [
